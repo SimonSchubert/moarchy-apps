@@ -1,0 +1,18 @@
+pkgbase = moarchy-keep-git
+	pkgdesc = Text notes and checklists for a Linux phone, kept on the device
+	pkgver = 0.1.0
+	pkgrel = 1
+	url = https://github.com/SimonSchubert/moarchy-keep
+	arch = any
+	license = MIT
+	makedepends = git
+	depends = python
+	depends = python-gobject
+	depends = gtk4
+	depends = libadwaita
+	provides = moarchy-keep
+	conflicts = moarchy-keep
+	source = moarchy-keep::git+https://github.com/SimonSchubert/moarchy-keep.git
+	sha256sums = SKIP
+
+pkgname = moarchy-keep-git
