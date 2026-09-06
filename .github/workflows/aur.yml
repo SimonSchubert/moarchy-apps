@@ -29,26 +29,30 @@ jobs:
         run: pacman -Sy --noconfirm namcap
 
       - name: Lint the PKGBUILD
-        working-directory: aur/moarchy-keep-git
+        working-directory: aur/moarchy-keep
         run: namcap PKGBUILD
 
       # The .SRCINFO is what the AUR web interface and every helper reads; a
       # stale one advertises the wrong dependencies to everyone while the
       # PKGBUILD quietly builds something else.
       - name: Validate .SRCINFO matches the PKGBUILD
-        working-directory: aur/moarchy-keep-git
+        working-directory: aur/moarchy-keep
         run: |
           su builder -c "makepkg --printsrcinfo" > .SRCINFO.generated
           diff -u .SRCINFO .SRCINFO.generated
 
-      # A -git package has no checksums to verify, so the one thing that can
-      # rot silently is the source URL. Cloning it is the whole check.
-      - name: The source repository exists and is cloneable
+      # The checksum is the whole point of a versioned package: if it does not
+      # match the release tarball, everyone's install fails at makepkg.
+      - name: The release tarball exists and matches its checksum
         run: |
-          url=$(grep -oP '^\s+source = .*git\+\K\S+' aur/moarchy-keep-git/.SRCINFO)
-          echo "cloning $url"
-          git clone --depth 1 "$url" /tmp/src-check
-          test -f /tmp/src-check/moarchy_keep/app.py
+          pacman -Sy --noconfirm curl
+          url=$(grep -oP '^\s+source = .*::\K\S+' aur/moarchy-keep/.SRCINFO)
+          want=$(grep -oP '^\s+sha256sums = \K\S+' aur/moarchy-keep/.SRCINFO)
+          echo "fetching $url"
+          curl -fsSL -o /tmp/asset "$url"
+          got=$(sha256sum /tmp/asset | cut -d' ' -f1)
+          [ "$got" = "$want" ] || { echo "MISMATCH: want $want, got $got"; exit 1; }
+          echo "ok $got"
 
   publish:
     name: Publish to AUR
@@ -84,11 +88,11 @@ jobs:
           git config --global --add safe.directory '*'
 
           cd /tmp
-          git clone ssh://aur@aur.archlinux.org/moarchy-keep-git.git
-          cp "$GITHUB_WORKSPACE/aur/moarchy-keep-git/PKGBUILD" moarchy-keep-git/
-          cp "$GITHUB_WORKSPACE/aur/moarchy-keep-git/.SRCINFO" moarchy-keep-git/
-          cd moarchy-keep-git
+          git clone ssh://aur@aur.archlinux.org/moarchy-keep.git
+          cp "$GITHUB_WORKSPACE/aur/moarchy-keep/PKGBUILD" moarchy-keep/
+          cp "$GITHUB_WORKSPACE/aur/moarchy-keep/.SRCINFO" moarchy-keep/
+          cd moarchy-keep
           git add PKGBUILD .SRCINFO
           git diff --cached --quiet && { echo "unchanged, nothing to push"; exit 0; }
-          git commit -m "Update moarchy-keep-git"
+          git commit -m "Update moarchy-keep"
           git push

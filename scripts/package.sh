@@ -3,7 +3,7 @@
 #
 #   ./scripts/package.sh            # -> packages/moarchy-keep-*-any.pkg.tar.zst
 #
-# aur/moarchy-keep-git/PKGBUILD is a -git package: it clones the published
+# aur/moarchy-keep/PKGBUILD is a -git package: it clones the published
 # repository, which is the right thing for someone installing this from the AUR
 # and the wrong thing for testing a change that is not pushed anywhere. There is
 # deliberately only one PKGBUILD in this repo -- the one the AUR publishes -- so
@@ -33,11 +33,9 @@ docker run --rm --platform linux/arm64 \
     # Everything that decides what lands where -- the private module directory,
     # the desktop entry, the icon -- is the file in the repo, not a copy of it,
     # so this cannot drift from what the published package installs.
-    sed -e "/^source=/d" -e "/^sha256sums=/d" -e "/^makedepends=/d" \
-        -e "s|^pkgname=moarchy-keep-git$|pkgname=moarchy-keep|" \
-        -e "/^pkgver() {/,/^}/d" \
-        -e "s|cd \"\$srcdir/\$_pkgname\"|cd \"\$srcdir\"|" \
-        /tree/aur/moarchy-keep-git/PKGBUILD > PKGBUILD
+    sed -e "/^source=/d" -e "/^sha256sums=/d" \
+        -e "s|cd \"\$srcdir/\$pkgname-\$pkgver\"|cd \"\$srcdir\"|" \
+        /tree/aur/moarchy-keep/PKGBUILD > PKGBUILD
     mkdir -p src
     cp -a /tree/moarchy_keep /tree/bin /tree/data /tree/tests /tree/LICENSE /tree/README.md src/
     find src -name __pycache__ -prune -exec rm -rf {} +

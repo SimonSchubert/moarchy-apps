@@ -83,7 +83,7 @@ not save over what it could not read.
 ## Install
 
 ```bash
-yay -S moarchy-keep-git
+yay -S moarchy-keep
 ```
 
 Or run it from a checkout with `python3 -m moarchy_keep`.
@@ -146,19 +146,34 @@ What that showed:
 each, an add-item row, and two ticked items struck through under a collapsible
 heading](docs/screenshots/device/device-note-list.png)
 
-**Not yet answered: whether the on-screen keyboard covers the note being
-edited.** What is established is that the keyboard reserves 200px and the
-compositor shrinks the workspace to match — 674 → 474, measured three ways on
-the same evening by three different surfaces. What is *not* established is that
-a moarchy-keep editor is one of the surfaces that gets shrunk: the phone is
-shared, and the rect I measured turned out to belong to the app drawer's search
-field in someone else's test rather than to this app's note. The apparatus is
-ready — `MOARCHY_KEEP_NEW=text` opens a note with the cursor already in the
-body, which raises the keyboard without a finger — and it wants ninety seconds
-of an undisturbed session.
+### Known issue: you cannot type into it on the phone yet
 
-The other open question is whether a long press on a card competes with the
-shell's own gestures.
+Tapping a text field does not raise the on-screen keyboard. The note opens, the
+tap lands, the cursor appears — and no keyboard. On a notes app that is close to
+fatal, and it is this app's bug rather than the keyboard's:
+
+```
+moarchy-keep      tap a list item:  0 text-input objects, 0 enter events, workspace stays 674
+gnome-text-editor same session:     1 object, 1 enter, workspace 674 → 474
+```
+
+moarchy-keyboard raises itself when a client enables Wayland text input, so a
+client that never enables it leaves the keyboard correctly down. Under
+`WAYLAND_DEBUG=1` this app either never calls `get_text_input` at all or calls
+it without ever receiving the `enter` that would let it enable — while a stock
+GTK4 app in the same session does both. A window whose whole content is one
+`GtkTextView`, built by this same application class, also does both, so the
+fault is somewhere in the widget structure between the two.
+
+That is as far as the evidence goes. Several tidier explanations — that pages
+pushed onto `AdwNavigationView` break it, that it is a focus-timing race, that a
+text widget must exist before the surface gets keyboard focus — each looked
+convincing for one run and were overturned by the next; on a 1.15GHz A53 with a
+shared screen, a single run is not a measurement. What holds up under repetition
+and against a same-session control is only the table above.
+
+A hardware keyboard is unaffected. The other open question is whether a long
+press on a card competes with the shell's own gestures.
 
 ## Not in this version
 
