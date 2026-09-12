@@ -1,7 +1,7 @@
 #!/bin/bash
 # Build the [moarchy] pacman repository from built packages.
 #
-#   packaging/repo-add.sh dist/*.pkg.tar.zst
+#   packaging/repo-add.sh packages/*.pkg.tar.*
 #
 # Why this exists
 # ---------------
@@ -40,7 +40,7 @@ REPO="${REPO:-moarchy}"
 OUT="${OUT:-dist/repo/aarch64}"
 KEY="${MOARCHY_SIGNING_KEY:-$HOME/.config/moarchy-store/signing-key.asc}"
 
-[[ $# -gt 0 ]] || { echo "usage: repo-add.sh <package>.pkg.tar.zst ..." >&2; exit 1; }
+[[ $# -gt 0 ]] || { echo "usage: repo-add.sh <package>.pkg.tar.* ..." >&2; exit 1; }
 
 mkdir -p "$OUT"
 for pkg in "$@"; do
@@ -48,24 +48,60 @@ for pkg in "$@"; do
   cp "$pkg" "$OUT/"
 done
 
+# Whatever compression the packages actually use. Upstream Arch defaults to
+# zstd and Arch Linux ARM's makepkg.conf still says `PKGEXT='.pkg.tar.xz'`, so
+# a script that globbed for one of them found nothing on the machine that
+# builds for the phone -- it copied the packages in, signed none of them, and
+# handed repo-add an empty list. pacman reads either, and so does repo-add;
+# only this file had an opinion.
+shopt -s nullglob
+packages=()
+for pkg in "$OUT"/*.pkg.tar.*; do
+  [[ $pkg == *.sig ]] || packages+=("$pkg")
+done
+shopt -u nullglob
+[[ ${#packages[@]} -gt 0 ]] || { echo "no packages in $OUT" >&2; exit 1; }
+
 # Sign each package. A repo whose packages are unsigned forces SigLevel to be
 # relaxed on the device, which would give away the one thing this arrangement
-# has over the AUR.
+# has over the AUR -- so an unsignable repo is not built at all unless the
+# caller says out loud that it wants one.
+signer=""
 if [[ -f $KEY ]]; then
-  for pkg in "$OUT"/*.pkg.tar.zst; do
-    [[ -f "$pkg.sig" ]] && continue
-    gpg --batch --yes --detach-sign --no-armor \
-        --local-user "$(gpg --with-colons --import-options show-only --import "$KEY" 2>/dev/null | awk -F: '/^fpr/{print $10; exit}')" \
-        "$pkg"
-  done
+  signer=$(gpg --with-colons --import-options show-only --import "$KEY" 2>/dev/null |
+           awk -F: '/^fpr/{print $10; exit}')
+  # The key file holding the secret material is not the same as the secret
+  # material being usable: gpg signs with what is in the keyring, and a key
+  # sitting in a config directory has not been imported into one. Asked here,
+  # once, because the alternative is `gpg: signing failed: No secret key` from
+  # inside a loop after the packages have already been copied.
+  if ! gpg --list-secret-keys "$signer" >/dev/null 2>&1; then
+    echo "the key at $KEY is not in this keyring, so nothing can be signed with it." >&2
+    echo "  its fingerprint:  $signer" >&2
+    echo "  import it with:   gpg --import $KEY" >&2
+    echo "  or point MOARCHY_SIGNING_KEY at the key you mean to sign packages with." >&2
+    [[ ${ALLOW_UNSIGNED:-} == 1 ]] || exit 1
+    signer=""
+  fi
 else
-  echo "warning: no signing key at $KEY -- packages are unsigned," >&2
-  echo "         so the device would need SigLevel = Optional, which defeats the point." >&2
+  echo "no signing key at $KEY." >&2
+  [[ ${ALLOW_UNSIGNED:-} == 1 ]] || exit 1
+fi
+
+if [[ -n $signer ]]; then
+  for pkg in "${packages[@]}"; do
+    [[ -f "$pkg.sig" ]] && continue
+    gpg --batch --yes --detach-sign --no-armor --local-user "$signer" "$pkg"
+  done
+  echo "signed by $signer"
+else
+  echo "warning: ALLOW_UNSIGNED=1 -- these packages are unsigned, so the device" >&2
+  echo "         would need SigLevel = Optional, which defeats the point." >&2
 fi
 
 # repo-add builds the sync database pacman downloads. -n refuses to add a
 # package already in it at the same version, so a re-run is not a surprise.
-repo-add --new --remove "$OUT/$REPO.db.tar.gz" "$OUT"/*.pkg.tar.zst
+repo-add --new --remove "$OUT/$REPO.db.tar.gz" "${packages[@]}"
 
 echo
 echo "repo at $OUT"
