@@ -46,6 +46,14 @@ git archive "$tag:shared"    | tar x -C "$root"
 # installs neither them nor the relative links in README.md that point at them,
 # so they would travel to every machine that installs this and be read by none.
 rm -rf "$root/docs"
+
+# And the PKGBUILD, which must not travel inside the tarball it names. Its
+# sha256sums line is the checksum of this archive; if the archive contains the
+# PKGBUILD, then writing the checksum into it changes the archive, which changes
+# the checksum. Two builds either side of pinning it produced two different
+# hashes and the cycle had no fixed point. makepkg gets the PKGBUILD from the
+# AUR repository, never from the source, so it has no business being here.
+rm -f "$root/PKGBUILD" "$root/.SRCINFO"
 # LICENSE lives once, at the top of the repo, and every package needs a copy.
 git show "$tag:LICENSE"  > "$root/LICENSE"
 git show "$tag:ruff.toml" > "$root/ruff.toml"
