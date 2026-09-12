@@ -1,0 +1,17 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>[moarchy] pacman repository</title>
+<h1>[moarchy]</h1>
+<p>A signed pacman repository for <a href="https://github.com/SimonSchubert/moarchy-apps">moarchy-apps</a>.</p>
+<pre>
+# /etc/pacman.conf
+[moarchy]
+SigLevel = Required TrustedOnly
+Server = https://simonschubert.github.io/moarchy-apps/aarch64
+
+# trust the key that signs it
+curl -O https://simonschubert.github.io/moarchy-apps/aarch64/moarchy.gpg
+sudo pacman-key --add moarchy.gpg
+sudo pacman-key --lsign-key 3CA83612E7F3108F442006B418305B893569BAD3
+</pre>
+<p>Key fingerprint: <code>3CA83612E7F3108F442006B418305B893569BAD3</code></p>
