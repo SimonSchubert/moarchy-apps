@@ -13,7 +13,7 @@ license=('MIT')
 # loses a ring it can live without; this loses the board.
 depends=('python' 'python-gobject' 'gtk4' 'libadwaita' 'python-cairo')
 source=("$url/releases/download/reversi-v$pkgver/$pkgname-$pkgver.tar.gz")
-sha256sums=('SKIP')  # packaging/release.sh prints the real one
+sha256sums=('b334c92279ec3761e2b19eb23ef3cc476d8154fca26d94431992d1a60e7f14e0')
 
 # The source tarball is assembled by packaging/release.sh from two subtrees of
 # one tag -- apps/reversi and shared -- so it holds this app and the shared code
