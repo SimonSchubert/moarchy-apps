@@ -1,0 +1,24 @@
+pkgbase = puzzle-games
+	pkgdesc = A suite of 300+ minimalist logic, math and attention puzzles
+	pkgver = 1.1.4
+	pkgrel = 1
+	url = https://github.com/sidhant947/Puzzle
+	arch = aarch64
+	license = GPL-3.0-or-later
+	makedepends = git
+	makedepends = cmake
+	makedepends = ninja
+	makedepends = clang
+	makedepends = pkgconf
+	makedepends = unzip
+	makedepends = which
+	makedepends = patchelf
+	depends = gtk3
+	options = !strip
+	options = !debug
+	source = git+https://github.com/sidhant947/Puzzle.git#commit=f1228fcaa4f6ef073b667e1c6eebb527f93c7098
+	source = moarchy-puzzle-games-1.1.4.tar.gz::https://github.com/SimonSchubert/moarchy-apps/releases/download/puzzle-games-v1.1.4/moarchy-puzzle-games-1.1.4.tar.gz
+	sha256sums = SKIP
+	sha256sums = a220848cb0f247c4931a6fabf1153f91b2b6aafb41f534f514411209f5c56734
+
+pkgname = puzzle-games

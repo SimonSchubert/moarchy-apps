@@ -29,8 +29,11 @@ _flutter=3.47.4
 
 source=("git+$url.git#commit=$_commit"
         "moarchy-$pkgname-$pkgver.tar.gz::https://github.com/SimonSchubert/moarchy-apps/releases/download/$pkgname-v$pkgver/moarchy-$pkgname-$pkgver.tar.gz")
+# SKIP for the git source -- the #commit= above is the pin. The tarball is
+# pinned properly: packaging/release.sh builds it from the tag deterministically
+# and it is uploaded verbatim, so this hash names exactly those bytes.
 sha256sums=('SKIP'
-            'SKIP')
+            'a220848cb0f247c4931a6fabf1153f91b2b6aafb41f534f514411209f5c56734')
 
 # Flutter's AOT snapshot travels in sections of the built binary, and the engine
 # .so ships stripped already.
