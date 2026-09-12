@@ -27,8 +27,12 @@ _flutter=3.47.4
 
 source=("git+$url.git#commit=$_commit"
         "moarchy-queens-$pkgver.tar.gz::https://github.com/SimonSchubert/moarchy-apps/releases/download/queens-v$pkgver/moarchy-queens-$pkgver.tar.gz")
+# SKIP for the git source -- the #commit= above is the pin, and a checksum over
+# a clone is not a thing makepkg computes. The tarball is pinned properly: it is
+# built by packaging/release.sh from the tag, deterministically, and uploaded
+# verbatim as a release asset, so this hash names exactly those bytes.
 sha256sums=('SKIP'
-            'SKIP')
+            '242f5b2640b0e90e6838c187dec506b1742a399609b3514f0af00e16181d29b9')
 
 # Flutter's AOT snapshot travels in sections of the built binary and the engine
 # .so ships stripped already; strip is a way to break the first and pointless on
