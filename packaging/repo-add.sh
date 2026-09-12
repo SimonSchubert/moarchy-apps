@@ -19,8 +19,15 @@
 #     from, only whether the name is in the catalogue;
 #   * the allowlist is untouched, so the security property the helper exists to
 #     provide is exactly as narrow as before;
-#   * the packages carry a signature from the same key that signs the
-#     catalogue, which is stronger provenance than the AUR offers.
+#   * the packages carry a detached signature from a key pinned in the image's
+#     keyring, which is stronger provenance than the AUR offers -- the AUR
+#     ships no package signatures at all, because it ships no packages.
+#
+# Which key is a decision, not a default. `moarchy package signing` signs these;
+# `moarchy-store catalogue signing` signs catalogue.toml. Signing both with one
+# key is a defensible arrangement and so is keeping them apart, but the choice
+# has to be made on purpose -- MOARCHY_SIGNING_KEY is where it is made, and this
+# script now refuses rather than guessing when the key it is handed cannot sign.
 #
 # What changes is one file in the image: /etc/pacman.conf gains a repo whose key
 # is pinned. That is a decision made once, deliberately, rather than a hole.

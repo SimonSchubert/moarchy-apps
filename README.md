@@ -66,6 +66,7 @@ shared/moarchy_ui/     the half of "theme" that is the same in every app
 apps/<name>/           one app: its package, data, tests, demo, shots, PKGBUILD
 packaging/release.sh   tag -> per-app tarball + sha256
 packaging/repo-add.sh  built packages -> a signed [moarchy] pacman repo
+packaging/publish-pages.sh    that repo -> the gh-pages branch it is served from
 scripts/check.sh       lint, tests, and a real run at 360x720
 scripts/screenshot.sh  the photo harness; apps/<name>/shots.sh says what to shoot
 scripts/package.sh     build one app's package from the working tree
@@ -99,8 +100,9 @@ done literally: a signed binary repo **is** a pacman sync database, so
   only whether the name is in the catalogue;
 - the allowlist is untouched, so the security property the helper exists to
   provide stays exactly as narrow as it was;
-- packages carry a signature from the same key that signs the catalogue, which
-  is better provenance than the AUR offers.
+- packages carry a detached signature from a key pinned in the image's own
+  keyring, which is better provenance than the AUR offers — the AUR ships no
+  package signatures at all, because it ships no packages.
 
 What changes is one stanza in the image's `/etc/pacman.conf`, with the key
 pinned — a decision made once, deliberately, rather than a hole.
