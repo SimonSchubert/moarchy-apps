@@ -1,0 +1,18 @@
+[Desktop Entry]
+Type=Application
+Name=Puzzle Games
+GenericName=Puzzle collection
+Comment=A suite of minimalist logic, math and attention puzzles
+# PUZZLE_NO_TITLEBAR is read by linux/runner/my_application.cc, through
+# no-titlebar.patch until sidhant947/Puzzle takes the change. It lives here and
+# not in /usr/bin/puzzle-games on purpose: run from a shell on a desktop the
+# binary should behave like any other GTK application.
+Exec=env PUZZLE_NO_TITLEBAR=1 puzzle-games
+Icon=puzzle-games
+Terminal=false
+Categories=Game;LogicGame;
+Keywords=puzzle;sudoku;kakuro;futoshiki;logic;math;
+StartupNotify=true
+# Upstream's application id, which is how a shell matches the window to this
+# file. Not the package name.
+StartupWMClass=com.sidhant.puzzle

@@ -1,0 +1,98 @@
+# Maintainer: Simon Schubert <simon@librem.one>
+#
+# Packaging for somebody else's app, like apps/queens -- and a smaller job than
+# that one, because upstream already ships a Linux target. All this adds is one
+# branch in their runner and a .desktop file. See README.md.
+pkgname=puzzle-games
+pkgver=1.1.4
+pkgrel=1
+pkgdesc="A suite of 300+ minimalist logic, math and attention puzzles"
+arch=('aarch64')
+url="https://github.com/sidhant947/Puzzle"
+license=('GPL-3.0-or-later')
+depends=('gtk3')
+makedepends=('git' 'cmake' 'ninja' 'clang' 'pkgconf' 'unzip' 'which' 'patchelf')
+
+# Named puzzle-games, not puzzle, deliberately. `puzzles` -- Simon Tatham's
+# Portable Puzzle Collection -- is already in extra, and two packages one letter
+# apart, both collections of small logic games, is a trap laid for whoever types
+# the shorter one. This is also what the app calls itself on its own title bar.
+
+# Upstream tagged v1.1.4 here. The commit, not the tag: a tag can be moved and
+# this is somebody else's repository to move.
+_commit=f1228fcaa4f6ef073b667e1c6eebb527f93c7098
+
+# The SDK this was built and tested with. Flutter is in no pacman repository for
+# aarch64, so it cannot be a makedepends; build() uses one on PATH and fetches
+# this tag when there is none.
+_flutter=3.47.4
+
+source=("git+$url.git#commit=$_commit"
+        "moarchy-$pkgname-$pkgver.tar.gz::https://github.com/SimonSchubert/moarchy-apps/releases/download/$pkgname-v$pkgver/moarchy-$pkgname-$pkgver.tar.gz")
+sha256sums=('SKIP'
+            'SKIP')
+
+# Flutter's AOT snapshot travels in sections of the built binary, and the engine
+# .so ships stripped already.
+options=('!strip' '!debug')
+
+prepare() {
+  cd "$srcdir/Puzzle"
+
+  # A patch, not a vendored runner -- the difference from apps/queens, and the
+  # reason is upstream's own tree. Queens gitignores linux/ entirely, so the
+  # file to change does not exist there and a patch would have nothing to apply
+  # to. Puzzle commits linux/ (and snap/, macos/, windows/), so the file is
+  # real, versioned, and reviewable as a diff.
+  patch -Np1 -i "$srcdir/moarchy-$pkgname-$pkgver/no-titlebar.patch"
+}
+
+build() {
+  export PUB_CACHE="$srcdir/.pub-cache"
+
+  if ! command -v flutter >/dev/null; then
+    if [ ! -x "$srcdir/flutter/bin/flutter" ]; then
+      git clone --depth 1 -b "$_flutter" \
+        https://github.com/flutter/flutter.git "$srcdir/flutter"
+    fi
+    export PATH="$srcdir/flutter/bin:$PATH"
+  fi
+
+  cd "$srcdir/Puzzle"
+  flutter config --enable-linux-desktop >/dev/null
+  flutter precache --linux
+  flutter build linux --release
+}
+
+package() {
+  cd "$srcdir/Puzzle"
+
+  # The bundle is a directory: the executable finds libflutter_linux_gtk.so and
+  # data/ beside it by relative path, so it stays whole under /usr/lib and
+  # /usr/bin gets a line that runs it. Upstream's binary is `puzzle`; the
+  # command this package puts on PATH is `puzzle-games`, as the package is.
+  install -d "$pkgdir/usr/lib/$pkgname"
+  cp -a build/linux/*/release/bundle/. "$pkgdir/usr/lib/$pkgname/"
+
+  # CMake leaves each plugin's RUNPATH pointing at the build tree's
+  # linux/flutter/ephemeral, which exists nowhere on an installed system. It
+  # resolves today only because the engine is already loaded by the time the
+  # registrant opens a plugin. Four plugins here rather than queens' one:
+  # screen_retriever, url_launcher and window_manager come with the desktop
+  # target upstream already supports.
+  patchelf --set-rpath '$ORIGIN' "$pkgdir/usr/lib/$pkgname/lib/"*_plugin.so \
+                                 "$pkgdir/usr/lib/$pkgname/lib/"*_manager*.so
+
+  install -Dm755 /dev/stdin "$pkgdir/usr/bin/$pkgname" <<EOF
+#!/bin/sh
+exec /usr/lib/$pkgname/puzzle "\$@"
+EOF
+
+  install -Dm644 "$srcdir/moarchy-$pkgname-$pkgver/$pkgname.desktop" \
+    "$pkgdir/usr/share/applications/$pkgname.desktop"
+
+  install -Dm644 fastlane/metadata/android/en-US/images/icon.png \
+    "$pkgdir/usr/share/icons/hicolor/512x512/apps/$pkgname.png"
+
+  install -Dm644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}

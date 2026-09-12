@@ -13,6 +13,7 @@ the aarch64 repos, the AUR or Flathub. This is where they get written.
 | [reversi](apps/reversi) | Reversi: a board drawn for 360px, an opponent on a clock | v0.1.0 |
 | [chess](apps/chess) | Chess: two taps a move, an opponent in the app, no second package | v0.1.0 |
 | [queens](apps/queens) | *Packaging only:* sidhant947's crown-placement puzzle, and the Linux runner it does not ship | 1.0.8 |
+| [puzzle-games](apps/puzzle-games) | *Packaging only:* sidhant947's suite of 300+ small puzzles, minus the titlebar | 1.1.4 |
 
 Habits is gap #9 on that list — Loop has 72 translations and Linux has nothing;
 `francis`, the nearest thing in the catalogue, is a pomodoro timer. Keep came in
@@ -28,6 +29,14 @@ is exactly where a phone's one change has to live — so it is committed in
 carry their whole history to hold ten files; this carries the ten files.
 `apps/queens/README.md` says what the change is and why it is an environment
 variable rather than an `#ifdef`.
+
+Puzzle is the same arrangement and a smaller one. Upstream commits `linux/`
+there — alongside `snap/`, `macos/` and `windows/` — so the Linux target already
+works and the whole delta is one patch against a real, versioned file. Queens
+needed the runner carried; Puzzle needed a branch. Both are upstream as
+[Queens#15](https://github.com/sidhant947/Queens/pull/15) and
+[Puzzle#168](https://github.com/sidhant947/Puzzle/pull/168), and if they land
+these directories keep only their PKGBUILDs.
 
 Reversi and Chess are **not** on that list, and both READMEs say so in as many
 words: GNOME has shipped Iagno and Chess for twenty years and they are
