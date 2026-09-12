@@ -1,0 +1,18 @@
+[Desktop Entry]
+Type=Application
+Name=Queens
+GenericName=Logic puzzle
+Comment=Place one queen per row, column and colour region
+# QUEENS_NO_TITLEBAR is read by the runner in linux/runner/my_application.cc.
+# It lives here rather than in /usr/bin/queens on purpose: the binary should
+# behave like any other GTK application when someone runs it from a shell on a
+# desktop, and only a phone's launcher asks for an undecorated window.
+Exec=env QUEENS_NO_TITLEBAR=1 queens
+Icon=queens
+Terminal=false
+Categories=Game;LogicGame;
+Keywords=puzzle;queens;logic;crown;
+StartupNotify=true
+# The window class Flutter gives it, which is how a shell matches the window
+# back to this file. It is upstream's application id, not the package name.
+StartupWMClass=com.sidhant.queens

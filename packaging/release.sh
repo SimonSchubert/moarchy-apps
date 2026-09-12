@@ -39,7 +39,16 @@ root="$stage/$name-$version"
 mkdir -p "$root"
 
 git archive "$tag:apps/$app" | tar x -C "$root"
-git archive "$tag:shared"    | tar x -C "$root"
+
+# shared/ is the Python half these apps have in common, and not every app here
+# has it. queens is the first that does not: it is packaging for somebody else's
+# Flutter app, and a GTK4 widget library inside that tarball would be dead weight
+# in every download and a claim about the contents that is not true. The test is
+# the app's own code -- a Python package named after it, or modules at its root.
+if [ -d "$root/moarchy_$app" ] || compgen -G "$root"/*.py >/dev/null; then
+  git archive "$tag:shared" | tar x -C "$root"
+  _python=1
+fi
 
 # The screenshots are for the repository's README, not for the package. They are
 # the bulk of the download -- Keep's are half a megabyte -- and the PKGBUILD
@@ -56,7 +65,12 @@ rm -rf "$root/docs"
 rm -f "$root/PKGBUILD" "$root/.SRCINFO"
 # LICENSE lives once, at the top of the repo, and every package needs a copy.
 git show "$tag:LICENSE"  > "$root/LICENSE"
-git show "$tag:ruff.toml" > "$root/ruff.toml"
+# ruff.toml travels with Python, for the same reason shared/ does. An if rather
+# than a && chain: this script runs under set -e, where a failed test as the
+# last command of a statement ends the release.
+if [ -n "${_python:-}" ]; then
+  git show "$tag:ruff.toml" > "$root/ruff.toml"
+fi
 
 mkdir -p "$out"
 

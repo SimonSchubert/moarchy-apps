@@ -12,11 +12,22 @@ the aarch64 repos, the AUR or Flathub. This is where they get written.
 | [habits](apps/habits) | Habit tracking: a tap a day, a streak, sixteen weeks of history | v0.1.2 |
 | [reversi](apps/reversi) | Reversi: a board drawn for 360px, an opponent on a clock | v0.1.0 |
 | [chess](apps/chess) | Chess: two taps a move, an opponent in the app, no second package | v0.1.0 |
+| [queens](apps/queens) | *Packaging only:* sidhant947's crown-placement puzzle, and the Linux runner it does not ship | 1.0.8 |
 
 Habits is gap #9 on that list — Loop has 72 translations and Linux has nothing;
 `francis`, the nearest thing in the catalogue, is a pomodoro timer. Keep came in
 from its own repository with its history, and is the reason the shared half of
 `theme.py` exists.
+
+Queens is the odd row: nobody here wrote it. It is a Flutter app by sidhant947
+that targets Android, runs on aarch64 Linux without a line of its code changing,
+and has no `linux/` directory because `flutter create` generates one on demand.
+That generated runner is not in upstream's repository, changes with the SDK, and
+is exactly where a phone's one change has to live — so it is committed in
+`apps/queens` and the PKGBUILD builds upstream's code against it. A fork would
+carry their whole history to hold ten files; this carries the ten files.
+`apps/queens/README.md` says what the change is and why it is an environment
+variable rather than an `#ifdef`.
 
 Reversi and Chess are **not** on that list, and both READMEs say so in as many
 words: GNOME has shipped Iagno and Chess for twenty years and they are

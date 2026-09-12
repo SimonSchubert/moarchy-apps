@@ -1,0 +1,101 @@
+# Maintainer: Simon Schubert <simon@librem.one>
+#
+# The first package here that is not an app written here, and the first that is
+# not arch=any. apps/queens holds no game: it holds the Linux runner upstream
+# does not ship, and the recipe that builds their code against it. See
+# README.md for why that is a directory in this repo rather than a fork.
+pkgname=queens
+pkgver=1.0.8
+pkgrel=1
+pkgdesc="Crown-placement logic puzzle: one queen per row, column and colour region"
+arch=('aarch64')
+url="https://github.com/sidhant947/Queens"
+license=('GPL-3.0-or-later')
+depends=('gtk3')
+makedepends=('git' 'cmake' 'ninja' 'clang' 'pkgconf' 'unzip' 'which')
+
+# Upstream tagged V1.0.8 here. The commit, not the tag: a tag can be moved and a
+# commit cannot, and this is somebody else's repository to move.
+_commit=df703d361e8cbe2d4086fcada4db31d7d7e1bbbe
+
+# The SDK this was built and tested with. Flutter is in no pacman repository for
+# aarch64 -- archlinuxarm.org/packages/aarch64/flutter is a 404 and Arch's own
+# repos carry only fvm -- so it cannot be a makedepends, and build() fetches it
+# below. Pinned rather than "stable", because "stable" moves under us and the
+# runner in linux/ is written against a specific template.
+_flutter=3.47.4
+
+source=("git+$url.git#commit=$_commit"
+        "moarchy-queens-$pkgver.tar.gz::https://github.com/SimonSchubert/moarchy-apps/releases/download/queens-v$pkgver/moarchy-queens-$pkgver.tar.gz")
+sha256sums=('SKIP'
+            'SKIP')
+
+# Flutter's AOT snapshot travels in sections of the built binary and the engine
+# .so ships stripped already; strip is a way to break the first and pointless on
+# the second.
+options=('!strip' '!debug')
+
+prepare() {
+  cd "$srcdir/Queens"
+
+  # The runner upstream has no reason to carry: Queens is an Android app, and
+  # `flutter create --platforms=linux .` writes linux/ from an SDK template.
+  # Copied from this repo rather than generated during the build, because a
+  # generated runner makes the window's behaviour a function of whichever
+  # Flutter happens to be installed on the build machine -- and the one change
+  # in ours (QUEENS_NO_TITLEBAR) would be silently dropped by a newer template.
+  cp -r "$srcdir/moarchy-queens-$pkgver/linux" .
+}
+
+build() {
+  # Keep pub's cache inside the build, not in the builder's home.
+  export PUB_CACHE="$srcdir/.pub-cache"
+
+  # Use a Flutter already on PATH if the build machine has one (the phone image
+  # builder and the VM both do), and fetch the pinned tag if not. A shallow
+  # clone of one tag is about 1.5 GB with the artifacts precache pulls, which is
+  # why this is worth avoiding when it can be.
+  if ! command -v flutter >/dev/null; then
+    if [ ! -x "$srcdir/flutter/bin/flutter" ]; then
+      git clone --depth 1 -b "$_flutter" \
+        https://github.com/flutter/flutter.git "$srcdir/flutter"
+    fi
+    export PATH="$srcdir/flutter/bin:$PATH"
+  fi
+
+  cd "$srcdir/Queens"
+  flutter config --enable-linux-desktop >/dev/null
+  # Downloads the linux-arm64 engine artifacts. They exist: Google publishes no
+  # arm64 SDK archive, but linux-arm64, linux-arm64-debug/-profile/-release are
+  # all in the release bucket, so nothing here is built from source.
+  flutter precache --linux
+  flutter build linux --release
+}
+
+package() {
+  cd "$srcdir/Queens"
+
+  # The bundle is a directory, not a binary: the executable loads
+  # libflutter_linux_gtk.so and data/ beside it by relative path, so it stays
+  # whole under /usr/lib and /usr/bin gets a line that runs it.
+  install -d "$pkgdir/usr/lib/$pkgname"
+  cp -a build/linux/*/release/bundle/. "$pkgdir/usr/lib/$pkgname/"
+
+  install -Dm755 /dev/stdin "$pkgdir/usr/bin/$pkgname" <<EOF
+#!/bin/sh
+exec /usr/lib/$pkgname/$pkgname "\$@"
+EOF
+
+  install -Dm644 "$srcdir/moarchy-queens-$pkgver/queens.desktop" \
+    "$pkgdir/usr/share/applications/$pkgname.desktop"
+
+  # Upstream's own artwork, from the metadata their releases are built from,
+  # rather than a copy of it kept here: one icon, in one place, at the version
+  # this package builds.
+  install -Dm644 fastlane/metadata/android/en-US/images/icon.png \
+    "$pkgdir/usr/share/icons/hicolor/512x512/apps/$pkgname.png"
+
+  # GPL-3.0, theirs. The MIT LICENSE in the packaging tarball covers the runner
+  # in linux/ and nothing else, and does not belong in the installed package.
+  install -Dm644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}
