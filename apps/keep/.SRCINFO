@@ -2,14 +2,14 @@ pkgbase = moarchy-keep
 	pkgdesc = Text notes and checklists for a Linux phone, kept on the device
 	pkgver = 0.1.1
 	pkgrel = 1
-	url = https://github.com/SimonSchubert/moarchy-keep
+	url = https://github.com/SimonSchubert/moarchy-apps
 	arch = any
 	license = MIT
 	depends = python
 	depends = python-gobject
 	depends = gtk4
 	depends = libadwaita
-	source = https://github.com/SimonSchubert/moarchy-keep/releases/download/v0.1.1/moarchy-keep-0.1.1.tar.gz
-	sha256sums = b3ebd88760c720d78f4c15ed7cc96ebb589911ff27553c3d6b89a916dd336e89
+	source = https://github.com/SimonSchubert/moarchy-apps/releases/download/keep-v0.1.1/moarchy-keep-0.1.1.tar.gz
+	sha256sums = 6a5647eb169a7b59485455798bca3834551ab3391e11a3961e2ab1bd207fdb71
 
 pkgname = moarchy-keep

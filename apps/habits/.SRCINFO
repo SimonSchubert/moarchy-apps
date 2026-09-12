@@ -1,0 +1,15 @@
+pkgbase = moarchy-habits
+	pkgdesc = Habit tracking for a Linux phone, kept on the device
+	pkgver = 0.1.0
+	pkgrel = 1
+	url = https://github.com/SimonSchubert/moarchy-apps
+	arch = any
+	license = MIT
+	depends = python
+	depends = python-gobject
+	depends = gtk4
+	depends = libadwaita
+	source = https://github.com/SimonSchubert/moarchy-apps/releases/download/habits-v0.1.0/moarchy-habits-0.1.0.tar.gz
+	sha256sums = e06e00f8fadc7e9bff3f060d7918e5e22dff40b11ef5fa0a7a5c9867e7341493
+
+pkgname = moarchy-habits

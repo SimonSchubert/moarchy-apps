@@ -9,7 +9,7 @@ license=('MIT')
 # Pure Python, so arch=any. The GUI stack is all runtime, nothing is compiled.
 depends=('python' 'python-gobject' 'gtk4' 'libadwaita')
 source=("$url/releases/download/keep-v$pkgver/$pkgname-$pkgver.tar.gz")
-sha256sums=('b3ebd88760c720d78f4c15ed7cc96ebb589911ff27553c3d6b89a916dd336e89')
+sha256sums=('6a5647eb169a7b59485455798bca3834551ab3391e11a3961e2ab1bd207fdb71')
 
 # The source tarball is assembled by packaging/release.sh from two subtrees of
 # one tag -- apps/keep and shared -- so it holds this app and the shared code it
