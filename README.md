@@ -111,8 +111,31 @@ SigLevel = Required TrustedOnly
 Server = https://simonschubert.github.io/moarchy-apps/aarch64
 ```
 
+...and the key that signs it, which is the half that makes `TrustedOnly` mean
+anything:
+
+```sh
+curl -O https://simonschubert.github.io/moarchy-apps/aarch64/moarchy.gpg
+sudo pacman-key --add moarchy.gpg
+sudo pacman-key --lsign-key 3CA83612E7F3108F442006B418305B893569BAD3
+```
+
 That single change is what makes every app in this repo listable, and it
 retires the "AUR only" verdict for `moarchy-keep` and `moarchy-airwaves` too.
+
+The repo is live and holds all four apps at their released versions. It is
+built in two halves, because the two tools it needs are on different machines:
+
+```sh
+packaging/repo-add.sh packages/*.pkg.tar.*   # in the Arch container, for repo-add
+packaging/publish-pages.sh                   # here, where the signing key is
+git push origin gh-pages
+```
+
+`SigLevel = Required TrustedOnly` is checked rather than assumed: a real pacman
+in a clean container, pointed at the published URL with nothing but that key
+trusted, syncs the database and installs `moarchy-chess` with
+`Validated By: Signature`.
 
 ## Working on it
 
