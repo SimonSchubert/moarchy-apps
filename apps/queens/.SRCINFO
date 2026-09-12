@@ -1,0 +1,23 @@
+pkgbase = queens
+	pkgdesc = Crown-placement logic puzzle: one queen per row, column and colour region
+	pkgver = 1.0.8
+	pkgrel = 1
+	url = https://github.com/sidhant947/Queens
+	arch = aarch64
+	license = GPL-3.0-or-later
+	makedepends = git
+	makedepends = cmake
+	makedepends = ninja
+	makedepends = clang
+	makedepends = pkgconf
+	makedepends = unzip
+	makedepends = which
+	depends = gtk3
+	options = !strip
+	options = !debug
+	source = git+https://github.com/sidhant947/Queens.git#commit=df703d361e8cbe2d4086fcada4db31d7d7e1bbbe
+	source = moarchy-queens-1.0.8.tar.gz::https://github.com/SimonSchubert/moarchy-apps/releases/download/queens-v1.0.8/moarchy-queens-1.0.8.tar.gz
+	sha256sums = SKIP
+	sha256sums = 242f5b2640b0e90e6838c187dec506b1742a399609b3514f0af00e16181d29b9
+
+pkgname = queens
