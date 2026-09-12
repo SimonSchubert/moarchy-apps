@@ -13,7 +13,7 @@ license=('MIT' 'CC-BY-4.0')
 # context at all. Habits loses a ring it can live without; this loses the board.
 depends=('python' 'python-gobject' 'gtk4' 'libadwaita' 'python-cairo')
 source=("$url/releases/download/chess-v$pkgver/$pkgname-$pkgver.tar.gz")
-sha256sums=('SKIP')  # packaging/release.sh prints the real one
+sha256sums=('647d996143061e989c7ab83bd42160bffd4e57a6ac8f7bc2bf86351aec24c3e0')
 
 # Two licences, because the pieces are not ours: the six outlines in
 # moarchy_chess/pieces.py are Font Awesome Free's chess icons under CC BY 4.0,
