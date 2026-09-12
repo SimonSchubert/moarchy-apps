@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- The app is a grid of days that fill in as they are kept, so the icon is
+     that grid with a streak running through it. Four columns because the row on
+     a phone is five and four reads more clearly at 16px. -->
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+  <rect width="128" height="128" rx="28" fill="#2b3340"/>
+  <g fill="#4a5568">
+    <rect x="22" y="22"  width="20" height="20" rx="6"/>
+    <rect x="52" y="22"  width="20" height="20" rx="6"/>
+    <rect x="82" y="22"  width="20" height="20" rx="6"/>
+    <rect x="22" y="52"  width="20" height="20" rx="6"/>
+    <rect x="82" y="52"  width="20" height="20" rx="6"/>
+    <rect x="22" y="82"  width="20" height="20" rx="6"/>
+    <rect x="52" y="82"  width="20" height="20" rx="6"/>
+  </g>
+  <g fill="#33d17a">
+    <rect x="82" y="82" width="20" height="20" rx="6"/>
+    <rect x="52" y="52" width="20" height="20" rx="6"/>
+  </g>
+</svg>

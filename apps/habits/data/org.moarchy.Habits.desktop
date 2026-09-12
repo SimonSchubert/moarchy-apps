@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=Habits
+GenericName=Habit Tracker
+Comment=Track habits with a tap a day, kept on the device
+Exec=moarchy-habits
+Icon=org.moarchy.Habits
+Terminal=false
+Categories=Utility;Office;ProjectManagement;
+Keywords=habit;habits;streak;routine;daily;tracker;goal;
+StartupNotify=true
+StartupWMClass=org.moarchy.Habits
