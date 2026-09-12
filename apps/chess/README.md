@@ -243,6 +243,14 @@ single line on stderr as the only sign. The screenshots are the rest of it, and
 are what caught the rank numbers down the left edge being drawn in the colour of
 the square they were standing on.
 
+`scripts/icon-lint.py` runs over every app's icon, and exists because neither of
+the two things it checks is visible from here. An icon has to be well-formed XML
+— Reversi's was not, and librsvg had been refusing to draw it — and it cannot
+use a clip path, because the drawer renders with QtSvg, which ignores
+`clip-path` and *paints* a `<clipPath>` declared outside `<defs>`. The first
+version of this app's icon did both, and drew as a black square with a knight on
+it on any phone whose image does not carry omarchy-mobile's repair hook.
+
 | variable | what it does |
 |---|---|
 | `MOARCHY_CHESS_DIR` | where the game lives |

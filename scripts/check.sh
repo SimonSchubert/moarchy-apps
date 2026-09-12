@@ -30,6 +30,8 @@ else
   echo "ruff not installed -- skipping lint"
 fi
 
+run python3 scripts/icon-lint.py
+
 for app in "${apps[@]}"; do
   dir="apps/$app"
   [[ -d $dir ]] || { echo "no such app: $app" >&2; status=1; continue; }
