@@ -10,11 +10,21 @@ the aarch64 repos, the AUR or Flathub. This is where they get written.
 |---|---|---|
 | [keep](apps/keep) | Notes and checklists, in the shape of Google Keep | v0.1.1 |
 | [habits](apps/habits) | Habit tracking: a tap a day, a streak, sixteen weeks of history | first cut |
+| [reversi](apps/reversi) | Reversi: a board drawn for 360px, an opponent on a clock | first cut |
 
 Habits is gap #9 on that list — Loop has 72 translations and Linux has nothing;
 `francis`, the nearest thing in the catalogue, is a pomodoro timer. Keep came in
 from its own repository with its history, and is the reason the shared half of
 `theme.py` exists.
+
+Reversi is **not** on that list, and its README says so in as many words: GNOME
+has shipped Iagno for twenty years and it is `gnome-reversi` in `extra`. It is
+here because the list measures what Linux lacks, and a phone lacks things the
+list does not ask about — a board drawn for 360px, an opponent that answers on a
+clock rather than at a depth chosen on a laptop, and a game written to disk on
+every move because phones reclaim apps rather than closing them. Whether Iagno
+survives 360px is a question for moarchy-store's sweep, which exists to score
+exactly that.
 
 ## Why one repo
 
