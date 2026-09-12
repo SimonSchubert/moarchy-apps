@@ -1,13 +1,23 @@
-name: AUR Package
+name: AUR Package (keep)
 
+# Still one workflow for one app. It is named and pathed for Keep rather than
+# matrixed over apps/*, because publishing to the AUR is not a thing to
+# generalise on spec -- the second app to need it can add its own file, and
+# whoever writes the third can decide a matrix has earned itself.
+#
+# NOTE: apps/keep/PKGBUILD now points at a moarchy-apps release asset that does
+# not exist yet. Cut `keep-v0.1.1` here with packaging/release.sh and upload it
+# before letting this run, or validation will fail on a source it cannot fetch.
 on:
   push:
     branches: [main]
     paths:
-      - 'aur/**'
+      - 'apps/keep/PKGBUILD'
+      - 'apps/keep/.SRCINFO'
   pull_request:
     paths:
-      - 'aur/**'
+      - 'apps/keep/PKGBUILD'
+      - 'apps/keep/.SRCINFO'
   workflow_dispatch:
 
 jobs:
@@ -29,14 +39,14 @@ jobs:
         run: pacman -Sy --noconfirm namcap
 
       - name: Lint the PKGBUILD
-        working-directory: aur/moarchy-keep
+        working-directory: apps/keep
         run: namcap PKGBUILD
 
       # The .SRCINFO is what the AUR web interface and every helper reads; a
       # stale one advertises the wrong dependencies to everyone while the
       # PKGBUILD quietly builds something else.
       - name: Validate .SRCINFO matches the PKGBUILD
-        working-directory: aur/moarchy-keep
+        working-directory: apps/keep
         run: |
           su builder -c "makepkg --printsrcinfo" > .SRCINFO.generated
           diff -u .SRCINFO .SRCINFO.generated
@@ -46,8 +56,8 @@ jobs:
       - name: The release tarball exists and matches its checksum
         run: |
           pacman -Sy --noconfirm curl
-          url=$(grep -oP '^\s+source = .*::\K\S+' aur/moarchy-keep/.SRCINFO)
-          want=$(grep -oP '^\s+sha256sums = \K\S+' aur/moarchy-keep/.SRCINFO)
+          url=$(grep -oP '^\s+source = .*::\K\S+' apps/keep/.SRCINFO)
+          want=$(grep -oP '^\s+sha256sums = \K\S+' apps/keep/.SRCINFO)
           echo "fetching $url"
           curl -fsSL -o /tmp/asset "$url"
           got=$(sha256sum /tmp/asset | cut -d' ' -f1)
@@ -89,8 +99,8 @@ jobs:
 
           cd /tmp
           git clone ssh://aur@aur.archlinux.org/moarchy-keep.git
-          cp "$GITHUB_WORKSPACE/aur/moarchy-keep/PKGBUILD" moarchy-keep/
-          cp "$GITHUB_WORKSPACE/aur/moarchy-keep/.SRCINFO" moarchy-keep/
+          cp "$GITHUB_WORKSPACE/apps/keep/PKGBUILD" moarchy-keep/
+          cp "$GITHUB_WORKSPACE/apps/keep/.SRCINFO" moarchy-keep/
           cd moarchy-keep
           git add PKGBUILD .SRCINFO
           git diff --cached --quiet && { echo "unchanged, nothing to push"; exit 0; }
