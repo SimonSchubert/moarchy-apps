@@ -39,27 +39,46 @@ Flathub, not in the AUR. The nearest thing in moarchy-store's catalogue is
   header counts *4 of 5 today*, and finishing the day says so
 - **Milestones at 7, 30, 100 and 365 days**, with the next one always named on
   the habit's page — *7 days — 2 to go*
+- **Points, seven levels and ten achievements**, none of which can be lost
 - **Everything local.** One JSON file, no account, no network code in the app
 - **The phone's colours.** A habit picks a *role* — the theme's green, its blue —
   and `omarchy-theme-set` recolours every mark in place
 
-## Rewards, and what is deliberately not here
+## Rewards
 
-There are no points, no coins, no levels and no avatar. Extrinsic currency is
-the thing most likely to crowd out the reason someone started, and it would
-fight the strength score below, which exists precisely so the app is not a
-casino that pays out on streaks.
+A scoreboard, not a currency. There is nothing to spend points on, nothing to
+buy, and no way to earn one except by keeping a day — so the app can never ask
+you to come back for a reward that is not the habit itself.
 
-What is here is acknowledgement, at the two moments that are actually worth
-marking:
+| | |
+|---|---|
+| A kept day | 10 points, plus 1 per day of the streak it belongs to |
+| Streak bonus | capped at 10, so a long streak never makes a new habit feel pointless to start |
+| Levels | seven, at 0 · 100 · 300 · 700 · 1500 · 3000 · 6000 — *Day one* to *Second nature* |
+| Achievements | ten, earned once and never lost |
+
+**Nothing subtracts.** A tracker that can punish you is one you stop opening on
+the days it matters most, which is the opposite of the job. There is no streak
+insurance to buy back a missed day either — the strength score already exists so
+that a lapse costs a percent instead of everything, and a currency you could
+lose or repurchase would undo it.
+
+Achievements are questions about *history*, not about the last tap, so they are
+answered when the file is read as well as when a day is ticked. Import a year of
+habits and the badges you already earned are there. The rules all live in
+`game.py`, which imports no GTK, so they are covered by tests rather than by a
+screenshot.
+
+And acknowledgement, at the moments actually worth marking:
 
 - **The tick.** A halo expands out of the mark and it pops, once, for 320ms.
   This is the whole reward loop of a habit tracker and it was silent — the
   square changed colour in the same frame with nothing to tell a thumb it had
   landed. It respects `prefers-reduced-motion`: the halo stays, the motion goes.
-- **Crossing something.** A toast at 7, 30, 100 and 365 days, and one when the
-  last habit of the day is ticked. Only on *crossing* — re-ticking a day inside
-  a 40-day streak does not re-announce the 30, and unticking never celebrates.
+- **Crossing something.** A toast for a new achievement, for 7, 30, 100 and 365
+  days, and for the last habit of the day — at most one per tap, rarest first.
+  Only on *crossing*: re-ticking a day inside a 40-day streak does not
+  re-announce the 30, and unticking never celebrates.
 
 A tracker that congratulates every tap is a tracker people mute.
 

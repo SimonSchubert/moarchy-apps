@@ -16,7 +16,7 @@ RUN sed -i '/^\[options\]/a DisableSandbox' /etc/pacman.conf
 
 RUN pacman-key --init && pacman-key --populate archlinuxarm && \
     pacman -Syu --noconfirm --needed \
-      python python-gobject gtk4 libadwaita \
+      python python-gobject gtk4 libadwaita python-cairo \
       adwaita-icon-theme adwaita-fonts cantarell-fonts ttf-dejavu \
       dbus xorg-server-xvfb xorg-xdpyinfo xdotool imagemagick \
       sway wayland-utils wtype \

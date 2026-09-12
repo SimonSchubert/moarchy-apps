@@ -32,7 +32,11 @@ from dataclasses import dataclass, field
 from datetime import date, timedelta
 from pathlib import Path
 
-SCHEMA = 1
+# 2 added the meta table, which is where achievements are recorded. A schema-1
+# file simply has no meta and loads with none earned -- and because every
+# achievement is a question about history rather than about the last tap, the
+# first run re-awards whatever that history already deserved.
+SCHEMA = 2
 
 BOOLEAN = "boolean"
 MEASURABLE = "measurable"
@@ -322,6 +326,8 @@ class Store:
     def __init__(self, path: Path | str | None = None) -> None:
         self.path = Path(path) if path else data_dir() / "habits.json"
         self.habits: list[Habit] = []
+        # key -> the ISO date it was earned. Earned once, never lost.
+        self.achievements: dict[str, str] = {}
 
     # --- file ------------------------------------------------------------
 
@@ -337,6 +343,13 @@ class Store:
         try:
             data = json.loads(raw)
             records = data.get("habits", []) if isinstance(data, dict) else []
+            meta = data.get("meta", {}) if isinstance(data, dict) else {}
+            earned = meta.get("achievements", {}) if isinstance(meta, dict) else {}
+            self.achievements = (
+                {str(k): str(v) for k, v in earned.items() if isinstance(k, str)}
+                if isinstance(earned, dict)
+                else {}
+            )
         except ValueError:
             # A file we cannot parse is moved aside rather than overwritten: the
             # next save would otherwise destroy whatever the user actually had.
@@ -361,7 +374,11 @@ class Store:
 
     def save(self) -> None:
         self.path.parent.mkdir(parents=True, exist_ok=True)
-        payload = {"schema": SCHEMA, "habits": [h.to_dict() for h in self.habits]}
+        payload = {
+            "schema": SCHEMA,
+            "habits": [h.to_dict() for h in self.habits],
+            "meta": {"achievements": self.achievements},
+        }
         tmp = self.path.with_suffix(".tmp")
         with tmp.open("w", encoding="utf-8") as fh:
             json.dump(payload, fh, ensure_ascii=False, indent=1)
@@ -406,6 +423,13 @@ class Store:
 
     def restore(self, habit: Habit, index: int) -> None:
         self.habits.insert(max(0, min(index, len(self.habits))), habit)
+
+    def award(self, key: str, day: date | None = None) -> bool:
+        """Record an achievement. Returns False if it was already held."""
+        if key in self.achievements:
+            return False
+        self.achievements[key] = _iso(day or today())
+        return True
 
     def move(self, habit: Habit, to: int) -> None:
         if habit not in self.habits:

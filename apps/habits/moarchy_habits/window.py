@@ -22,14 +22,16 @@ gi.require_version("Adw", "1")
 from gi.repository import Adw, Gio, GLib, Gtk  # noqa: E402
 from moarchy_ui.icons import icon  # noqa: E402
 
-from . import theme  # noqa: E402
+from . import game, theme  # noqa: E402
 from .editor import HabitEditor  # noqa: E402
 from .habits import MEASURABLE, Habit, Store, recent_days, today  # noqa: E402
 from .widgets import (  # noqa: E402
     STRIP_DAYS,
+    BadgeTile,
     WEEKDAYS,
     HabitRow,
     Heatmap,
+    TodayRing,
     frequency_label,
     strip_header,
 )
@@ -63,7 +65,12 @@ class HabitsWindow(Adw.ApplicationWindow):
         self._nav.add(self._list_page())
         self.set_content(self._nav)
 
+        action = Gio.SimpleAction.new("achievements", None)
+        action.connect("activate", lambda *_: self.show_achievements())
+        self.add_action(action)
+
         self.connect("close-request", self._on_close)
+        self.catch_up_achievements()
         self.rebuild()
         self._open_requested()
 
@@ -88,6 +95,7 @@ class HabitsWindow(Adw.ApplicationWindow):
         )
         menu.set_tooltip_text("Menu")
         model = Gio.Menu()
+        model.append("Achievements", "win.achievements")
         model.append("About Habits", "app.about")
         menu.set_menu_model(model)
         header.pack_end(menu)
@@ -101,6 +109,7 @@ class HabitsWindow(Adw.ApplicationWindow):
         self._list.set_margin_bottom(18)
 
         content = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=0)
+        content.append(self._scoreboard())
         content.append(self._day_header())
         content.append(self._list)
 
@@ -135,6 +144,45 @@ class HabitsWindow(Adw.ApplicationWindow):
         view.add_top_bar(header)
         view.set_content(self._toasts)
         return Adw.NavigationPage.new(view, "Habits")
+
+    def _scoreboard(self) -> Gtk.Widget:
+        """Today's ring and the running level, side by side.
+
+        Two different measurements, so two different shapes: the ring is today
+        and resets every night, the bar is everything and never goes down. A
+        second bar for today would have read as half of the same thing.
+        """
+        box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=14)
+        box.add_css_class("scoreboard")
+        box.set_margin_start(LIST_MARGIN)
+        box.set_margin_end(LIST_MARGIN)
+        box.set_margin_top(10)
+
+        self._ring = TodayRing()
+        self._ring.set_valign(Gtk.Align.CENTER)
+        box.append(self._ring)
+
+        right = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=3)
+        right.set_valign(Gtk.Align.CENTER)
+        right.set_hexpand(True)
+
+        self._level_name = Gtk.Label(xalign=0.0)
+        self._level_name.add_css_class("level-name")
+        self._level_name.set_ellipsize(3)
+        right.append(self._level_name)
+
+        self._level_bar = Gtk.ProgressBar()
+        self._level_bar.add_css_class("levelbar")
+        right.append(self._level_bar)
+
+        self._level_note = Gtk.Label(xalign=0.0)
+        self._level_note.add_css_class("level-note")
+        self._level_note.set_ellipsize(3)
+        right.append(self._level_note)
+
+        box.append(right)
+        self._scoreboard_box = box
+        return box
 
     def _day_header(self) -> Gtk.Widget:
         box, self._day_labels = strip_header(outer=LIST_MARGIN)
@@ -176,6 +224,18 @@ class HabitsWindow(Adw.ApplicationWindow):
 
     def _refresh_progress(self) -> None:
         kept, total = self.store.today_progress()
+        self._ring.refresh(kept, total)
+
+        points = game.total_points(self.store)
+        _, name, into, togo = game.level_for(points)
+        self._level_name.set_text(name)
+        if togo is None:
+            self._level_bar.set_fraction(1.0)
+            self._level_note.set_text(f"{points} points")
+        else:
+            self._level_bar.set_fraction(into / (into + togo) if into + togo else 0.0)
+            self._level_note.set_text(f"{points} points · {togo} to go")
+
         if not total:
             self._title.set_subtitle("")
         elif kept == total:
@@ -218,10 +278,23 @@ class HabitsWindow(Adw.ApplicationWindow):
     def _celebrate(self, habit: Habit, was_streak: int, was_complete: bool) -> None:
         """Say something, but only when there is something to say.
 
-        Two things earn a toast: crossing a milestone, and finishing the day.
-        Everything else gets the halo and nothing more -- a tracker that
-        congratulates every tap is a tracker people mute.
+        Three things earn a toast: a new achievement, crossing a milestone, and
+        finishing the day. At most one per tap, in that order -- a tracker that
+        fires three toasts at a thumb is a tracker people mute, and the rarest
+        of the three is the one worth the interruption.
         """
+        # Awarded whether or not anything is shown, so an achievement earned
+        # during a flurry of taps is not lost because a milestone spoke first.
+        earned = game.newly_earned(self.store)
+        for key in earned:
+            self.store.award(key)
+
+        if earned:
+            name, _ = game.describe(earned[0])
+            more = f" (+{len(earned) - 1} more)" if len(earned) > 1 else ""
+            self._toast(f"Achievement: {name}{more}")
+            return
+
         milestone = habit.milestone_crossed(was_streak, habit.streak())
         if milestone is not None:
             best = habit.best_streak()
@@ -303,6 +376,26 @@ class HabitsWindow(Adw.ApplicationWindow):
                 self._on_opened(None, match.id)
         if os.environ.get("MOARCHY_HABITS_NEW"):
             self.new_habit()
+        if os.environ.get("MOARCHY_HABITS_PAGE") == "achievements":
+            self.show_achievements()
+
+    def catch_up_achievements(self) -> None:
+        """Award whatever the history already deserves, without saying so.
+
+        Achievements are questions about history, not about the last tap, so a
+        store that already qualifies should be credited the moment it is read --
+        otherwise a user with a year of habits opens the page and is told they
+        have earned nothing. Silent on purpose: crediting six at once on first
+        run is a fact, not six separate pieces of good news.
+        """
+        awarded = False
+        for key in game.newly_earned(self.store):
+            awarded = self.store.award(key) or awarded
+        if awarded:
+            self.queue_save()
+
+    def show_achievements(self) -> None:
+        self._nav.push(AchievementsPage(self.store))
 
     # --- saving ----------------------------------------------------------
 
@@ -396,6 +489,7 @@ class HabitDetail(Adw.NavigationPage):
             ("next", "Next milestone"),
             ("best", "Best streak"),
             ("kept", "Days kept"),
+            ("points", "Points"),
             ("total", "Total"),
         ):
             row = Adw.ActionRow(title=title)
@@ -460,6 +554,7 @@ class HabitDetail(Adw.NavigationPage):
 
         self._rows["best"].set_text(f"{habit.best_streak()} days")
         self._rows["kept"].set_text(f"{habit.kept_days()} days")
+        self._rows["points"].set_text(f"{game.habit_points(habit)}")
         # For a yes-or-no habit the total *is* the number of days kept, so the
         # row would repeat the one above it. Measurable habits have something
         # of their own to say: 431 glasses.
@@ -487,3 +582,58 @@ class HabitDetail(Adw.NavigationPage):
     def _on_delete_response(self, _dialog: Adw.AlertDialog, response: str) -> None:
         if response == "delete":
             self.window.delete_habit(self.habit)
+
+
+class AchievementsPage(Adw.NavigationPage):
+    """Every badge, earned or not, and what the earned ones are worth."""
+
+    __gtype_name__ = "HabitsAchievements"
+
+    def __init__(self, store: Store) -> None:
+        super().__init__()
+        self.set_title("Achievements")
+
+        header = Adw.HeaderBar()
+
+        body = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=14)
+        body.set_margin_top(16)
+        body.set_margin_bottom(24)
+        body.set_margin_start(14)
+        body.set_margin_end(14)
+
+        points = game.total_points(store)
+        number, name, _, togo = game.level_for(points)
+        headline = Gtk.Label(xalign=0.5)
+        headline.add_css_class("level-name")
+        headline.set_text(f"Level {number} · {name}")
+        body.append(headline)
+
+        note = Gtk.Label(xalign=0.5)
+        note.add_css_class("level-note")
+        earned = sum(1 for k in game.ACHIEVEMENT_KEYS if k in store.achievements)
+        tail = "" if togo is None else f" · {togo} to the next level"
+        note.set_text(
+            f"{points} points · {earned} of {len(game.ACHIEVEMENT_KEYS)} earned{tail}"
+        )
+        body.append(note)
+
+        grid = Gtk.FlowBox()
+        grid.set_selection_mode(Gtk.SelectionMode.NONE)
+        grid.set_max_children_per_line(3)
+        grid.set_min_children_per_line(3)
+        grid.set_row_spacing(10)
+        grid.set_column_spacing(10)
+        grid.set_homogeneous(True)
+        for key, title, blurb in game.ACHIEVEMENTS:
+            grid.append(BadgeTile(title, blurb, store.achievements.get(key)))
+        body.append(grid)
+
+        scroller = Gtk.ScrolledWindow()
+        scroller.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
+        scroller.set_vexpand(True)
+        scroller.set_child(body)
+
+        view = Adw.ToolbarView()
+        view.add_top_bar(header)
+        view.set_content(scroller)
+        self.set_child(view)

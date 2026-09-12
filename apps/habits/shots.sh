@@ -2,4 +2,5 @@
 # shot_longpress already defined.
 shot list
 shot detail "MOARCHY_HABITS_OPEN=Read"
+shot achievements "MOARCHY_HABITS_PAGE=achievements"
 shot editor "MOARCHY_HABITS_NEW=1"

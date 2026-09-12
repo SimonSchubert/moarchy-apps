@@ -20,6 +20,7 @@ only guaranteed if one file owns both paddings.
 
 from __future__ import annotations
 
+import math
 from datetime import date, timedelta
 from typing import ClassVar
 
@@ -363,3 +364,103 @@ class Heatmap(Gtk.Box):
                 continue
             face.paint(habit.colour, step_for(habit, day), is_today=day == now)
             face.set_tooltip_text(day.strftime("%A %-d %B %Y"))
+
+
+class TodayRing(Gtk.Overlay):
+    """Today's completion as an arc, with the count inside it.
+
+    A ring rather than a bar because this is the one number the app is about and
+    it wants a shape of its own -- and because a bar next to the level bar below
+    would read as two halves of the same measurement, which they are not.
+
+    The colour comes from CSS rather than from an argument, so a theme change
+    repaints it with everything else and this widget never learns that themes
+    exist. `get_color()` resolves whatever `.ring` is currently set to.
+    """
+
+    __gtype_name__ = "HabitsTodayRing"
+
+    SIZE = 74
+    THICKNESS = 7
+
+    def __init__(self) -> None:
+        super().__init__()
+        self._fraction = 0.0
+
+        self._area = Gtk.DrawingArea()
+        self._area.set_size_request(self.SIZE, self.SIZE)
+        self._area.add_css_class("ring")
+        self._area.set_draw_func(self._draw)
+        self.set_child(self._area)
+
+        self._label = Gtk.Label()
+        self._label.add_css_class("ring-figure")
+        self._label.set_halign(Gtk.Align.CENTER)
+        self._label.set_valign(Gtk.Align.CENTER)
+        self.add_overlay(self._label)
+
+    def refresh(self, kept: int, total: int) -> None:
+        self._fraction = (kept / total) if total else 0.0
+        self._label.set_text(f"{kept}/{total}" if total else "—")
+        self._area.queue_draw()
+
+    def _draw(self, area: Gtk.DrawingArea, cr, width: int, height: int) -> None:
+        colour = area.get_color()
+        radius = (min(width, height) - self.THICKNESS) / 2
+        cx, cy = width / 2, height / 2
+
+        cr.set_line_width(self.THICKNESS)
+        cr.set_line_cap(1)  # cairo.LINE_CAP_ROUND
+
+        # The track: the same hue, faint, so an empty ring still reads as a ring
+        # rather than as a missing one.
+        cr.set_source_rgba(colour.red, colour.green, colour.blue, 0.16)
+        cr.arc(cx, cy, radius, 0, 2 * math.pi)
+        cr.stroke()
+
+        if self._fraction <= 0:
+            return
+        # Start at twelve o'clock and go clockwise, which is the direction
+        # everyone expects a thing filling up to go.
+        start = -math.pi / 2
+        cr.set_source_rgba(colour.red, colour.green, colour.blue, colour.alpha)
+        cr.arc(cx, cy, radius, start, start + 2 * math.pi * min(self._fraction, 1.0))
+        cr.stroke()
+
+
+class BadgeTile(Gtk.Box):
+    """One achievement, earned or not.
+
+    A locked badge is shown rather than hidden. A grid with gaps in it says what
+    there is to aim at; a grid that only shows what you already have says
+    nothing at all.
+    """
+
+    __gtype_name__ = "HabitsBadgeTile"
+
+    def __init__(self, name: str, blurb: str, earned_on: str | None) -> None:
+        super().__init__(orientation=Gtk.Orientation.VERTICAL, spacing=2)
+        self.set_size_request(96, -1)
+        self.add_css_class("badge")
+        if earned_on:
+            self.add_css_class("earned")
+
+        glyph = Gtk.Label(label="★" if earned_on else "☆")
+        glyph.add_css_class("badge-glyph")
+        self.append(glyph)
+
+        title = Gtk.Label(label=name)
+        title.add_css_class("badge-name")
+        title.set_wrap(True)
+        title.set_justify(Gtk.Justification.CENTER)
+        title.set_max_width_chars(12)
+        self.append(title)
+
+        note = Gtk.Label(label=earned_on or blurb)
+        note.add_css_class("badge-note")
+        note.set_wrap(True)
+        note.set_justify(Gtk.Justification.CENTER)
+        note.set_max_width_chars(14)
+        self.append(note)
+
+        self.set_tooltip_text(blurb)

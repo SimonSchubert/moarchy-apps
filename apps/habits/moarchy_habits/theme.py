@@ -180,5 +180,56 @@ def stylesheet(p: Palette) -> str:
   letter-spacing: 0.08em;
   color: @moarchy_dim;
 }
+
+/* --- the scoreboard ------------------------------------------------------ */
+
+/* The ring reads its own `color` in its draw function, so setting it here is
+   what makes a theme change repaint it along with everything else. */
+.ring { color: @accent_color; }
+.ring-figure {
+  font-size: 1.05rem;
+  font-weight: 700;
+  font-feature-settings: "tnum";
+}
+.scoreboard {
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: @moarchy_surface;
+}
+.level-name {
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+.level-note {
+  font-size: 0.8rem;
+  color: @moarchy_dim;
+  font-feature-settings: "tnum";
+}
+.levelbar { min-height: 6px; }
+.levelbar > trough,
+.levelbar > trough > progress { min-height: 6px; border-radius: 3px; }
+
+/* --- badges -------------------------------------------------------------- */
+
+.badge {
+  padding: 12px 6px;
+  border-radius: 12px;
+  background: @moarchy_surface;
+  opacity: 0.45;
+}
+.badge.earned { opacity: 1; }
+.badge-glyph {
+  font-size: 1.7rem;
+  color: @moarchy_dim;
+}
+.badge.earned .badge-glyph { color: @accent_color; }
+.badge-name {
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+.badge-note {
+  font-size: 0.7rem;
+  color: @moarchy_dim;
+}
 """
     )
