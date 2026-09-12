@@ -66,6 +66,11 @@ mkdir -p "$out"
 # about in GitHub's generated archives, arriving from our own side instead.
 # Every file is stamped with the tag's own commit date, and gzip -n is told to
 # write neither a name nor a timestamp.
+# The stamp is the tag's own commit date, which makes the tarball a function
+# of the tag and nothing else -- but it also means MOVING a tag changes the
+# bytes. So pin the checksum *after* the tag is final, and do not re-tag
+# afterwards. The commit that writes sha256sums into the PKGBUILD comes after
+# the tag and is not part of it, which is fine: PKGBUILD is excluded above.
 stamp=$(git log -1 --format=%cd --date=format:%Y%m%d%H%M.%S "$tag")
 find "$root" -exec touch -t "$stamp" {} +
 tar cf - -C "$stage" "$name-$version" | gzip -n -9 > "$out/$name-$version.tar.gz"

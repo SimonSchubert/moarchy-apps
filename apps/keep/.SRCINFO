@@ -10,6 +10,6 @@ pkgbase = moarchy-keep
 	depends = gtk4
 	depends = libadwaita
 	source = https://github.com/SimonSchubert/moarchy-apps/releases/download/keep-v0.1.1/moarchy-keep-0.1.1.tar.gz
-	sha256sums = 6a5647eb169a7b59485455798bca3834551ab3391e11a3961e2ab1bd207fdb71
+	sha256sums = 9786ab25aca6980ea68efd7578af1ae8aed7b5fecac76b5c99a674e8a8c5eebd
 
 pkgname = moarchy-keep
