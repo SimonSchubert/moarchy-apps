@@ -18,7 +18,15 @@ HERE = Path(__file__).resolve().parent.parent
 sys.path[:0] = [str(HERE), str(HERE.parent.parent / "shared")]
 
 from moarchy_reversi import ai  # noqa: E402
-from moarchy_reversi.reversi import DARK, LIGHT, OPENING, PASS, Game, Position, index  # noqa: E402
+from moarchy_reversi.reversi import (  # noqa: E402
+    DARK,
+    LIGHT,
+    OPENING,
+    PASS,
+    Game,
+    Position,
+    index,
+)
 
 
 def _wound_down(seed: int, empties: int) -> Game:

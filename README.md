@@ -11,20 +11,32 @@ the aarch64 repos, the AUR or Flathub. This is where they get written.
 | [keep](apps/keep) | Notes and checklists, in the shape of Google Keep | v0.1.1 |
 | [habits](apps/habits) | Habit tracking: a tap a day, a streak, sixteen weeks of history | first cut |
 | [reversi](apps/reversi) | Reversi: a board drawn for 360px, an opponent on a clock | first cut |
+| [chess](apps/chess) | Chess: two taps a move, an opponent in the app, no second package | first cut |
 
 Habits is gap #9 on that list — Loop has 72 translations and Linux has nothing;
 `francis`, the nearest thing in the catalogue, is a pomodoro timer. Keep came in
 from its own repository with its history, and is the reason the shared half of
 `theme.py` exists.
 
-Reversi is **not** on that list, and its README says so in as many words: GNOME
-has shipped Iagno for twenty years and it is `gnome-reversi` in `extra`. It is
-here because the list measures what Linux lacks, and a phone lacks things the
-list does not ask about — a board drawn for 360px, an opponent that answers on a
-clock rather than at a depth chosen on a laptop, and a game written to disk on
-every move because phones reclaim apps rather than closing them. Whether Iagno
-survives 360px is a question for moarchy-store's sweep, which exists to score
-exactly that.
+Reversi and Chess are **not** on that list, and both READMEs say so in as many
+words: GNOME has shipped Iagno and Chess for twenty years and they are
+`gnome-reversi` and `gnome-chess` in `extra`. They are here because the list
+measures what Linux lacks, and a phone lacks things the list does not ask about
+— a board drawn for 360px, an opponent that answers on a clock rather than at a
+depth chosen on a laptop, and a game written to disk on every move because
+phones reclaim apps rather than closing them. Chess adds one more: `pacman -Si
+gnome-chess` lists `gnuchess` as an *optional* dependency, so the board you
+install has nobody in it until you install a second package, and the search here
+is in the app. Whether either survives 360px is a question for moarchy-store's
+sweep, which exists to score exactly that.
+
+The two share everything that is not the rules — the board is one cairo drawing
+area in both, for the same argument about sixty-four widgets, and the clock on
+the opponent is the same clock. What they do not share is code: two hundred
+lines of near-identical widget would be a third place for the palette to live,
+and the thing this repo exists to stop is the palette living in four places. The
+shared half is `shared/moarchy_ui`, and it stays the half that is genuinely the
+same.
 
 ## Why one repo
 

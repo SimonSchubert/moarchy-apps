@@ -27,8 +27,8 @@ from .editor import HabitEditor  # noqa: E402
 from .habits import MEASURABLE, Habit, Store, recent_days, today  # noqa: E402
 from .widgets import (  # noqa: E402
     STRIP_DAYS,
-    BadgeTile,
     WEEKDAYS,
+    BadgeTile,
     HabitRow,
     Heatmap,
     TodayRing,

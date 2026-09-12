@@ -12,7 +12,7 @@
 
      Four cells across, not eight. Eight lines of 11px each is mush at the 42px
      the drawer actually asks for, and the four discs in the middle are what
-     makes this Othello and not a chessboard -- it is the one opening position
+     makes this Othello and not a chessboard — it is the one opening position
      every set of rules agrees on, and the thing a player recognises. Nothing
      here is finer than 2px at 128, which is half a pixel at 42. -->
 <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">

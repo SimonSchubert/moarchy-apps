@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=Chess
+GenericName=Board Game
+Comment=Play chess against the phone, or across a table
+Exec=moarchy-chess
+Icon=org.moarchy.Chess
+Terminal=false
+Categories=Game;BoardGame;
+Keywords=chess;board;game;strategy;checkmate;
+StartupNotify=true
+StartupWMClass=org.moarchy.Chess
