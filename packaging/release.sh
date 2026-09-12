@@ -51,7 +51,16 @@ git show "$tag:LICENSE"  > "$root/LICENSE"
 git show "$tag:ruff.toml" > "$root/ruff.toml"
 
 mkdir -p "$out"
-tar czf "$out/$name-$version.tar.gz" -C "$stage" "$name-$version"
+
+# Build the same bytes every time. Two runs of this script a second apart used to
+# produce two different checksums, because tar records mtimes and gzip stamps the
+# time into its header -- which is the same class of problem the PKGBUILD warns
+# about in GitHub's generated archives, arriving from our own side instead.
+# Every file is stamped with the tag's own commit date, and gzip -n is told to
+# write neither a name nor a timestamp.
+stamp=$(git log -1 --format=%cd --date=format:%Y%m%d%H%M.%S "$tag")
+find "$root" -exec touch -t "$stamp" {} +
+tar cf - -C "$stage" "$name-$version" | gzip -n -9 > "$out/$name-$version.tar.gz"
 
 sum=$(shasum -a 256 "$out/$name-$version.tar.gz" | cut -d' ' -f1)
 echo "$out/$name-$version.tar.gz"
