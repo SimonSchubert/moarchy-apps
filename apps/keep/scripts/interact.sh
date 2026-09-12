@@ -12,6 +12,11 @@
 # follows the pointer, so the pointer stays inside the window after every tap.
 set -uo pipefail
 
+# The app's own tree and the shared one, both resolved from this file rather
+# than from the working directory, so the script runs from anywhere.
+APP="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+export PYTHONPATH="$(cd "$APP/../.." && pwd)/shared:$APP"
+
 DIR="${MOARCHY_KEEP_DIR:-$(mktemp -d)}"
 DISPLAY_NUM="${DISPLAY_NUM:-:96}"
 export DISPLAY="$DISPLAY_NUM" MOARCHY_KEEP_DIR="$DIR"

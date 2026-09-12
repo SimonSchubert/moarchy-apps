@@ -19,8 +19,15 @@ RUN pacman-key --init && pacman-key --populate archlinuxarm && \
       python python-gobject gtk4 libadwaita \
       adwaita-icon-theme adwaita-fonts cantarell-fonts ttf-dejavu \
       dbus xorg-server-xvfb xorg-xdpyinfo xdotool imagemagick \
+      sway wayland-utils wtype \
       ruff && \
     pacman -Scc --noconfirm
+
+# sway is here for one property the X server cannot test at all: whether an app
+# enables Wayland text input. The phone's on-screen keyboard raises itself when
+# a client does, so an app that never enables it cannot be typed into there --
+# and that is invisible under X11, which has no such protocol. Running the same
+# compositor the phone runs, headless, makes it checkable in seconds.
 
 # No GL in this container, and none on a Mali-400 either: both fall back to the
 # software renderer, so what is photographed here is what the phone draws.

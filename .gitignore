@@ -3,3 +3,7 @@ __pycache__/
 .ruff_cache/
 packages/
 build/
+*.pkg.tar.*
+apps/*/docs/screenshots/device/
+.device-seed/
+dist/

@@ -279,7 +279,10 @@ class Habit:
     @classmethod
     def from_dict(cls, data: dict) -> Habit:
         if not isinstance(data, dict):
-            raise ValueError("habit is not a table")
+            # TypeError, not ValueError: the argument is the wrong *kind* of
+            # thing, not a well-formed one carrying a bad value. Store.load
+            # catches both, so this is about saying the right thing.
+            raise TypeError("habit is not a table")
         entries: dict[str, float] = {}
         raw = data.get("entries")
         if isinstance(raw, dict):

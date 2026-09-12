@@ -86,6 +86,8 @@ not save over what it could not read.
 yay -S moarchy-keep
 ```
 
+[![AUR](https://img.shields.io/aur/version/moarchy-keep)](https://aur.archlinux.org/packages/moarchy-keep)
+
 Or run it from a checkout with `python3 -m moarchy_keep`.
 
 ## Checking it without a phone
@@ -106,7 +108,24 @@ that matters: a GTK layout error is not an exception. The app starts, the window
 appears, one widget is the wrong size or missing, and a single line on stderr is
 the only sign — which on a phone goes to a journal nobody reads.
 
-Two scripts go further:
+`scripts/text-input-check.sh` is the one that would have caught the defect
+above. It runs the app under **headless sway** — the compositor the phone runs —
+and reads the Wayland protocol trace to answer one question: does this app
+enable text input? An on-screen keyboard raises itself when the focused client
+does, so an app that never does cannot be typed into on a phone, and X11 has no
+such protocol to notice it with:
+
+```
+  control (bare TextView)  created=1 enter=1 enable=1  CAN BE TYPED INTO
+  moarchy-keep (new note)  created=1 enter=0 enable=0  ** NO KEYBOARD **
+```
+
+The control is a window whose whole content is one `GtkTextView`. If it fails,
+the harness is broken rather than the app, and the script says so instead of
+reporting a failure — a lesson from an evening of measurements that turned out
+to be measuring the wrong surface.
+
+Two more go further still:
 
 - `scripts/interact.sh` taps the app with `xdotool` — takes a note, types a
   title and a body, makes a list, presses Enter for the next item — and then
@@ -115,6 +134,12 @@ Two scripts go further:
 - `scripts/screenshot.sh` photographs it, optionally under a real Omarchy
   palette: `./scripts/fetch-themes.sh /tmp/themes` then
   `THEME=/tmp/themes/tokyo-night/colors.toml ./scripts/screenshot.sh`.
+
+And on the phone itself, `scripts/package.sh` builds the package from the
+working tree and `scripts/device.sh` installs it, photographs it and takes it
+away again — `check`, `install`, `seed`, `shots`, `log`, `remove`. It is written
+for a shared device: every step is small, announced and reversible, nothing is
+copied into the filesystem by hand, and `remove` is a `pacman -R`.
 
 The cairo renderer these use is not a compromise for the container: the
 PinePhone's Mali-400 tops out at GLES 2.0, so GTK falls back to software

@@ -12,6 +12,8 @@ the user do that translation on a touch screen buys nothing.
 
 from __future__ import annotations
 
+from typing import ClassVar
+
 import gi
 
 gi.require_version("Gtk", "4.0")
@@ -43,7 +45,7 @@ class HabitEditor(Adw.Dialog):
 
     __gtype_name__ = "HabitsEditor"
 
-    __gsignals__ = {
+    __gsignals__: ClassVar[dict] = {
         "saved": (GObject.SignalFlags.RUN_FIRST, None, (str,)),
     }
 

@@ -15,9 +15,10 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+HERE = Path(__file__).resolve().parent.parent
+sys.path[:0] = [str(HERE), str(HERE.parent.parent / "shared")]
 
-from moarchy_keep.notes import (
+from moarchy_keep.notes import (  # noqa: E402
     LIST,
     TEXT,
     Item,

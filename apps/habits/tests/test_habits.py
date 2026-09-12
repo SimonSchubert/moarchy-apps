@@ -65,7 +65,7 @@ class TestTicking(unittest.TestCase):
 class TestStreak(unittest.TestCase):
     def test_counts_consecutive_days(self):
         h = Habit(name="Read")
-        days_back(h, range(0, 5))
+        days_back(h, range(5))
         self.assertEqual(h.streak(TODAY), 5)
 
     def test_today_undone_does_not_break_it(self):
@@ -119,24 +119,24 @@ class TestScore(unittest.TestCase):
 
     def test_perfect_month_is_near_one(self):
         h = Habit(name="Read")
-        days_back(h, range(0, 30))
+        days_back(h, range(30))
         self.assertGreater(h.score(TODAY), 0.9)
 
     def test_score_is_bounded(self):
         h = Habit(name="Read")
-        days_back(h, range(0, 400))
+        days_back(h, range(400))
         self.assertLessEqual(h.score(TODAY), 1.0)
 
     def test_recent_days_count_for_more(self):
         """Same number of days kept; the one who kept them lately scores higher."""
         recent, distant = Habit(name="a"), Habit(name="b")
-        days_back(recent, range(0, 10))
+        days_back(recent, range(10))
         days_back(distant, range(60, 70))
         self.assertGreater(recent.score(TODAY), distant.score(TODAY))
 
     def test_lapse_lowers_the_score(self):
         kept = Habit(name="a")
-        days_back(kept, range(0, 30))
+        days_back(kept, range(30))
         lapsed = Habit(name="b")
         days_back(lapsed, range(15, 45))
         self.assertGreater(kept.score(TODAY), lapsed.score(TODAY))
@@ -167,12 +167,12 @@ class TestMilestones(unittest.TestCase):
 
     def test_next_milestone_counts_down(self):
         h = Habit(name="Read")
-        days_back(h, range(0, 5))
+        days_back(h, range(5))
         self.assertEqual(h.next_milestone(TODAY), (7, 2))
 
     def test_next_milestone_is_none_past_the_last(self):
         h = Habit(name="Read")
-        days_back(h, range(0, MILESTONES[-1] + 10))
+        days_back(h, range(MILESTONES[-1] + 10))
         self.assertIsNone(h.next_milestone(TODAY))
 
 

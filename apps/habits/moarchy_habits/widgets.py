@@ -21,6 +21,7 @@ only guaranteed if one file owns both paddings.
 from __future__ import annotations
 
 from datetime import date, timedelta
+from typing import ClassVar
 
 import gi
 
@@ -43,9 +44,8 @@ ROW_PAD = 12  # horizontal padding, shared by the rows and their header
 # thing worse than guessing is guessing differently in the two grids.
 WEEKDAYS = ("M", "T", "W", "T", "F", "S", "S")
 
-# How long the tick animation runs. Long enough to register, short enough
-# that ticking four habits in a row is not four waits.
-POP_MS = 320
+# The tick animation's length is theme.POP_MS -- the keyframes and the timer
+# that removes the class have to agree, and the stylesheet owns the number.
 
 
 def step_for(habit: Habit, day: date) -> int:
@@ -101,7 +101,7 @@ class Face(Gtk.Box):
         animation does not replay while its class is still applied.
         """
         self.add_css_class("just-done")
-        GLib.timeout_add(POP_MS, self._unpop)
+        GLib.timeout_add(theme.POP_MS, self._unpop)
 
     def _unpop(self) -> bool:
         self.remove_css_class("just-done")
@@ -155,7 +155,7 @@ class DayStrip(Gtk.Box):
 
     __gtype_name__ = "HabitsDayStrip"
 
-    __gsignals__ = {
+    __gsignals__: ClassVar[dict] = {
         # (iso date) -- the row above decides what a tap means.
         "day-activated": (GObject.SignalFlags.RUN_FIRST, None, (str,)),
     }
@@ -232,7 +232,7 @@ class HabitRow(Gtk.ListBoxRow):
 
     __gtype_name__ = "HabitsHabitRow"
 
-    __gsignals__ = {
+    __gsignals__: ClassVar[dict] = {
         "toggled": (GObject.SignalFlags.RUN_FIRST, None, (str, str)),
         "opened": (GObject.SignalFlags.RUN_FIRST, None, (str,)),
     }

@@ -8,10 +8,13 @@ the aarch64 repos, the AUR or Flathub. This is where they get written.
 
 | app | what it is | state |
 |---|---|---|
+| [keep](apps/keep) | Notes and checklists, in the shape of Google Keep | v0.1.1 |
 | [habits](apps/habits) | Habit tracking: a tap a day, a streak, sixteen weeks of history | first cut |
 
-Gap #9 on that list — Loop Habit Tracker has 72 translations and Linux has
-nothing; `francis`, the nearest thing in the catalogue, is a pomodoro timer.
+Habits is gap #9 on that list — Loop has 72 translations and Linux has nothing;
+`francis`, the nearest thing in the catalogue, is a pomodoro timer. Keep came in
+from its own repository with its history, and is the reason the shared half of
+`theme.py` exists.
 
 ## Why one repo
 
@@ -38,12 +41,19 @@ checksum that still names exact code.
 
 ```
 shared/moarchy_ui/     the half of "theme" that is the same in every app
-apps/<name>/           one app: its package, data, tests, demo, PKGBUILD
+apps/<name>/           one app: its package, data, tests, demo, shots, PKGBUILD
 packaging/release.sh   tag -> per-app tarball + sha256
 packaging/repo-add.sh  built packages -> a signed [moarchy] pacman repo
 scripts/check.sh       lint, tests, and a real run at 360x720
+scripts/screenshot.sh  the photo harness; apps/<name>/shots.sh says what to shoot
+scripts/package.sh     build one app's package from the working tree
+scripts/text-input-check.sh   does the app raise the on-screen keyboard?
 docker/Dockerfile.dev  the GNOME stack the phone has and a Mac does not
 ```
+
+Every harness takes the app as its first argument. The only thing that differs
+between photographing a notes app and a habit tracker is *which* screens, so
+that list -- and only that list -- lives in the app, as `shots.sh`.
 
 Shared code is **vendored into each package at build time**, not shipped as its
 own pacman package. moarchy-store reports what an app costs in packages and

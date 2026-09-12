@@ -1,6 +1,13 @@
 #!/bin/bash
 # Install and photograph moarchy-keep on the actual phone.
 #
+# Still Keep's own rather than shared. Every other harness in this repo was
+# generalised when Keep moved into it, but this one talks to hardware that
+# cannot be stood up in a container, so generalising it would mean rewriting
+# the one script nothing here can test. Lift it into scripts/ when a second
+# app actually needs a device run -- the app-specific parts are the package
+# name, the data file, and the two shots at the bottom.
+#
 #   ./scripts/package.sh                    # build it first
 #   ./scripts/device.sh install
 #   ./scripts/device.sh shots
@@ -19,7 +26,9 @@
 # app needs neither, which is one reason it installs cleanly here.
 set -uo pipefail
 
-REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"   # apps/keep
+ROOT="$(cd "$REPO/../.." && pwd)"                          # the repo
+export PYTHONPATH="$ROOT/shared:$REPO"
 PHONE="${PHONE:-moarchy@192.168.0.18}"
 # One multiplexed connection for the whole run. Four sessions each opening a
 # fresh connection per scp is what trips sshd's MaxStartups on this phone, and
@@ -69,7 +78,7 @@ for w in ws:
 step_install() {
   say "install"
   local pkg
-  pkg=$(ls -t "$REPO"/packages/moarchy-keep-*.pkg.tar.* 2>/dev/null | head -1)
+  pkg=$(ls -t "$ROOT"/packages/moarchy-keep-*.pkg.tar.* 2>/dev/null | head -1)
   [[ -n $pkg ]] || die "no package -- run ./scripts/package.sh first"
   info "$(basename "$pkg")"
   scp "${SSH_OPTS[@]}" -q "$pkg" "$PHONE:/tmp/" || die "scp failed"
@@ -88,7 +97,7 @@ step_seed() {
   fi
   local tmp="$REPO/.device-seed"
   rm -rf "$tmp"; mkdir -p "$tmp"
-  MOARCHY_KEEP_DIR="$tmp" python3 "$REPO/scripts/demo-notes.py" >/dev/null || die "could not build the demo notes"
+  MOARCHY_KEEP_DIR="$tmp" python3 "$REPO/demo.py" >/dev/null || die "could not build the demo notes"
   phone 'mkdir -p ~/.local/share/moarchy-keep'
   scp "${SSH_OPTS[@]}" -q "$tmp/notes.json" "$PHONE:.local/share/moarchy-keep/notes.json" || die "scp failed"
   rm -rf "$tmp"

@@ -50,6 +50,12 @@ RAMP_LIGHT = (0.0, 0.22, 0.44, 0.68, 0.92)
 
 STEPS = len(RAMP_DARK) - 1
 
+# How long the tick animation runs. Long enough to register, short enough that
+# ticking four habits in a row is not four waits. Lives here rather than in
+# widgets.py because the keyframes below and the timer that removes the class
+# have to agree, and one of them has to own the number.
+POP_MS = 320
+
 
 def mark_colour(palette: Palette, key: str, step: int) -> str:
     """The fill of one mark, at a step from 0 (untouched) to STEPS."""
@@ -114,7 +120,7 @@ def marks_css(p: Palette) -> str:
   100% {{ box-shadow: 0 0 0 14px alpha({p.accent}, 0); transform: scale(1); }}
 }}
 .mark.just-done {{
-  animation: habit-pop {int(320)}ms ease-out;
+  animation: habit-pop {POP_MS}ms ease-out;
 }}
 
 /* Reduced motion is a setting people turn on because motion makes them ill.

@@ -9,6 +9,7 @@ learns that a theme exists.
 
 from __future__ import annotations
 
+import os
 import sys
 
 import gi
@@ -52,6 +53,13 @@ class KeepApplication(Adw.Application):
             window = KeepWindow(self.store, application=self)
             window.connect("close-request", self._on_close)
         window.present()
+
+        # Debug hook: quit after N seconds. The headless checks need the app to
+        # end by itself -- a log that was cut off by a kill cannot be told apart
+        # from one that stopped because something went wrong.
+        seconds = os.environ.get("MOARCHY_KEEP_QUIT_AFTER")
+        if seconds and seconds.isdigit():
+            GLib.timeout_add_seconds(int(seconds), self.quit)
 
     def do_shutdown(self) -> None:
         # Belt and braces: the window flushes on close-request, but a session

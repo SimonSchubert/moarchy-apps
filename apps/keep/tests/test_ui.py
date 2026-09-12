@@ -19,7 +19,8 @@ import unittest
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+HERE = Path(__file__).resolve().parent.parent
+sys.path[:0] = [str(HERE), str(HERE.parent.parent / "shared")]
 
 REASON = ""
 try:

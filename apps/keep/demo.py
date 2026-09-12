@@ -14,9 +14,10 @@ import sys
 import time
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+HERE = Path(__file__).resolve().parent
+sys.path[:0] = [str(HERE), str(HERE.parent.parent / "shared")]
 
-from moarchy_keep.notes import LIST, TEXT, Item, Note, Store
+from moarchy_keep.notes import LIST, TEXT, Item, Note, Store  # noqa: E402
 
 NOW = time.time()
 MINUTE = 60
