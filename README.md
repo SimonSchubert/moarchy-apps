@@ -9,9 +9,9 @@ the aarch64 repos, the AUR or Flathub. This is where they get written.
 | app | what it is | state |
 |---|---|---|
 | [keep](apps/keep) | Notes and checklists, in the shape of Google Keep | v0.1.1 |
-| [habits](apps/habits) | Habit tracking: a tap a day, a streak, sixteen weeks of history | first cut |
+| [habits](apps/habits) | Habit tracking: a tap a day, a streak, sixteen weeks of history | v0.1.2 |
 | [reversi](apps/reversi) | Reversi: a board drawn for 360px, an opponent on a clock | first cut |
-| [chess](apps/chess) | Chess: two taps a move, an opponent in the app, no second package | first cut |
+| [chess](apps/chess) | Chess: two taps a move, an opponent in the app, no second package | v0.1.0 |
 
 Habits is gap #9 on that list — Loop has 72 translations and Linux has nothing;
 `francis`, the nearest thing in the catalogue, is a pomodoro timer. Keep came in
