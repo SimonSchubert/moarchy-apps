@@ -12,6 +12,7 @@ pkgbase = queens
 	makedepends = pkgconf
 	makedepends = unzip
 	makedepends = which
+	makedepends = patchelf
 	depends = gtk3
 	options = !strip
 	options = !debug

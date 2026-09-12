@@ -12,7 +12,7 @@ arch=('aarch64')
 url="https://github.com/sidhant947/Queens"
 license=('GPL-3.0-or-later')
 depends=('gtk3')
-makedepends=('git' 'cmake' 'ninja' 'clang' 'pkgconf' 'unzip' 'which')
+makedepends=('git' 'cmake' 'ninja' 'clang' 'pkgconf' 'unzip' 'which' 'patchelf')
 
 # Upstream tagged V1.0.8 here. The commit, not the tag: a tag can be moved and a
 # commit cannot, and this is somebody else's repository to move.
@@ -84,6 +84,24 @@ package() {
   # whole under /usr/lib and /usr/bin gets a line that runs it.
   install -d "$pkgdir/usr/lib/$pkgname"
   cp -a build/linux/*/release/bundle/. "$pkgdir/usr/lib/$pkgname/"
+
+  # CMake leaves the plugin libraries pointing at the build tree:
+  #
+  #   liburl_launcher_linux_plugin.so
+  #     RUNPATH [.../src/Queens/linux/flutter/ephemeral]
+  #
+  # which is where libflutter_linux_gtk.so sat while it was being built and
+  # nowhere on the installed system. It works by accident today -- the engine is
+  # already in the process by the time the registrant loads a plugin, so the
+  # soname resolves without ever consulting that path -- and it is exactly the
+  # accident makepkg warns about. The libraries all sit in one directory once
+  # installed, so $ORIGIN is both true and stable.
+  patchelf --set-rpath '$ORIGIN' "$pkgdir/usr/lib/$pkgname/lib/"*_plugin.so
+
+  # libapp.so keeps a file:// URI naming the build directory, recorded inside
+  # the AOT snapshot as the source of the generated plugin registrant. That one
+  # stays: it is data, not a link path, and rewriting a snapshot to please a
+  # warning is a worse idea than the warning.
 
   install -Dm755 /dev/stdin "$pkgdir/usr/bin/$pkgname" <<EOF
 #!/bin/sh
