@@ -40,6 +40,12 @@ mkdir -p "$root"
 
 git archive "$tag:apps/$app" | tar x -C "$root"
 git archive "$tag:shared"    | tar x -C "$root"
+
+# The screenshots are for the repository's README, not for the package. They are
+# the bulk of the download -- Keep's are half a megabyte -- and the PKGBUILD
+# installs neither them nor the relative links in README.md that point at them,
+# so they would travel to every machine that installs this and be read by none.
+rm -rf "$root/docs"
 # LICENSE lives once, at the top of the repo, and every package needs a copy.
 git show "$tag:LICENSE"  > "$root/LICENSE"
 git show "$tag:ruff.toml" > "$root/ruff.toml"
