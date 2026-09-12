@@ -20,6 +20,7 @@ gi.require_version("Gtk", "4.0")
 gi.require_version("Adw", "1")
 
 from gi.repository import Adw, Gio, GLib, Gtk  # noqa: E402
+from moarchy_ui.icons import icon  # noqa: E402
 
 from . import theme  # noqa: E402
 from .editor import HabitEditor  # noqa: E402
@@ -35,6 +36,8 @@ from .widgets import (  # noqa: E402
 
 # A tick writes the file, but not once per tap: a thumb going down a column of
 # five days would otherwise fsync five times.
+APP_ICON = "org.moarchy.Habits"
+
 SAVE_DEBOUNCE_MS = 700
 
 # The boxed list's inset from the window edge. The weekday header is a sibling
@@ -74,13 +77,15 @@ class HabitsWindow(Adw.ApplicationWindow):
         # nothing at all about how today was going.
         self._title = Adw.WindowTitle(title="Habits", subtitle="")
         header.set_title_widget(self._title)
-        add = Gtk.Button(icon_name="list-add-symbolic")
+        add = Gtk.Button(icon_name=icon("list-add-symbolic", "add-symbolic"))
         add.set_tooltip_text("New habit")
         add.update_property([Gtk.AccessibleProperty.LABEL], ["New habit"])
         add.connect("clicked", lambda *_: self.new_habit())
         header.pack_start(add)
 
-        menu = Gtk.MenuButton(icon_name="open-menu-symbolic")
+        menu = Gtk.MenuButton(
+            icon_name=icon("open-menu-symbolic", "view-more-symbolic")
+        )
         menu.set_tooltip_text("Menu")
         model = Gio.Menu()
         model.append("About Habits", "app.about")
@@ -105,7 +110,9 @@ class HabitsWindow(Adw.ApplicationWindow):
         self._scroller.set_child(content)
 
         self._empty = Adw.StatusPage()
-        self._empty.set_icon_name("view-list-bullet-symbolic")
+        # The app's own icon, which this package installs -- so it cannot be
+        # missing wherever the app is, whatever the theme.
+        self._empty.set_icon_name(APP_ICON)
         self._empty.set_title("No habits yet")
         self._empty.set_description(
             "Add something you want to do regularly. Tap a day to mark it done."
@@ -337,13 +344,15 @@ class HabitDetail(Adw.NavigationPage):
         self.set_title(habit.name or "Habit")
 
         header = Adw.HeaderBar()
-        edit = Gtk.Button(icon_name="document-edit-symbolic")
+        edit = Gtk.Button(icon_name=icon("document-edit-symbolic", "edit-symbolic"))
         edit.set_tooltip_text("Edit")
         edit.update_property([Gtk.AccessibleProperty.LABEL], ["Edit habit"])
         edit.connect("clicked", lambda *_: self.window.edit_habit(self.habit))
         header.pack_end(edit)
 
-        delete = Gtk.Button(icon_name="user-trash-symbolic")
+        delete = Gtk.Button(
+            icon_name=icon("user-trash-symbolic", "edit-delete-symbolic")
+        )
         delete.set_tooltip_text("Delete")
         delete.update_property([Gtk.AccessibleProperty.LABEL], ["Delete habit"])
         delete.add_css_class("destructive-action")

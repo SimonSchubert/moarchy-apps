@@ -8,27 +8,10 @@ gi.require_version("Gtk", "4.0")
 gi.require_version("Adw", "1")
 
 from gi.repository import Gdk, GLib, Gtk, Pango  # noqa: E402
+from moarchy_ui.icons import icon  # noqa: E402  -- re-exported
 
 from . import theme  # noqa: E402
 from .notes import CARD_ITEMS, Item, Note  # noqa: E402
-
-
-def icon(*candidates: str) -> str:
-    """First of these icon names the live theme actually has.
-
-    Naming an icon that is not installed does not fall back to nothing -- GTK
-    renders "image-missing", a broken-image glyph that reads as a bug. The
-    phone's icon theme is not the desktop's, so the chain is checked rather
-    than assumed.
-    """
-    display = Gdk.Display.get_default()
-    if display is None:
-        return candidates[-1] if candidates else "dialog-information-symbolic"
-    icons = Gtk.IconTheme.get_for_display(display)
-    for name in candidates:
-        if icons.has_icon(name):
-            return name
-    return "dialog-information-symbolic"
 
 
 def checkbox_glyph(done: bool) -> Gtk.Widget:

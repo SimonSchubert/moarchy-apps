@@ -1,6 +1,6 @@
 # Maintainer: Simon Schubert <simon@librem.one>
 pkgname=moarchy-habits
-pkgver=0.1.0
+pkgver=0.1.1
 pkgrel=1
 pkgdesc="Habit tracking for a Linux phone, kept on the device"
 arch=('any')
