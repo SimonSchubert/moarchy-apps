@@ -1,0 +1,98 @@
+name: AUR Package
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'aur/**'
+  pull_request:
+    paths:
+      - 'aur/**'
+  workflow_dispatch:
+
+jobs:
+  validate:
+    name: Validate PKGBUILD
+    runs-on: ubuntu-latest
+    container: archlinux:base-devel
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup build user
+        run: |
+          useradd -m builder
+          echo "builder ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+          chown -R builder:builder .
+
+      - name: Install namcap
+        run: pacman -Sy --noconfirm namcap
+
+      - name: Lint the PKGBUILD
+        working-directory: aur/moarchy-keep
+        run: namcap PKGBUILD
+
+      # The .SRCINFO is what the AUR web interface and every helper reads; a
+      # stale one advertises the wrong dependencies to everyone while the
+      # PKGBUILD quietly builds something else.
+      - name: Validate .SRCINFO matches the PKGBUILD
+        working-directory: aur/moarchy-keep
+        run: |
+          su builder -c "makepkg --printsrcinfo" > .SRCINFO.generated
+          diff -u .SRCINFO .SRCINFO.generated
+
+      # The checksum is the whole point of a versioned package: if it does not
+      # match the release tarball, everyone's install fails at makepkg.
+      - name: The release tarball exists and matches its checksum
+        run: |
+          pacman -Sy --noconfirm curl
+          url=$(grep -oP '^\s+source = .*::\K\S+' aur/moarchy-keep/.SRCINFO)
+          want=$(grep -oP '^\s+sha256sums = \K\S+' aur/moarchy-keep/.SRCINFO)
+          echo "fetching $url"
+          curl -fsSL -o /tmp/asset "$url"
+          got=$(sha256sum /tmp/asset | cut -d' ' -f1)
+          [ "$got" = "$want" ] || { echo "MISMATCH: want $want, got $got"; exit 1; }
+          echo "ok $got"
+
+  publish:
+    name: Publish to AUR
+    needs: validate
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    container: archlinux:base-devel
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: pacman -Sy --noconfirm openssh git
+
+      - name: Push to AUR
+        env:
+          AUR_SSH_KEY: ${{ secrets.AUR_SSH_KEY }}
+        run: |
+          # System-wide known_hosts: the container's HOME moves between steps,
+          # and a host key written to the wrong one is a prompt nobody can answer.
+          echo "aur.archlinux.org ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEuBKrPzbawxA/k2g6NcyV5jmqwJ2s+zpgZGZ7tpLIcN" >> /etc/ssh/ssh_known_hosts
+          for dir in "$HOME" "/root"; do
+            mkdir -p "$dir/.ssh"
+            echo "$AUR_SSH_KEY" > "$dir/.ssh/aur"
+            chmod 600 "$dir/.ssh/aur"
+            printf "Host aur.archlinux.org\n  IdentityFile %s/.ssh/aur\n  User aur\n" "$dir" > "$dir/.ssh/config"
+            chmod 700 "$dir/.ssh"
+            chmod 600 "$dir/.ssh/config"
+          done
+
+          git config --global user.name "Simon Schubert"
+          git config --global user.email "sschubert89@gmail.com"
+          git config --global --add safe.directory '*'
+
+          cd /tmp
+          git clone ssh://aur@aur.archlinux.org/moarchy-keep.git
+          cp "$GITHUB_WORKSPACE/aur/moarchy-keep/PKGBUILD" moarchy-keep/
+          cp "$GITHUB_WORKSPACE/aur/moarchy-keep/.SRCINFO" moarchy-keep/
+          cd moarchy-keep
+          git add PKGBUILD .SRCINFO
+          git diff --cached --quiet && { echo "unchanged, nothing to push"; exit 0; }
+          git commit -m "Update moarchy-keep"
+          git push

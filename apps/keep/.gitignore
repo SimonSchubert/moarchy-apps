@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+*.pkg.tar.*
+packages/
+docs/screenshots/device/
+.device-seed/

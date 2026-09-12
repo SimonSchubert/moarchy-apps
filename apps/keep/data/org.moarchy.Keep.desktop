@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=Notes
+GenericName=Notes
+Comment=Text notes and checklists, kept on the device
+Exec=moarchy-keep
+Icon=org.moarchy.Keep
+Terminal=false
+Categories=Utility;TextEditor;
+Keywords=note;notes;list;checklist;todo;memo;keep;
+StartupNotify=true
+StartupWMClass=org.moarchy.Keep
