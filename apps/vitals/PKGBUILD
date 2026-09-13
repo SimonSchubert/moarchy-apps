@@ -21,7 +21,7 @@ license=('MIT')
 # GUI stack the phone already has.
 depends=('python' 'python-gobject' 'gtk4' 'libadwaita' 'python-cairo')
 source=("$url/releases/download/vitals-v$pkgver/$pkgname-$pkgver.tar.gz")
-sha256sums=('SKIP')  # packaging/release.sh prints the real one
+sha256sums=('d199df2f268d68f3ab717bc1ee6cea19bc355401c509eda2ab4cb112c47b2f3d')
 
 # The source tarball is assembled by packaging/release.sh from two subtrees of
 # one tag -- apps/vitals and shared -- so it holds this app and the shared code
