@@ -59,10 +59,10 @@ package() {
 
   install -Dm755 launcher "$pkgdir/usr/bin/moarchy-pegsolitaire"
 
-  install -Dm644 data/org.moarchy.PegPegSolitaire.desktop \
-    "$pkgdir/usr/share/applications/org.moarchy.PegPegSolitaire.desktop"
-  install -Dm644 data/org.moarchy.PegPegSolitaire.svg \
-    "$pkgdir/usr/share/icons/hicolor/scalable/apps/org.moarchy.PegPegSolitaire.svg"
+  install -Dm644 data/org.moarchy.PegSolitaire.desktop \
+    "$pkgdir/usr/share/applications/org.moarchy.PegSolitaire.desktop"
+  install -Dm644 data/org.moarchy.PegSolitaire.svg \
+    "$pkgdir/usr/share/icons/hicolor/scalable/apps/org.moarchy.PegSolitaire.svg"
 
   install -Dm644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
   install -Dm644 README.md "$pkgdir/usr/share/doc/$pkgname/README.md"

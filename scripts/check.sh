@@ -31,6 +31,7 @@ else
 fi
 
 run python3 scripts/icon-lint.py
+run python3 scripts/pkgbuild-lint.py
 
 for app in "${apps[@]}"; do
   dir="apps/$app"

@@ -9,7 +9,11 @@ than one" is a rule, and a rule can be wrong.
 The layout is tested as arithmetic rather than through a widget, because
 `layout_for` and `card_at` take a width and a height as arguments and give back
 rectangles. That is deliberate: where a card is drawn and where a tap lands are
-the same function, and a bug in it is a game that plays the wrong card.
+the same function, and a bug in it is a game that plays the wrong card. They
+live in `layout.py`, which imports no GTK, so those tests run in the build
+chroot alongside the rules -- the first cut reached into `widgets.py` for them
+and made this whole module unimportable without a display, which is how the
+package build found it.
 
 Animations are turned off for the whole module. That is not only for speed: it
 is the reduced-motion path, and it is the one where a move has to land and
@@ -71,7 +75,7 @@ from moarchy_solitaire.klondike import (  # noqa: E402
     shuffled,
 )
 from moarchy_solitaire.store import LOST, WON, Store  # noqa: E402
-from moarchy_solitaire.widgets import card_at, layout_for  # noqa: E402
+from moarchy_solitaire.layout import card_at, layout_for  # noqa: E402
 
 
 def pump(until=None, seconds: float = 6.0) -> bool:

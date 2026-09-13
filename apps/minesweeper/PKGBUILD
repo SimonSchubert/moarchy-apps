@@ -60,10 +60,10 @@ package() {
 
   install -Dm755 launcher "$pkgdir/usr/bin/moarchy-minesweeper"
 
-  install -Dm644 data/org.moarchy.PegMinesweeper.desktop \
-    "$pkgdir/usr/share/applications/org.moarchy.PegMinesweeper.desktop"
-  install -Dm644 data/org.moarchy.PegMinesweeper.svg \
-    "$pkgdir/usr/share/icons/hicolor/scalable/apps/org.moarchy.PegMinesweeper.svg"
+  install -Dm644 data/org.moarchy.Minesweeper.desktop \
+    "$pkgdir/usr/share/applications/org.moarchy.Minesweeper.desktop"
+  install -Dm644 data/org.moarchy.Minesweeper.svg \
+    "$pkgdir/usr/share/icons/hicolor/scalable/apps/org.moarchy.Minesweeper.svg"
 
   install -Dm644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
   install -Dm644 README.md "$pkgdir/usr/share/doc/$pkgname/README.md"

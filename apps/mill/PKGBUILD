@@ -57,10 +57,10 @@ package() {
 
   install -Dm755 launcher "$pkgdir/usr/bin/moarchy-mill"
 
-  install -Dm644 data/org.moarchy.PegMill.desktop \
-    "$pkgdir/usr/share/applications/org.moarchy.PegMill.desktop"
-  install -Dm644 data/org.moarchy.PegMill.svg \
-    "$pkgdir/usr/share/icons/hicolor/scalable/apps/org.moarchy.PegMill.svg"
+  install -Dm644 data/org.moarchy.Mill.desktop \
+    "$pkgdir/usr/share/applications/org.moarchy.Mill.desktop"
+  install -Dm644 data/org.moarchy.Mill.svg \
+    "$pkgdir/usr/share/icons/hicolor/scalable/apps/org.moarchy.Mill.svg"
 
   install -Dm644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
   install -Dm644 README.md "$pkgdir/usr/share/doc/$pkgname/README.md"
