@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Drawn as an Adwaita object rather than a full-bleed tile, for the reason
+     Keep's icon records: mobileomarchy's AppDrawer.qml paints the .desktop icon
+     bare, with no tile behind it, four to a row next to Contacts and
+     Calculator. An icon that fills its own square is the one thing in that grid
+     that reads as a tile instead of as a thing.
+
+     So this is three cards fanned. Each is an Adwaita object in its own right,
+     on two 2px lips a step darker down a paper ramp (#f6f5f4, #deddda,
+     #c0bfbc), with the same 2px white specular at 0.187 inset from the left
+     edge that every other icon here carries, on the front card only, since it
+     is the only card whose left edge is showing.
+
+     Three cards and not seven columns. A whole Klondike table at the 42px the
+     drawer actually asks for is grey mush. A fanned hand is the picture
+     everybody already has of a pack of cards, and one big spade is the pip that
+     survives being a pixel wide.
+
+     The spade is a path and not a glyph. A character from a font is a bet on
+     the font stack of a device whose font stack is not this one, and a suit
+     that renders as a box is an icon of a box. It is the same four curves the
+     app draws its own pips with, at a different size.
+
+     Nothing here is finer than 3px at 128, which is a pixel at 42. No clip
+     path: QtSvg ignores clip-path and paints an out-of-defs clipPath as a black
+     rectangle, which is how Chess's first icon drew as a black square. -->
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+  <g transform="rotate(-17 64 78)">
+    <rect x="18" y="30" width="50" height="72" rx="7" fill="#c0bfbc"/>
+    <rect x="18" y="26" width="50" height="72" rx="7" fill="#deddda"/>
+    <rect x="18" y="22" width="50" height="72" rx="7" fill="#f6f5f4"/>
+  </g>
+  <g transform="rotate(-5 64 78)">
+    <rect x="34" y="28" width="50" height="72" rx="7" fill="#c0bfbc"/>
+    <rect x="34" y="24" width="50" height="72" rx="7" fill="#deddda"/>
+    <rect x="34" y="20" width="50" height="72" rx="7" fill="#f6f5f4"/>
+  </g>
+  <g transform="rotate(8 64 78)">
+    <rect x="50" y="30" width="50" height="72" rx="7" fill="#c0bfbc"/>
+    <rect x="50" y="26" width="50" height="72" rx="7" fill="#deddda"/>
+    <rect x="50" y="22" width="50" height="72" rx="7" fill="#f6f5f4"/>
+    <rect x="52" y="26" width="2" height="64" fill="#ffffff" opacity="0.187"/>
+    <g fill="#241f31">
+      <path d="M75 44 C94.5 62 83.25 74.75 75 63.5 C66.75 74.75 55.5 62 75 44 Z"/>
+      <path d="M69 74 C73.2 67.25 76.8 67.25 81 74 Z"/>
+    </g>
+  </g>
+</svg>

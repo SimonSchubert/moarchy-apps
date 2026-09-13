@@ -14,6 +14,7 @@ the aarch64 repos, the AUR or Flathub. This is where they get written.
 | [chess](apps/chess) | Chess: two taps a move, an opponent in the app, no second package | v0.1.0 |
 | [queens](apps/queens) | *Packaging only:* sidhant947's crown-placement puzzle, and the Linux runner it does not ship | 1.0.8 |
 | [tictactoe](apps/tictactoe) | Noughts and crosses: the game solved at startup, then told to err | v0.1.0 |
+| [solitaire](apps/solitaire) | Klondike: one tap a move, and an app that says when a deal is lost | v0.1.0 |
 | [puzzle-games](apps/puzzle-games) | *Packaging only:* sidhant947's suite of 300+ small puzzles, minus the titlebar | 1.1.4 |
 
 Habits is gap #9 on that list — Loop has 72 translations and Linux has nothing;

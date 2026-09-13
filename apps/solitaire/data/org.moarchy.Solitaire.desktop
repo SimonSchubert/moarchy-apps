@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=Solitaire
+GenericName=Card Game
+Comment=Klondike patience, one tap a move
+Exec=moarchy-solitaire
+Icon=org.moarchy.Solitaire
+Terminal=false
+Categories=Game;CardGame;
+Keywords=solitaire;patience;klondike;cards;game;
+StartupNotify=true
+StartupWMClass=org.moarchy.Solitaire
