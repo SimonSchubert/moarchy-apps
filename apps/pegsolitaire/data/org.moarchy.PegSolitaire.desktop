@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=Peg Solitaire
+GenericName=Puzzle
+Comment=Jump pegs until one is left, on nine solvable figures
+Exec=moarchy-pegsolitaire
+Icon=org.moarchy.PegSolitaire
+Terminal=false
+Categories=Game;LogicGame;
+Keywords=peg;solitaire;solo;noble;marbles;puzzle;brainvita;
+StartupNotify=true
+StartupWMClass=org.moarchy.PegSolitaire
