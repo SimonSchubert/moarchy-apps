@@ -1,30 +1,131 @@
-name: AUR Package (keep)
+name: AUR
 
-# Still one workflow for one app. It is named and pathed for Keep rather than
-# matrixed over apps/*, because publishing to the AUR is not a thing to
-# generalise on spec -- the second app to need it can add its own file, and
-# whoever writes the third can decide a matrix has earned itself.
+# Every app here ships to the AUR as well as to [moarchy-apps] and the store
+# catalogue -- docs/publishing.md says why all three, and which app has actually
+# reached which. This file is the AUR third of that, for every app rather than
+# for Keep alone.
 #
-# NOTE: apps/keep/PKGBUILD now points at a moarchy-apps release asset that does
-# not exist yet. Cut `keep-v0.1.1` here with packaging/release.sh and upload it
-# before letting this run, or validation will fail on a source it cannot fetch.
+# It used to be one workflow for one app, "because publishing to the AUR is not
+# a thing to generalise on spec", with the matrix left to whoever wrote the third
+# app. Fourteen happened, nine of them were pushed by hand, and a column
+# maintained by memory is the thing this repository keeps proving it should not
+# have.
+#
+# WHICH APPS. Every directory under apps/ that has a PKGBUILD, a .SRCINFO, and a
+# pkgbase beginning with `moarchy-`. That prefix is the rule and not a
+# coincidence: the two packaging-only directories carry upstream's own name --
+# `queens`, `puzzle-games` -- and claiming a generic AUR name for somebody else's
+# app is a decision to make deliberately, while sidhant947/Queens#15 and
+# Puzzle#168 are still open. A new app of ours is published the day it is added;
+# a new one of theirs is not published by accident.
+#
+# WHAT RUNS. Only the apps whose PKGBUILD or .SRCINFO the push touched, so an
+# unrelated commit does not clone fourteen AUR repositories to push nothing.
+# workflow_dispatch takes one app name, or none for all of them.
+
 on:
   push:
     branches: [main]
     paths:
-      - 'apps/keep/PKGBUILD'
-      - 'apps/keep/.SRCINFO'
+      - 'apps/*/PKGBUILD'
+      - 'apps/*/.SRCINFO'
   pull_request:
     paths:
-      - 'apps/keep/PKGBUILD'
-      - 'apps/keep/.SRCINFO'
+      - 'apps/*/PKGBUILD'
+      - 'apps/*/.SRCINFO'
   workflow_dispatch:
+    inputs:
+      app:
+        description: 'One app directory (e.g. chess), or empty for every publishable app'
+        required: false
+        default: ''
 
 jobs:
-  validate:
-    name: Validate PKGBUILD
+  detect:
+    name: Which apps
+    runs-on: ubuntu-latest
+    outputs:
+      apps: ${{ steps.pick.outputs.apps }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # the diff below needs history, not just the tip
+
+      - id: pick
+        run: |
+          set -euo pipefail
+
+          # Everything we are willing to publish, by the pkgbase rule above.
+          publishable=()
+          for dir in apps/*/; do
+            app=${dir%/}; app=${app#apps/}
+            [ -f "apps/$app/PKGBUILD" ] && [ -f "apps/$app/.SRCINFO" ] || continue
+            base=$(awk -F' = ' '/^pkgbase = /{print $2; exit}' "apps/$app/.SRCINFO")
+            case "$base" in moarchy-*) publishable+=("$app") ;; esac
+          done
+
+          selected=()
+          changed=()
+          case "${{ github.event_name }}" in
+            workflow_dispatch)
+              want="${{ github.event.inputs.app }}"
+              if [ -n "$want" ]; then selected=("$want"); else selected=("${publishable[@]}"); fi
+              ;;
+            pull_request)
+              git fetch -q origin "${{ github.base_ref }}"
+              mapfile -t changed < <(git diff --name-only "origin/${{ github.base_ref }}...HEAD")
+              ;;
+            *)
+              before="${{ github.event.before }}"
+              # A brand-new branch reports an all-zero "before", and a force-push
+              # can name a commit this clone no longer has. Either way there is
+              # nothing to diff against, so fall back to the tip's own parent
+              # rather than publishing everything.
+              if [ -z "$before" ] || [ "$before" = "0000000000000000000000000000000000000000" ] \
+                 || ! git cat-file -e "$before^{commit}" 2>/dev/null; then
+                before="${{ github.sha }}^"
+              fi
+              mapfile -t changed < <(git diff --name-only "$before" "${{ github.sha }}")
+              ;;
+          esac
+
+          if [ ${#selected[@]} -eq 0 ]; then
+            for app in "${publishable[@]}"; do
+              for path in "${changed[@]}"; do
+                case "$path" in
+                  "apps/$app/PKGBUILD"|"apps/$app/.SRCINFO") selected+=("$app"); break ;;
+                esac
+              done
+            done
+          fi
+
+          # Anything asked for that we will not publish is a mistake worth
+          # saying out loud rather than skipping in silence.
+          for app in "${selected[@]}"; do
+            printf '%s\n' "${publishable[@]}" | grep -qx "$app" || {
+              echo "::error::$app is not publishable to the AUR (no PKGBUILD/.SRCINFO, or its pkgbase is not moarchy-*)"
+              exit 1; }
+          done
+
+          if [ ${#selected[@]} -eq 0 ]; then
+            json='[]'
+          else
+            json=$(printf '%s\n' "${selected[@]}" | jq -R . | jq -sc .)
+          fi
+          echo "apps=$json" >> "$GITHUB_OUTPUT"
+          echo "publishing: $json"
+
+  publish:
+    name: ${{ matrix.app }}
+    needs: detect
+    if: needs.detect.outputs.apps != '[]'
     runs-on: ubuntu-latest
     container: archlinux:base-devel
+    strategy:
+      fail-fast: false      # one broken app does not hold up the rest
+      max-parallel: 1       # one at a time: the AUR is somebody else's server
+      matrix:
+        app: ${{ fromJSON(needs.detect.outputs.apps) }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -35,52 +136,49 @@ jobs:
           echo "builder ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
           chown -R builder:builder .
 
-      - name: Install namcap
-        run: pacman -Sy --noconfirm namcap
+      - name: Install dependencies
+        run: pacman -Sy --noconfirm namcap openssh git jq
 
       - name: Lint the PKGBUILD
-        working-directory: apps/keep
+        working-directory: apps/${{ matrix.app }}
         run: namcap PKGBUILD
 
       # The .SRCINFO is what the AUR web interface and every helper reads; a
       # stale one advertises the wrong dependencies to everyone while the
       # PKGBUILD quietly builds something else.
       - name: Validate .SRCINFO matches the PKGBUILD
-        working-directory: apps/keep
+        working-directory: apps/${{ matrix.app }}
         run: |
           su builder -c "makepkg --printsrcinfo" > .SRCINFO.generated
           diff -u .SRCINFO .SRCINFO.generated
 
       # The checksum is the whole point of a versioned package: if it does not
       # match the release tarball, everyone's install fails at makepkg.
+      #
+      # Read with awk rather than the `.*::\K` regex this step used to carry.
+      # That pattern required a `name::url` source and every .SRCINFO here has a
+      # plain URL, so it matched nothing, curl was handed an empty string, and
+      # the step could only ever fail -- which nobody saw, because the only app
+      # it was wired to was updated by hand.
       - name: The release tarball exists and matches its checksum
+        working-directory: apps/${{ matrix.app }}
         run: |
-          pacman -Sy --noconfirm curl
-          url=$(grep -oP '^\s+source = .*::\K\S+' apps/keep/.SRCINFO)
-          want=$(grep -oP '^\s+sha256sums = \K\S+' apps/keep/.SRCINFO)
+          url=$(awk -F' = ' '/^[[:space:]]*source = /{print $2; exit}' .SRCINFO)
+          url=${url#*::}   # drop an optional  name::  prefix, if one is ever used
+          want=$(awk -F' = ' '/^[[:space:]]*sha256sums = /{print $2; exit}' .SRCINFO)
+          [ -n "$url" ] && [ -n "$want" ] || { echo "no source or sha256sums in .SRCINFO"; exit 1; }
           echo "fetching $url"
           curl -fsSL -o /tmp/asset "$url"
           got=$(sha256sum /tmp/asset | cut -d' ' -f1)
           [ "$got" = "$want" ] || { echo "MISMATCH: want $want, got $got"; exit 1; }
           echo "ok $got"
 
-  publish:
-    name: Publish to AUR
-    needs: validate
-    if: github.event_name != 'pull_request'
-    runs-on: ubuntu-latest
-    container: archlinux:base-devel
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Install dependencies
-        run: pacman -Sy --noconfirm openssh git
-
       - name: Push to AUR
+        if: github.event_name != 'pull_request'
         env:
           AUR_SSH_KEY: ${{ secrets.AUR_SSH_KEY }}
         run: |
+          set -euo pipefail
           # System-wide known_hosts: the container's HOME moves between steps,
           # and a host key written to the wrong one is a prompt nobody can answer.
           echo "aur.archlinux.org ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEuBKrPzbawxA/k2g6NcyV5jmqwJ2s+zpgZGZ7tpLIcN" >> /etc/ssh/ssh_known_hosts
@@ -94,15 +192,30 @@ jobs:
           done
 
           git config --global user.name "Simon Schubert"
-          git config --global user.email "sschubert89@gmail.com"
+          git config --global user.email "simon@librem.one"
           git config --global --add safe.directory '*'
 
+          src="$GITHUB_WORKSPACE/apps/${{ matrix.app }}"
+          pkg=$(awk -F' = ' '/^pkgbase = /{print $2; exit}' "$src/.SRCINFO")
+          ver=$(awk -F' = ' '/^[[:space:]]*pkgver = /{print $2; exit}' "$src/.SRCINFO")
+
           cd /tmp
-          git clone ssh://aur@aur.archlinux.org/moarchy-keep.git
-          cp "$GITHUB_WORKSPACE/apps/keep/PKGBUILD" moarchy-keep/
-          cp "$GITHUB_WORKSPACE/apps/keep/.SRCINFO" moarchy-keep/
-          cd moarchy-keep
+          git clone "ssh://aur@aur.archlinux.org/$pkg.git"
+          cp "$src/PKGBUILD" "$src/.SRCINFO" "$pkg/"
+          cd "$pkg"
+
+          # An AUR package base that does not exist yet clones as an empty
+          # repository, where the first branch is named after whatever
+          # init.defaultBranch says. The AUR's branch is master either way, so
+          # the refspec is written out in full rather than left to the default.
+          if git rev-parse -q --verify HEAD >/dev/null 2>&1; then
+            message="Update $pkg to $ver"
+          else
+            message="Initial import: $pkg $ver"
+          fi
+
           git add PKGBUILD .SRCINFO
           git diff --cached --quiet && { echo "unchanged, nothing to push"; exit 0; }
-          git commit -m "Update moarchy-keep"
-          git push
+          git commit -m "$message"
+          git push origin HEAD:refs/heads/master
+          echo "$message"
