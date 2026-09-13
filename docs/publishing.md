@@ -91,20 +91,33 @@ tests and run the rest, 60 to 179 of them per app.
    because the only app it was wired to was updated by hand. It reads the field
    with `awk` now, and still strips a `name::` prefix if one is ever used.
 
-2. **The image does not carry `[moarchy-apps]`.** `image/configure.sh` in the
-   moarchy repo appends exactly one stanza, read from `manifest.toml`'s `[repo]`
-   table, and that is `[moarchy]` pointing at the distro's release-tag repo. So
-   on a freshly flashed phone the twelve packages in `[moarchy-apps]` cannot be
-   installed at all, however well signed they are. moarchy-store's
-   `scripts/syncdb.py` already models both repos as reachable — its comment even
-   records `pacman -Si moarchy-vitals` answering `Repository : moarchy-apps` on
-   the phone — but that phone had the stanza added by hand. **Any catalogue row
-   for a `[moarchy-apps]` package is a dead Install button on a stock image
-   until `manifest.toml` grows a second repo.** That is the one blocker on this
-   list that makes a published row worse than no row, and serial 26 raised the
-   stakes: there are now ten rows in the catalogue whose Install button depends
-   on a stanza the image does not write. The phone this was measured on has it,
-   added by hand. A freshly flashed one does not.
+2. **~~The image does not carry `[moarchy-apps]`.~~** Fixed in the moarchy repo
+   on 2026-09-13 (`docs/structure.md` R8c), and it was the blocker worth
+   fixing first: moarchy-store's catalogue lists ten packages that live only in
+   this repo, its helper installs by execing `pacman -S` against a name in a
+   sync database, and without the stanza there is no sync database — so every
+   one of those rows was a dead Install button on a freshly flashed phone while
+   working on the developer's own handset, which had the stanza added by hand
+   one afternoon and never written down.
+
+   `image/configure.sh` no longer reads one hardcoded `[repo]`: it loops over
+   every manifest section naming a `server`, so a third repo is a manifest
+   edit. `image/verify.sh` checks the stanza and the cached `.db.sig` for each
+   of them rather than for `moarchy.db` alone — and fails loudly if the list
+   comes back empty, because a `for` over nothing prints nothing and passes,
+   which is the shape of the original bug. Both repos are signed by the same
+   key, so `moarchy-keyring` needed no change.
+
+   Verified before shipping: a clean Arch ARM container carrying exactly the
+   two stanzas the image now writes, trusting nothing but the key fetched from
+   the published URL, syncs both databases and installs `moarchy-chess` with
+   `Validated By : Signature`.
+
+   **What it does not fix is a phone already in the field.** An image change
+   reaches a device only through a reflash; `/etc/pacman.conf` is a `pacman`
+   backup file and no package update rewrites it. Every handset flashed before
+   this still needs the stanza added once, by hand or by something that has not
+   been written yet.
 
 3. **queens and puzzle-games are in the other repo.** Both are `arch=aarch64`
    Flutter builds and were published into `[moarchy]` with the distro's own
