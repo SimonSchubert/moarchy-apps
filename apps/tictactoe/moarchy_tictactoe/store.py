@@ -36,7 +36,7 @@ import time
 from pathlib import Path
 
 from .ai import DEFAULT_LEVEL, LEVEL_KEYS
-from .tictactoe import O, X, Game
+from .tictactoe import CROSS, NOUGHT, Game
 
 SCHEMA = 1
 
@@ -95,7 +95,7 @@ class Store:
         self.mode: str = SOLO
         self.level: str = DEFAULT_LEVEL
         # The mark seat A is holding *this* game. It swaps on every rematch.
-        self.mark: int = X
+        self.mark: int = CROSS
         self.finished: bool = False
         # Whether the result of the finished game has already gone into the
         # tallies. Deliberately not the same flag as `finished`: the move that
@@ -136,7 +136,7 @@ class Store:
             self.level = (
                 game.get("level") if game.get("level") in LEVEL_KEYS else DEFAULT_LEVEL
             )
-            self.mark = O if game.get("mark") == "o" else X
+            self.mark = NOUGHT if game.get("mark") == "o" else CROSS
             self.finished = bool(game.get("finished"))
             self.recorded = bool(game.get("recorded"))
 
@@ -168,7 +168,7 @@ class Store:
             "game": {
                 "mode": self.mode,
                 "level": self.level,
-                "mark": "x" if self.mark == X else "o",
+                "mark": "x" if self.mark == CROSS else "o",
                 "finished": self.finished,
                 "recorded": self.recorded,
                 "moves": self.moves,
@@ -200,7 +200,7 @@ class Store:
         """
         self.mode = mode if mode in MODES else SOLO
         self.level = level if level in LEVEL_KEYS else DEFAULT_LEVEL
-        self.mark = mark if mark in (X, O) else X
+        self.mark = mark if mark in (CROSS, NOUGHT) else CROSS
         self.moves = []
         self.finished = False
         self.recorded = False
@@ -215,7 +215,7 @@ class Store:
         seat holds X every game is a series decided before it starts -- which is
         exactly why two people with a pencil take turns going first.
         """
-        self.mark = O if self.mark == X else X
+        self.mark = NOUGHT if self.mark == CROSS else CROSS
         self.moves = []
         self.finished = False
         self.recorded = False

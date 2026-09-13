@@ -12,6 +12,7 @@ the eight around it, which produces a first tap that opens a lone 4.
 import random
 import sys
 import unittest
+from itertools import pairwise
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent.parent
@@ -289,7 +290,7 @@ class TheLevels(unittest.TestCase):
             self.assertLess(level.density, 0.23, level.key)
 
     def test_they_get_harder_in_order(self):
-        for easier, harder in zip(LEVELS, LEVELS[1:]):
+        for easier, harder in pairwise(LEVELS):
             self.assertLess(easier.cells, harder.cells)
             self.assertLess(easier.mines, harder.mines)
 

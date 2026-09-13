@@ -18,7 +18,13 @@ HERE = Path(__file__).resolve().parent.parent
 sys.path[:0] = [str(HERE), str(HERE.parent.parent / "shared")]
 
 from moarchy_tictactoe import ai  # noqa: E402
-from moarchy_tictactoe.tictactoe import EMPTY, O, X, Game, Position  # noqa: E402
+from moarchy_tictactoe.tictactoe import (  # noqa: E402
+    CROSS,
+    EMPTY,
+    NOUGHT,
+    Game,
+    Position,
+)
 
 # Every reachable position, which is a number this game is famous for.
 REACHABLE = 5478
@@ -46,7 +52,7 @@ def play(computer: int, level, rng, opponent=None) -> Game:
 def outcomes(level, rng, games=240, opponent=None) -> dict[str, int]:
     tally = {"won": 0, "lost": 0, "drawn": 0}
     for number in range(games):
-        computer = X if number % 2 else O
+        computer = CROSS if number % 2 else NOUGHT
         winner = play(computer, level, rng, opponent).position.winner()
         if winner is None:
             tally["drawn"] += 1
@@ -72,13 +78,13 @@ class TheTable(unittest.TestCase):
     def test_a_won_board_is_a_loss_for_whoever_is_to_move(self):
         # X played 0, 1, 2 against O's 3 and 4, so O is to play on a board it
         # has already lost. Nothing it does helps.
-        position = Position(x=0b111, o=0b11000, turn=O)
+        position = Position(x=0b111, o=0b11000, turn=NOUGHT)
         self.assertLess(ai.value(position), 0)
 
     def test_a_win_in_one_beats_a_win_in_three(self):
         # Both are wins; the value carries the distance so that a solved player
         # finishes rather than dawdling, and so that a lost one plays on.
-        soon = Position(x=0b011, o=0b011000, turn=X)
+        soon = Position(x=0b011, o=0b011000, turn=CROSS)
         self.assertGreater(ai.value(soon), ai.WIN)
 
 
@@ -125,14 +131,14 @@ class WhatALevelSees(unittest.TestCase):
     def test_every_level_takes_a_win_it_is_handed(self):
         # X to play with 0 and 1: 2 wins immediately. A level that plays
         # anything else does not read as easy, it reads as broken.
-        position = Position(x=0b011, o=0b011000, turn=X)
+        position = Position(x=0b011, o=0b011000, turn=CROSS)
         for level in ai.LEVELS:
             for _ in range(40):
                 self.assertEqual(ai.choose(position, level, self.rng), 2)
 
     def test_easy_will_walk_past_a_threat_and_fair_will_not(self):
         # O to play; X threatens 2. Fair blocks it, Easy often does not.
-        position = Position(x=0b011, o=0b1000, turn=O)
+        position = Position(x=0b011, o=0b1000, turn=NOUGHT)
         easy = sum(
             ai.choose(position, ai.level_for("easy"), self.rng) != 2 for _ in range(200)
         )
@@ -159,7 +165,7 @@ class TheLevelsAreOrdered(unittest.TestCase):
     def test_perfect_against_perfect_is_always_a_draw(self):
         perfect = ai.level_for("perfect")
         for _ in range(30):
-            game = play(X, perfect, self.rng, opponent=perfect)
+            game = play(CROSS, perfect, self.rng, opponent=perfect)
             self.assertIsNone(game.position.winner())
 
     def test_each_level_loses_more_often_than_the_one_above_it(self):

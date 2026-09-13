@@ -34,11 +34,11 @@ from gi.repository import GLib, GObject, Gtk  # noqa: E402
 
 from . import theme  # noqa: E402
 from .tictactoe import (  # noqa: E402
+    CROSS,
     EMPTY,
     MARKS,
     NAMES,
     SIZE,
-    X,
     Play,
     Position,
     cells,
@@ -273,7 +273,7 @@ class BoardView(Gtk.DrawingArea):
         striking = bool(self._line) and (anim is None or elapsed >= MARK_MS)
         cr.set_line_width(cell * NIB)
         for mark in MARKS:
-            name = "x" if mark == X else "o"
+            name = "x" if mark == CROSS else "o"
             for square in cells(self._position.marks(mark)):
                 faded = striking and square not in self._line
                 cr.set_source_rgb(*self._ink[f"faded_{name}" if faded else name])
@@ -281,7 +281,7 @@ class BoardView(Gtk.DrawingArea):
                 if anim is not None and square == anim["cell"]:
                     share = _ease(min(elapsed / MARK_MS, 1.0))
                 cx, cy = self._centre(ox, oy, cell, square)
-                if mark == X:
+                if mark == CROSS:
                     self._cross(cr, cx, cy, cell * MARK, share)
                 else:
                     self._ring(cr, cx, cy, cell * MARK, share)
@@ -332,7 +332,7 @@ class BoardView(Gtk.DrawingArea):
         x1, y1 = first[0] - dx / span * over, first[1] - dy / span * over
         x2, y2 = last[0] + dx / span * over, last[1] + dy / span * over
         winner = self._position.winner()
-        cr.set_source_rgb(*self._ink["x" if winner == X else "o"])
+        cr.set_source_rgb(*self._ink["x" if winner == CROSS else "o"])
         cr.set_line_width(cell * NIB * 0.85)
         cr.move_to(x1, y1)
         cr.line_to(x1 + (x2 - x1) * share, y1 + (y2 - y1) * share)

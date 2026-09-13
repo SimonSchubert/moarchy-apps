@@ -59,7 +59,7 @@ from moarchy_tictactoe.store import (  # noqa: E402
     WON,
     Store,
 )
-from moarchy_tictactoe.tictactoe import EMPTY, O, X, Game  # noqa: E402
+from moarchy_tictactoe.tictactoe import CROSS, EMPTY, NOUGHT, Game  # noqa: E402
 
 
 def pump(until=None, seconds: float = 6.0) -> bool:
@@ -80,7 +80,7 @@ class WindowBase(unittest.TestCase):
     def setUp(self):
         self.dir = TemporaryDirectory()
         self.store = Store(Path(self.dir.name) / "tictactoe.json")
-        self.store.begin(mode=SOLO, level="easy", mark=X)
+        self.store.begin(mode=SOLO, level="easy", mark=CROSS)
 
     def open(self) -> TicTacToeWindow:
         self.window = TicTacToeWindow(self.store)
@@ -132,10 +132,10 @@ class TheOpponent(WindowBase):
         self.assertTrue(
             pump(lambda: len(window.game.moves) >= 2), "the computer never replied"
         )
-        self.assertEqual(window.game.turn, X)
+        self.assertEqual(window.game.turn, CROSS)
 
     def test_the_computer_moves_first_when_it_holds_x(self):
-        self.store.begin(mode=SOLO, level="easy", mark=O)
+        self.store.begin(mode=SOLO, level="easy", mark=NOUGHT)
         window = self.open()
         self.assertTrue(
             pump(lambda: len(window.game.moves) >= 1), "the computer never opened"
@@ -147,19 +147,19 @@ class TheOpponent(WindowBase):
             if window.game.over:
                 break
             legal = window.game.position.legal()
-            if window.game.turn == X and legal:
+            if window.game.turn == CROSS and legal:
                 window._on_cell(window._board, legal[0])
             pump(lambda: not window._thinking and not window._board.busy, seconds=3)
         self.assertTrue(window.game.over)
         self.assertTrue(self.store.finished)
 
     def test_nobody_answers_across_a_table(self):
-        self.store.begin(mode=HOTSEAT, level="easy", mark=X)
+        self.store.begin(mode=HOTSEAT, level="easy", mark=CROSS)
         window = self.open()
         window._on_cell(window._board, 4)
         pump(seconds=0.6)
         self.assertEqual(len(window.game.moves), 1)
-        self.assertEqual(window.game.turn, O)
+        self.assertEqual(window.game.turn, NOUGHT)
 
 
 class TheButtons(WindowBase):
@@ -183,7 +183,7 @@ class TheButtons(WindowBase):
         pump(lambda: len(window.game.moves) >= 2 and not window._thinking)
         window.undo()
         self.assertEqual(window.game.moves, [])
-        self.assertEqual(window.game.turn, X)
+        self.assertEqual(window.game.turn, CROSS)
 
     def test_undo_on_an_empty_board_does_nothing(self):
         window = self.open()
@@ -196,7 +196,7 @@ class TheButtons(WindowBase):
         pump(seconds=0.2)
         self.assertEqual(self.store.series["a"], 1)
         window.rematch()
-        self.assertEqual(self.store.mark, O)
+        self.assertEqual(self.store.mark, NOUGHT)
         self.assertEqual(window.game.moves, [])
         self.assertEqual(self.store.series["a"], 1)
 
@@ -241,7 +241,7 @@ class TheResult(WindowBase):
         pump(lambda: self.store.record_for("easy")[DRAWN] == 1)
 
     def test_losing_is_recorded_as_a_loss(self):
-        self.store.begin(mode=SOLO, level="easy", mark=O)
+        self.store.begin(mode=SOLO, level="easy", mark=NOUGHT)
         self.store.remember(Game([0, 3, 1, 4, 2]), finished=False)
         self.open()
         pump(lambda: self.store.record_for("easy")[LOST] == 1)
@@ -254,7 +254,7 @@ class TheScoreLine(WindowBase):
         self.assertEqual(window.names["b"], "Easy")
 
     def test_across_a_table_it_names_two_players(self):
-        self.store.begin(mode=HOTSEAT, level="easy", mark=X)
+        self.store.begin(mode=HOTSEAT, level="easy", mark=CROSS)
         window = self.open()
         self.assertEqual(set(window.names.values()), {"One", "Two"})
 
@@ -262,7 +262,7 @@ class TheScoreLine(WindowBase):
         line = ScoreLine()
         line.refresh(
             EMPTY,
-            {"a": X, "b": O},
+            {"a": CROSS, "b": NOUGHT},
             {"a": "You", "b": "Fair"},
             {"a": 2, "b": 1, DRAWN: 1},
             live=True,
@@ -286,7 +286,7 @@ class TheOtherScreens(WindowBase):
     def test_the_new_game_sheet_builds_and_answers(self):
         chosen = []
         window = self.open()
-        dialog = NewGameDialog(mode=SOLO, level="fair", mark=O, in_progress=True)
+        dialog = NewGameDialog(mode=SOLO, level="fair", mark=NOUGHT, in_progress=True)
         dialog.connect("chosen", lambda _d, *args: chosen.append(args))
         # Presented before Start is pressed, because closing a dialog that was
         # never presented is a libadwaita critical -- and one that would be
@@ -294,10 +294,12 @@ class TheOtherScreens(WindowBase):
         dialog.present(window)
         pump(seconds=0.2)
         dialog._on_start()
-        self.assertEqual(chosen, [(SOLO, "fair", O)])
+        self.assertEqual(chosen, [(SOLO, "fair", NOUGHT)])
 
     def test_the_sheet_hides_the_difficulty_for_two_players(self):
-        dialog = NewGameDialog(mode=HOTSEAT, level="fair", mark=X, in_progress=False)
+        dialog = NewGameDialog(
+            mode=HOTSEAT, level="fair", mark=CROSS, in_progress=False
+        )
         self.assertFalse(dialog._level.get_visible())
 
 

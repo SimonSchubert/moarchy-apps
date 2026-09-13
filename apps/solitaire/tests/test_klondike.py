@@ -11,6 +11,7 @@ there are two aces of spades on the table.
 import random
 import sys
 import unittest
+from itertools import pairwise
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent.parent
@@ -58,7 +59,7 @@ def runs_hold(table: Table) -> bool:
     """Is every face-up section a descending alternating sequence?"""
     for index in range(COLUMNS):
         shown = table.face_up(TABLEAU + index)
-        for above, below in zip(shown, shown[1:]):
+        for above, below in pairwise(shown):
             if rank(above) != rank(below) + 1 or is_red(above) == is_red(below):
                 return False
     return True

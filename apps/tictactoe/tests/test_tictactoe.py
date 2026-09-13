@@ -16,10 +16,10 @@ sys.path[:0] = [str(HERE), str(HERE.parent.parent / "shared")]
 
 from moarchy_tictactoe.tictactoe import (  # noqa: E402
     CELLS,
+    CROSS,
     EMPTY,
     LINES,
-    O,
-    X,
+    NOUGHT,
     Game,
     Position,
     index,
@@ -67,20 +67,20 @@ class TheGrid(unittest.TestCase):
             )
 
     def test_the_marks_are_each_others_other(self):
-        self.assertEqual(other(X), O)
-        self.assertEqual(other(O), X)
+        self.assertEqual(other(CROSS), NOUGHT)
+        self.assertEqual(other(NOUGHT), CROSS)
 
 
 class Playing(unittest.TestCase):
     def test_an_empty_board_has_nine_moves_and_x_to_play(self):
-        self.assertEqual(EMPTY.turn, X)
+        self.assertEqual(EMPTY.turn, CROSS)
         self.assertEqual(len(EMPTY.legal()), CELLS)
 
     def test_playing_a_square_does_not_change_the_position_played_from(self):
         after = EMPTY.play(4)
         self.assertEqual(EMPTY.occupied(), 0)
-        self.assertEqual(after.marks(X), 1 << 4)
-        self.assertEqual(after.turn, O)
+        self.assertEqual(after.marks(CROSS), 1 << 4)
+        self.assertEqual(after.turn, NOUGHT)
 
     def test_a_taken_square_is_not_legal(self):
         after = EMPTY.play(4)
@@ -97,8 +97,12 @@ class Playing(unittest.TestCase):
         # the move order: eight lines times two marks is sixteen boards, and
         # constructing them says so in one line each.
         for mask, squares in LINES:
-            self.assertEqual(Position(x=mask, o=0, turn=O).winner(), X, str(squares))
-            self.assertEqual(Position(x=0, o=mask, turn=X).winner(), O, str(squares))
+            self.assertEqual(
+                Position(x=mask, o=0, turn=NOUGHT).winner(), CROSS, str(squares)
+            )
+            self.assertEqual(
+                Position(x=0, o=mask, turn=CROSS).winner(), NOUGHT, str(squares)
+            )
 
 
 class Endings(unittest.TestCase):
@@ -107,14 +111,14 @@ class Endings(unittest.TestCase):
         # over. Answering with the empty squares is how a board gets a tenth
         # mark on it.
         position = board([0, 3, 1, 4, 2])
-        self.assertEqual(position.winner(), X)
+        self.assertEqual(position.winner(), CROSS)
         self.assertEqual(position.legal(), [])
         self.assertTrue(position.is_over())
         self.assertFalse(position.is_full())
 
     def test_the_winning_line_comes_back_in_order(self):
         position = board([2, 0, 4, 1, 6])
-        self.assertEqual(position.winner(), X)
+        self.assertEqual(position.winner(), CROSS)
         self.assertEqual(position.winning_line(), (2, 4, 6))
 
     def test_a_full_board_with_no_line_is_a_draw(self):
@@ -129,8 +133,8 @@ class Endings(unittest.TestCase):
 
     def test_wins_now_names_the_square_that_finishes_it(self):
         position = board([0, 3, 1, 4])
-        self.assertEqual(position.wins_now(X), [2])
-        self.assertEqual(position.wins_now(O), [5])
+        self.assertEqual(position.wins_now(CROSS), [2])
+        self.assertEqual(position.wins_now(NOUGHT), [5])
 
 
 class TheMoveList(unittest.TestCase):
@@ -149,7 +153,7 @@ class TheMoveList(unittest.TestCase):
         game.play(4)
         play = game.play(2)
         self.assertEqual(play.cell, 2)
-        self.assertEqual(play.mark, X)
+        self.assertEqual(play.mark, CROSS)
         self.assertEqual(play.line, (0, 1, 2))
 
     def test_resume_keeps_what_will_play_and_drops_the_rest(self):
@@ -178,14 +182,14 @@ class TheMoveList(unittest.TestCase):
         game = Game([4, 0])  # X played, O replied; X is on move
         game.play(8)  # X again
         game.play(1)  # O replies
-        self.assertEqual(game.turn, X)
-        self.assertTrue(game.takeback(X))
-        self.assertEqual(game.turn, X)
+        self.assertEqual(game.turn, CROSS)
+        self.assertTrue(game.takeback(CROSS))
+        self.assertEqual(game.turn, CROSS)
         self.assertEqual(game.moves, [4, 0])
 
     def test_takeback_from_an_empty_board_does_nothing(self):
         game = Game()
-        self.assertFalse(game.takeback(X))
+        self.assertFalse(game.takeback(CROSS))
         self.assertEqual(game.moves, [])
 
 

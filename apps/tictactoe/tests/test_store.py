@@ -27,7 +27,7 @@ from moarchy_tictactoe.store import (  # noqa: E402
     WON,
     Store,
 )
-from moarchy_tictactoe.tictactoe import EMPTY, O, X, Game  # noqa: E402
+from moarchy_tictactoe.tictactoe import CROSS, EMPTY, NOUGHT, Game  # noqa: E402
 
 
 def fresh() -> Store:
@@ -49,23 +49,23 @@ class TestDefaults(unittest.TestCase):
         self.assertEqual(store.moves, [])
         self.assertEqual(store.game().position, EMPTY)
         self.assertEqual(store.mode, SOLO)
-        self.assertEqual(store.mark, X)
+        self.assertEqual(store.mark, CROSS)
         self.assertEqual(store.series, {"a": 0, "b": 0, DRAWN: 0})
 
     def test_a_new_game_starts_from_an_empty_board(self):
         store = fresh()
         played(store)
-        game = store.begin(mode=SOLO, level="perfect", mark=O)
+        game = store.begin(mode=SOLO, level="perfect", mark=NOUGHT)
         self.assertEqual(game.position, EMPTY)
         self.assertEqual(store.moves, [])
         self.assertFalse(store.finished)
-        self.assertEqual(store.mark, O)
+        self.assertEqual(store.mark, NOUGHT)
 
 
 class TestRoundTrip(unittest.TestCase):
     def test_everything_written_comes_back(self):
         store = fresh()
-        store.begin(mode=HOTSEAT, level="easy", mark=O)
+        store.begin(mode=HOTSEAT, level="easy", mark=NOUGHT)
         played(store, (0, 4, 8))
         store.record(WON)
         store.save()
@@ -75,7 +75,7 @@ class TestRoundTrip(unittest.TestCase):
         self.assertEqual(back.moves, [0, 4, 8])
         self.assertEqual(back.mode, HOTSEAT)
         self.assertEqual(back.level, "easy")
-        self.assertEqual(back.mark, O)
+        self.assertEqual(back.mark, NOUGHT)
         self.assertEqual(back.series["a"], 1)
 
     def test_the_board_is_replayed_rather_than_stored(self):
@@ -85,7 +85,7 @@ class TestRoundTrip(unittest.TestCase):
         back = Store(store.path)
         back.load()
         self.assertEqual(back.game().position, game.position)
-        self.assertEqual(back.game().position.winner(), X)
+        self.assertEqual(back.game().position.winner(), CROSS)
 
     def test_whether_a_result_was_counted_survives_the_file(self):
         # The flag the window reads on the way back in. It is not the same
@@ -93,7 +93,7 @@ class TestRoundTrip(unittest.TestCase):
         # written the instant it is played and counted a moment later, so a
         # phone killed between the two has a finished game and an uncounted one.
         store = fresh()
-        store.begin(mode=SOLO, level="fair", mark=X)
+        store.begin(mode=SOLO, level="fair", mark=CROSS)
         store.remember(Game([0, 3, 1, 4, 2]), finished=True)
         store.save()
         back = Store(store.path)
@@ -109,7 +109,7 @@ class TestRoundTrip(unittest.TestCase):
 
     def test_a_rematch_owes_its_result_again(self):
         store = fresh()
-        store.begin(mode=SOLO, level="fair", mark=X)
+        store.begin(mode=SOLO, level="fair", mark=CROSS)
         store.record(WON)
         self.assertTrue(store.recorded)
         store.rematch()
@@ -156,7 +156,8 @@ class TestABadFile(unittest.TestCase):
         game = store.game()
         self.assertLessEqual(
             abs(
-                game.position.marks(X).bit_count() - game.position.marks(O).bit_count()
+                game.position.marks(CROSS).bit_count()
+                - game.position.marks(NOUGHT).bit_count()
             ),
             1,
         )
@@ -182,7 +183,7 @@ class TestABadFile(unittest.TestCase):
         store.load()
         self.assertEqual(store.mode, SOLO)
         self.assertEqual(store.level, "fair")
-        self.assertEqual(store.mark, X)
+        self.assertEqual(store.mark, CROSS)
         self.assertEqual(store.moves, [])
         self.assertEqual(store.series[DRAWN], 0)
         self.assertEqual(store.record_for("easy")["played"], 0)
@@ -198,27 +199,27 @@ class TestABadFile(unittest.TestCase):
 class TestTheSeries(unittest.TestCase):
     def test_a_rematch_swaps_the_marks_and_keeps_the_score(self):
         store = fresh()
-        store.begin(mode=SOLO, level="fair", mark=X)
+        store.begin(mode=SOLO, level="fair", mark=CROSS)
         store.record(WON)
         played(store)
         store.rematch()
-        self.assertEqual(store.mark, O)
+        self.assertEqual(store.mark, NOUGHT)
         self.assertEqual(store.moves, [])
         self.assertEqual(store.series["a"], 1)
         store.rematch()
-        self.assertEqual(store.mark, X)
+        self.assertEqual(store.mark, CROSS)
 
     def test_a_new_game_starts_a_new_series(self):
         store = fresh()
-        store.begin(mode=SOLO, level="fair", mark=X)
+        store.begin(mode=SOLO, level="fair", mark=CROSS)
         store.record(WON)
         store.record(DRAWN)
-        store.begin(mode=SOLO, level="easy", mark=X)
+        store.begin(mode=SOLO, level="easy", mark=CROSS)
         self.assertEqual(store.series, {"a": 0, "b": 0, DRAWN: 0})
 
     def test_both_modes_keep_a_series(self):
         store = fresh()
-        store.begin(mode=HOTSEAT, level="fair", mark=X)
+        store.begin(mode=HOTSEAT, level="fair", mark=CROSS)
         store.record(LOST)
         store.record(LOST)
         self.assertEqual(store.series["b"], 2)
@@ -232,14 +233,14 @@ class TestTheSeries(unittest.TestCase):
 class TestTheRecord(unittest.TestCase):
     def test_only_the_computers_games_are_recorded(self):
         store = fresh()
-        store.begin(mode=HOTSEAT, level="fair", mark=X)
+        store.begin(mode=HOTSEAT, level="fair", mark=CROSS)
         store.record(WON)
         self.assertEqual(store.record_for("fair")["played"], 0)
         self.assertEqual(store.series["a"], 1)
 
     def test_a_run_without_losing_grows_and_a_loss_ends_it(self):
         store = fresh()
-        store.begin(mode=SOLO, level="perfect", mark=X)
+        store.begin(mode=SOLO, level="perfect", mark=CROSS)
         for _ in range(5):
             store.record(DRAWN)
         self.assertEqual(store.record_for("perfect")["unbeaten"], 5)
@@ -253,7 +254,7 @@ class TestTheRecord(unittest.TestCase):
 
     def test_totals_add_the_levels_up_and_take_the_best_run(self):
         store = fresh()
-        store.begin(mode=SOLO, level="easy", mark=X)
+        store.begin(mode=SOLO, level="easy", mark=CROSS)
         for _ in range(4):
             store.record(WON)
         store.level = "perfect"

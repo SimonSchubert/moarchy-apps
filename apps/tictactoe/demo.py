@@ -32,7 +32,7 @@ sys.path[:0] = [str(HERE), str(HERE.parent.parent / "shared")]
 
 from moarchy_tictactoe import ai  # noqa: E402
 from moarchy_tictactoe.store import DRAWN, LOST, SOLO, WON, Store  # noqa: E402
-from moarchy_tictactoe.tictactoe import X, Game  # noqa: E402
+from moarchy_tictactoe.tictactoe import CROSS, Game  # noqa: E402
 
 # Far enough in that both marks are on the board and there is something to read,
 # early enough that nothing is decided and every square still matters. Even, so
@@ -73,9 +73,9 @@ def _game_won(rng: random.Random) -> Game:
     for _ in range(500):
         game = Game()
         while not game.over:
-            level = easy if game.turn == X else fair
+            level = easy if game.turn == CROSS else fair
             game.play(ai.choose(game.position, level, rng))
-        if game.position.winner() == X:
+        if game.position.winner() == CROSS:
             return game
     raise SystemExit("could not find a game X wins -- check ai.choose")
 
@@ -98,7 +98,7 @@ def main() -> int:
     # Seat A holds X, which is the seat the person is sitting in and the mark
     # that moves first. A rematch would swap it; this is the first game of the
     # series as far as the file is concerned, with an invented score above it.
-    store.begin(mode=SOLO, level="fair", mark=X)
+    store.begin(mode=SOLO, level="fair", mark=CROSS)
     store.remember(game, finished=game.over)
     series = SERIES_WON if stage == "won" else SERIES
     store.series = dict(series)

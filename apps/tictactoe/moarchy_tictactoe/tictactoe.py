@@ -29,14 +29,19 @@ SIZE = 3
 CELLS = SIZE * SIZE
 FULL = (1 << CELLS) - 1
 
-X = 0
-O = 1  # noqa: E741 -- it is the name of the mark, and O is what is drawn
-MARKS = (X, O)
-NAMES = {X: "X", O: "O"}
+# Named for the shapes rather than for the letters, which is worth the extra
+# characters twice over: `O` on its own is a variable name half the linters in
+# the world will not have -- it is the one letter that is also a digit -- and
+# "noughts and crosses" is what this game is called everywhere the app is not
+# abbreviating itself in a window title.
+CROSS = 0
+NOUGHT = 1
+MARKS = (CROSS, NOUGHT)
+NAMES = {CROSS: "X", NOUGHT: "O"}
 
 
 def other(mark: int) -> int:
-    return O if mark == X else X
+    return NOUGHT if mark == CROSS else CROSS
 
 
 def index(row: int, column: int) -> int:
@@ -104,18 +109,18 @@ class Position:
 
     x: int = 0
     o: int = 0
-    turn: int = X
+    turn: int = CROSS
 
     @property
     def own(self) -> int:
-        return self.x if self.turn == X else self.o
+        return self.x if self.turn == CROSS else self.o
 
     @property
     def opp(self) -> int:
-        return self.o if self.turn == X else self.x
+        return self.o if self.turn == CROSS else self.x
 
     def marks(self, mark: int) -> int:
-        return self.x if mark == X else self.o
+        return self.x if mark == CROSS else self.o
 
     def occupied(self) -> int:
         return self.x | self.o
@@ -142,8 +147,8 @@ class Position:
         if not self.is_legal(cell):
             raise ValueError(f"square {cell} is not a legal move")
         placed = self.own | (1 << cell)
-        other = O if self.turn == X else X
-        if self.turn == X:
+        other = NOUGHT if self.turn == CROSS else CROSS
+        if self.turn == CROSS:
             return Position(placed, self.o, other)
         return Position(self.x, placed, other)
 

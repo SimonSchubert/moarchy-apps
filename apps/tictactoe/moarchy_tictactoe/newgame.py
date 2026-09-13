@@ -28,7 +28,7 @@ from gi.repository import Adw, GObject, Gtk  # noqa: E402
 
 from .ai import LEVELS  # noqa: E402
 from .store import HOTSEAT, SOLO  # noqa: E402
-from .tictactoe import O, X  # noqa: E402
+from .tictactoe import CROSS, NOUGHT  # noqa: E402
 
 OPPONENTS = ("The computer", "Another person")
 # Short, because an Adw.ComboRow ellipsizes its value before its title and
@@ -83,7 +83,7 @@ class NewGameDialog(Adw.Dialog):
 
         self._mark = Adw.ComboRow(title="Open as")
         self._mark.set_model(Gtk.StringList.new(MARKS))
-        self._mark.set_selected(1 if mark == O else 0)
+        self._mark.set_selected(1 if mark == NOUGHT else 0)
         self._mark.set_subtitle("The marks swap on every rematch")
         group.add(self._mark)
 
@@ -109,6 +109,6 @@ class NewGameDialog(Adw.Dialog):
     def _on_start(self, *_args) -> None:
         solo = self._opponent.get_selected() == 0
         level = LEVELS[min(self._level.get_selected(), len(LEVELS) - 1)]
-        mark = O if self._mark.get_selected() == 1 else X
+        mark = NOUGHT if self._mark.get_selected() == 1 else CROSS
         self.emit("chosen", SOLO if solo else HOTSEAT, level.key, mark)
         self.close()
