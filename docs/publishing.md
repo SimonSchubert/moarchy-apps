@@ -42,21 +42,30 @@ As of 2026-09-13, and this table is the thing to re-check rather than trust:
 | keep | `moarchy-keep` | 0.1.1 | yes | yes | no — still `deferred` in `verdicts.toml` |
 | habits | `moarchy-habits` | 0.1.2 | yes | yes | no |
 | vitals | `moarchy-vitals` | 0.1.0 | yes | yes | **yes**, tested on `pinephone-a64` |
-| chess | `moarchy-chess` | 0.1.0 | no | yes | no |
-| reversi | `moarchy-reversi` | 0.1.0 | no | yes | no |
-| tictactoe | `moarchy-tictactoe` | 0.1.0 | no | yes | no |
-| solitaire | `moarchy-solitaire` | 0.1.0 | no | yes | no |
-| pegsolitaire | `moarchy-pegsolitaire` | 0.1.0 | no | yes | no |
-| minesweeper | `moarchy-minesweeper` | 0.1.0 | no | yes | no |
-| mill | `moarchy-mill` | 0.1.0 | no | yes | no |
-| fiveletters | `moarchy-fiveletters` | 0.1.0 | no | yes | no |
-| breakout | `moarchy-breakout` | 0.1.0 | no | yes | no |
-| queens | `queens` | 1.0.8 | no | no — it is in `[moarchy]` | **yes** |
-| puzzle-games | `puzzle-games` | 1.1.4 | no | no — it is in `[moarchy]` | **yes** |
+| chess | `moarchy-chess` | 0.1.0 | yes | yes | no |
+| reversi | `moarchy-reversi` | 0.1.0 | yes | yes | no |
+| tictactoe | `moarchy-tictactoe` | 0.1.0 | yes | yes | no |
+| solitaire | `moarchy-solitaire` | 0.1.0 | yes | yes | no |
+| pegsolitaire | `moarchy-pegsolitaire` | 0.1.0 | yes | yes | no |
+| minesweeper | `moarchy-minesweeper` | 0.1.0 | yes | yes | no |
+| mill | `moarchy-mill` | 0.1.0 | yes | yes | no |
+| fiveletters | `moarchy-fiveletters` | 0.1.0 | yes | yes | no |
+| breakout | `moarchy-breakout` | 0.1.0 | yes | yes | no |
+| queens | `queens` | 1.0.8 | no — upstream's name to claim | no — it is in `[moarchy]` | **yes** |
+| puzzle-games | `puzzle-games` | 1.1.4 | no — upstream's name to claim | no — it is in `[moarchy]` | **yes** |
 
-Three of fourteen on the AUR, twelve of fourteen in the signed repo, three of
-fourteen in the store. The signed repo is the only column that was ever swept
-through to the end.
+Every app written here is now on the AUR and in the signed repo. Three of
+fourteen are in the store, which makes the catalogue the column that is behind —
+and gap 2 below is the reason to fix the image before filling it in.
+
+Each of the nine added on 2026-09-13 was checked before it was pushed, the same
+way the workflow checks: `namcap` clean, `.SRCINFO` identical to one generated
+from the PKGBUILD, the release asset fetched and its sha256 compared against the
+pin, and then a real `makepkg` in a clean Arch ARM container — which downloads
+the tarball, validates the checksum, and runs the package's own `check()`. That
+last one is not ceremony: `makepkg` runs `check()` for every AUR user, so a test
+needing a display would break the install for all of them. They skip the widget
+tests and run the rest, 60 to 179 of them per app.
 
 ## The gaps that are structural, not just unfinished rows
 
