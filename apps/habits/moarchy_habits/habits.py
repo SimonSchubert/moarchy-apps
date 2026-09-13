@@ -97,6 +97,13 @@ def _number(value, fallback: float) -> float:
     )
 
 
+# What on_track's answer is derived from. Assigning any of these throws the
+# cached answers away. `entries` is on the list for the case where the whole
+# dict is replaced; it is also mutated in place, which __setattr__ cannot see,
+# and set_value clears the cache itself for that reason.
+_TRACKING_FIELDS = frozenset({"kind", "target", "freq_num", "freq_den", "entries"})
+
+
 @dataclass
 class Habit:
     """One habit, and every day it was recorded.
@@ -120,6 +127,17 @@ class Habit:
     created: float = field(default_factory=time.time)
     archived: bool = False
     entries: dict[str, float] = field(default_factory=dict)
+    # on_track is asked the same question thousands of times over: scoring walks
+    # every day a habit has ever recorded, and a streak walks back from each of
+    # those. The answer only changes when the days or the frequency do, so it is
+    # kept here -- in the habit, where every caller benefits -- and thrown away
+    # by __setattr__ below rather than by hand at each of the places that write.
+    _tracked: dict[date, bool] = field(default_factory=dict, repr=False, compare=False)
+
+    def __setattr__(self, name: str, value) -> None:
+        if name in _TRACKING_FIELDS:
+            object.__setattr__(self, "_tracked", {})
+        object.__setattr__(self, name, value)
 
     # --- the day ---------------------------------------------------------
 
@@ -138,6 +156,8 @@ class Habit:
             self.entries.pop(key, None)
         else:
             self.entries[key] = float(amount)
+        # The dict is mutated in place, so __setattr__ never fires for it.
+        self._tracked.clear()
 
     def toggle(self, day: date) -> bool:
         """Tick or untick a day. Returns the new state."""
@@ -164,26 +184,43 @@ class Habit:
         habit is on track on any day where the trailing week already holds three
         kept days -- which is the whole point of saying three times a week
         rather than naming which three.
-        """
-        if self.is_daily:
-            return self.kept(day)
-        period = min(max(self.freq_den, 1), MAX_PERIOD)
-        need = min(max(self.freq_num, 1), period)
-        hit = sum(1 for i in range(period) if self.kept(day - timedelta(days=i)))
-        return hit >= need
 
-    def streak(self, upto: date | None = None) -> int:
+        Memoised, because this is the innermost question in the app: every
+        streak, every score and every point is a pile of these.
+        """
+        answer = self._tracked.get(day)
+        if answer is not None:
+            return answer
+        if self.is_daily:
+            answer = self.kept(day)
+        else:
+            period = min(max(self.freq_den, 1), MAX_PERIOD)
+            need = min(max(self.freq_num, 1), period)
+            hit = sum(1 for i in range(period) if self.kept(day - timedelta(days=i)))
+            answer = hit >= need
+        self._tracked[day] = answer
+        return answer
+
+    def streak(self, upto: date | None = None, limit: int | None = None) -> int:
         """Consecutive on-track days ending today.
 
         Today is forgiving: a day that has not been kept *yet* does not break a
         streak, because the day is not over. Yesterday is not forgiving.
+
+        `limit` stops counting once the answer has reached it, for a caller that
+        only needs to know whether a streak got that far -- `day_points`, whose
+        bonus is capped. Without it, scoring a habit that is nearly always on
+        track walks its whole history once per recorded day, which is the
+        difference between a tap answering at once and a tap answering in a
+        second. A limited count is `min(real streak, limit)`, so it may only be
+        compared against numbers at or below the limit.
         """
         day = upto or today()
         if not self.on_track(day):
             day -= timedelta(days=1)
         count = 0
         # A habit older than ten years has bigger problems than a wrong number.
-        for _ in range(3660):
+        for _ in range(3660 if limit is None else min(limit, 3660)):
             if not self.on_track(day):
                 break
             count += 1

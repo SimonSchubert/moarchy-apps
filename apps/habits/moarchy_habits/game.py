@@ -44,7 +44,12 @@ def day_points(habit: Habit, day: date) -> int:
     """What one kept day of one habit is worth."""
     if not habit.kept(day):
         return 0
-    return BASE_POINTS + min(habit.streak(day), STREAK_BONUS_CAP)
+    # The bonus is capped, so the streak is only counted as far as the cap. This
+    # is summed over every day a habit has ever been kept, and counting the
+    # whole of a long streak to then throw all but ten of it away is most of
+    # what a tap used to cost.
+    streak = habit.streak(day, limit=STREAK_BONUS_CAP)
+    return BASE_POINTS + min(streak, STREAK_BONUS_CAP)
 
 
 def habit_points(habit: Habit) -> int:
@@ -111,15 +116,27 @@ def _tracked_since(habit: Habit) -> date | None:
     return min(days) if days else None
 
 
-def _due_on(store: Store, day: date) -> list[Habit]:
+def _tracked_from(store: Store) -> list[tuple[Habit, date | None]]:
+    """Every active habit paired with the first day it can be judged on.
+
+    Worked out once and handed down, because `_tracked_since` reads a habit's
+    whole history and the two sweeps below ask about hundreds of days. Asking
+    per day instead made the achievement check, which runs on every tap, cost a
+    tenth of a second on a store with a year in it.
+    """
+    return [(habit, _tracked_since(habit)) for habit in store.active()]
+
+
+def _due_on(
+    store: Store,
+    day: date,
+    tracked: list[tuple[Habit, date | None]] | None = None,
+) -> list[Habit]:
     """The habits that existed on a day, so a day is not judged against habits
     that had not been started yet."""
-    out = []
-    for habit in store.active():
-        since = _tracked_since(habit)
-        if since is not None and since <= day:
-            out.append(habit)
-    return out
+    if tracked is None:
+        tracked = _tracked_from(store)
+    return [h for h, since in tracked if since is not None and since <= day]
 
 
 # A sweep means sweeping more than one thing. With a single habit it would be
@@ -132,13 +149,14 @@ def _perfect_days(store: Store) -> int:
     days: set[str] = set()
     for h in store.active():
         days |= set(h.entries)
+    tracked = _tracked_from(store)
     count = 0
     for key in days:
         try:
             day = date.fromisoformat(key)
         except ValueError:
             continue
-        due = _due_on(store, day)
+        due = _due_on(store, day, tracked)
         if len(due) >= SWEEP_MINIMUM and all(h.kept(day) for h in due):
             count += 1
     return count
@@ -148,10 +166,11 @@ def _perfect_run(store: Store, length: int) -> bool:
     if not store.active():
         return False
     now = today()
+    tracked = _tracked_from(store)
     run = 0
     for back in range(400):
         day = now - timedelta(days=back)
-        due = _due_on(store, day)
+        due = _due_on(store, day, tracked)
         if len(due) < SWEEP_MINIMUM:
             continue
         if all(h.kept(day) for h in due):
