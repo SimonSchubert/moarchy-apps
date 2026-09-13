@@ -14,7 +14,7 @@ license=('MIT')
 # not, and the board is the game.
 depends=('python' 'python-gobject' 'gtk4' 'libadwaita' 'python-cairo')
 source=("$url/releases/download/fiveletters-v$pkgver/$pkgname-$pkgver.tar.gz")
-sha256sums=('SKIP')  # packaging/release.sh prints the real one
+sha256sums=('8056449deb7d2b13eac6bf1291cfe486e70d3a8b02362e0a9c49d3fe8e793225')
 
 # The source tarball is assembled by packaging/release.sh from two subtrees of
 # one tag -- apps/solitaire and shared -- so it holds this app and the shared

@@ -14,7 +14,7 @@ license=('MIT')
 # state. Without pycairo GTK cannot hand that function a context at all.
 depends=('python' 'python-gobject' 'gtk4' 'libadwaita' 'python-cairo')
 source=("$url/releases/download/minesweeper-v$pkgver/$pkgname-$pkgver.tar.gz")
-sha256sums=('SKIP')  # packaging/release.sh prints the real one
+sha256sums=('3676b811ba71544a86a721ec54eb4a5c2ef3c031b8238ac1eb682228d83577c3')
 
 # The source tarball is assembled by packaging/release.sh from two subtrees of
 # one tag -- apps/solitaire and shared -- so it holds this app and the shared

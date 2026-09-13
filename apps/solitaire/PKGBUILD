@@ -15,7 +15,7 @@ license=('MIT')
 # context at all, and there is nothing left of the app.
 depends=('python' 'python-gobject' 'gtk4' 'libadwaita' 'python-cairo')
 source=("$url/releases/download/solitaire-v$pkgver/$pkgname-$pkgver.tar.gz")
-sha256sums=('SKIP')  # packaging/release.sh prints the real one
+sha256sums=('e884b83349edf28bc3b1839b43cdb5d3d1ec8cdf2fce46e71eed830c5e65900a')
 
 # The source tarball is assembled by packaging/release.sh from two subtrees of
 # one tag -- apps/solitaire and shared -- so it holds this app and the shared

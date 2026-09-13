@@ -13,7 +13,7 @@ license=('MIT')
 # loses a ring it can live without; this loses every X and every O.
 depends=('python' 'python-gobject' 'gtk4' 'libadwaita' 'python-cairo')
 source=("$url/releases/download/tictactoe-v$pkgver/$pkgname-$pkgver.tar.gz")
-sha256sums=('SKIP')  # packaging/release.sh prints the real one
+sha256sums=('a5d815bc28535296da2c5713a6713a7e35975e004d66ef6334c4e74d987e6d40')
 
 # The source tarball is assembled by packaging/release.sh from two subtrees of
 # one tag -- apps/tictactoe and shared -- so it holds this app and the shared

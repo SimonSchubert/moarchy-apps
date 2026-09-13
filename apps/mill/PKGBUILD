@@ -13,7 +13,7 @@ license=('MIT')
 # that function a context at all, and there is nothing left of the app.
 depends=('python' 'python-gobject' 'gtk4' 'libadwaita' 'python-cairo')
 source=("$url/releases/download/mill-v$pkgver/$pkgname-$pkgver.tar.gz")
-sha256sums=('SKIP')  # packaging/release.sh prints the real one
+sha256sums=('d9ac4d72185f8a0ec322ca97574e4c50434d1e265c28b3a96735b2d1030fdf4e')
 
 # The source tarball is assembled by packaging/release.sh from two subtrees of
 # one tag -- apps/solitaire and shared -- so it holds this app and the shared

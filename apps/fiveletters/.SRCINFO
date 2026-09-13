@@ -11,6 +11,6 @@ pkgbase = moarchy-fiveletters
 	depends = libadwaita
 	depends = python-cairo
 	source = https://github.com/SimonSchubert/moarchy-apps/releases/download/fiveletters-v0.1.0/moarchy-fiveletters-0.1.0.tar.gz
-	sha256sums = SKIP
+	sha256sums = 8056449deb7d2b13eac6bf1291cfe486e70d3a8b02362e0a9c49d3fe8e793225
 
 pkgname = moarchy-fiveletters

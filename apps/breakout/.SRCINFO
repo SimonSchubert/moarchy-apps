@@ -11,6 +11,6 @@ pkgbase = moarchy-breakout
 	depends = libadwaita
 	depends = python-cairo
 	source = https://github.com/SimonSchubert/moarchy-apps/releases/download/breakout-v0.1.0/moarchy-breakout-0.1.0.tar.gz
-	sha256sums = SKIP
+	sha256sums = e82cef60ed6acd37c67dd8c4ac115965e44be4d520c806117311d9f04ef75984
 
 pkgname = moarchy-breakout
