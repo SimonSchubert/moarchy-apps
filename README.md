@@ -17,6 +17,7 @@ the aarch64 repos, the AUR or Flathub. This is where they get written.
 | [solitaire](apps/solitaire) | Klondike: one tap a move, and an app that says when a deal is lost | v0.1.0 |
 | [pegsolitaire](apps/pegsolitaire) | Peg solitaire: nine figures, all solvable, and a hint that is a proof | v0.1.0 |
 | [minesweeper](apps/minesweeper) | Minesweeper: a portrait board, a latching flag, and a clock that stops | v0.1.0 |
+| [mill](apps/mill) | Nine Men's Morris: three squares, an opponent on a clock, and the rule everybody forgets | v0.1.0 |
 | [puzzle-games](apps/puzzle-games) | *Packaging only:* sidhant947's suite of 300+ small puzzles, minus the titlebar | 1.1.4 |
 
 Habits is gap #9 on that list — Loop has 72 translations and Linux has nothing;
@@ -186,6 +187,15 @@ docker run --rm --platform linux/arm64 -v "$PWD:/src" -w /src moarchy-apps-dev s
 It runs the Arch Linux ARM GNOME stack natively on Apple Silicon, with
 `GSK_RENDERER=cairo` — which is what a Mali-400 falls back to as well, so what
 is drawn there is what the phone draws.
+
+**The container is also the authority on lint.** It carries a newer ruff than a
+Mac's Homebrew usually does, the two disagree in both directions — rules that
+did not exist in the older one, and `# noqa` directives the newer one strips as
+unused — and `check.sh` lints `shared`, `apps` and `scripts` for *every* app it
+is asked about. So one file the container's ruff dislikes fails the checks for
+every app in the repository, including apps nobody has touched. Run the lint
+where the checks run, and prefer code that neither version has an opinion about
+to a directive that satisfies only one of them.
 
 ## Adding an app
 

@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=Mill
+GenericName=Board Game
+Comment=Nine Men's Morris against the phone, or across a table
+Exec=moarchy-mill
+Icon=org.moarchy.Mill
+Terminal=false
+Categories=Game;BoardGame;
+Keywords=mill;morris;merels;nine;men;board;game;strategy;
+StartupNotify=true
+StartupWMClass=org.moarchy.Mill
