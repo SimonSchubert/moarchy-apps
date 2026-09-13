@@ -35,19 +35,6 @@ gi.require_version("Adw", "1")
 from gi.repository import GLib, GObject, Gtk  # noqa: E402
 
 from . import theme  # noqa: E402
-from .layout import (  # noqa: E402
-    ASPECT,
-    GAP,
-    MARGIN,
-    MINIMUM,
-    SPLIT,
-    SQUEEZE,
-    UP_SHARE,
-    Layout,
-    card_at,
-    column_of,
-    layout_for,
-)
 from .klondike import (  # noqa: E402
     COLUMNS,
     DIAMOND,
@@ -66,6 +53,19 @@ from .klondike import (  # noqa: E402
     name,
     rank,
     suit,
+)
+from .layout import (  # noqa: E402
+    ASPECT,
+    GAP,
+    MARGIN,
+    MINIMUM,
+    SPLIT,
+    SQUEEZE,
+    UP_SHARE,
+    Layout,
+    card_at,
+    column_of,
+    layout_for,
 )
 
 # One move gliding from where it was to where it is going.

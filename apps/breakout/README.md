@@ -73,14 +73,18 @@ Five walls, written as art the way Peg Solitaire's figures are — a digit is a
 brick and how many hits it takes, a dot is a gap:
 
 ```python
-Level("chevron", "Chevron", """
+Level(
+    "chevron",
+    "Chevron",
+    """
 3.....3
 23...32
 123.321
 .12321.
 ..232..
 ...3...
-""")
+""",
+)
 ```
 
 Past the last one it starts again, faster. That is the honest arcade answer: the

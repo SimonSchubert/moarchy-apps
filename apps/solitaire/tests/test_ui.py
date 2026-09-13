@@ -74,8 +74,8 @@ from moarchy_solitaire.klondike import (  # noqa: E402
     deal,
     shuffled,
 )
-from moarchy_solitaire.store import LOST, WON, Store  # noqa: E402
 from moarchy_solitaire.layout import card_at, layout_for  # noqa: E402
+from moarchy_solitaire.store import LOST, WON, Store  # noqa: E402
 
 
 def pump(until=None, seconds: float = 6.0) -> bool:
