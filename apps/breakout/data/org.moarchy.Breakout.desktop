@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=Breakout
+GenericName=Arcade Game
+Comment=Knock the wall down without losing the ball
+Exec=moarchy-breakout
+Icon=org.moarchy.Breakout
+Terminal=false
+Categories=Game;ArcadeGame;
+Keywords=breakout;arkanoid;bricks;ball;bat;arcade;
+StartupNotify=true
+StartupWMClass=org.moarchy.Breakout
