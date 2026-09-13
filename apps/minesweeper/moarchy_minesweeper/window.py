@@ -20,13 +20,18 @@ of a number is one tap on a cell that is already open and therefore safe. On a
 28px grid that is the difference between a playable board and an exercise in
 aiming.
 
-**The clock stops when the window does.** Solitaire in this repository refuses a
-clock outright, on the grounds that a phone game is one you are interrupted in
-the middle of and a timer that counts through the interruption is measuring the
-interruption. That argument is right, and Minesweeper cannot follow it, because
-a best time is most of what this game's record has ever been -- so the clock is
-kept and the argument is answered instead: it runs only while this is the active
-window, and the reading goes dim to say so.
+**The clock stops when the window is not on screen.** Solitaire in this
+repository refuses a clock outright, on the grounds that a phone game is one you
+are interrupted in the middle of and a timer that counts through the
+interruption is measuring the interruption. That argument is right, and
+Minesweeper cannot follow it, because a best time is most of what this game's
+record has ever been -- so the clock is kept and the argument is answered
+instead: it runs only while the window is visible, and the reading goes dim to
+say so.
+
+Visible rather than focused -- see `_on_screen`. The phone's app drawer takes
+keyboard focus from every toplevel at once, so a clock that stopped on focus
+would stop under a drawer pulled up over a board somebody can still see.
 """
 
 from __future__ import annotations
@@ -82,7 +87,8 @@ class MinesweeperWindow(Adw.ApplicationWindow):
             self.add_action(action)
 
         self.connect("close-request", self._on_close)
-        self.connect("notify::is-active", lambda *_: self._sync_clock())
+        for signal in ("notify::is-active", "notify::suspended"):
+            self.connect(signal, lambda *_: self._sync_clock())
         self.refresh()
         self._open_requested()
 
@@ -192,7 +198,7 @@ class MinesweeperWindow(Adw.ApplicationWindow):
         left = game.remaining
         self._mines.refresh(str(left), low=left < 0)
         self._clock.refresh(
-            clock(self.store.seconds), paused=self._running and not self.is_active()
+            clock(self.store.seconds), paused=self._running and not self._on_screen()
         )
         self._title.set_subtitle(level_for(self.store.level).label)
         self._status.set_text(self._status_text())
@@ -232,9 +238,34 @@ class MinesweeperWindow(Adw.ApplicationWindow):
     def _running(self) -> bool:
         return self.game.started and not self.game.over
 
+    def _on_screen(self) -> bool:
+        """Is this window visible to somebody?
+
+        `suspended` and not `is-active`, and the difference is the whole reason
+        this method exists. Active means *keyboard focus*, and on this phone the
+        app drawer is a layer-shell surface that takes focus away from every
+        toplevel at once -- `swaymsg -t get_seats` reports `focus: 0` while a
+        perfectly visible app is on screen. Pausing on that means pausing
+        whenever the drawer is pulled up over the game, and reporting "Paused"
+        on a window somebody is looking at.
+
+        Suspended means *not visible*: minimised, occluded, on another
+        workspace. That is the question a game actually wants answered, and it
+        still covers the case that matters for a battery -- an app buried under
+        another app is suspended.
+
+        Falls back to `is-active` where the property does not exist. It arrived
+        in GTK 4.12 and this phone runs 4.22, but the fallback costs one line
+        and the alternative is an app that will not start on an older stack.
+        """
+        try:
+            return not self.props.suspended
+        except (AttributeError, TypeError):  # pragma: no cover - old GTK
+            return self.is_active()
+
     def _sync_clock(self) -> None:
         """Start or stop the second hand, whichever the window now wants."""
-        wanted = self._running and self.is_active()
+        wanted = self._running and self._on_screen()
         if wanted and not self._tick:
             self._tick = GLib.timeout_add(TICK_MS, self._second)
         elif not wanted and self._tick:
@@ -249,7 +280,7 @@ class MinesweeperWindow(Adw.ApplicationWindow):
             )
 
     def _second(self) -> bool:
-        if not self._running or not self.is_active():
+        if not self._running or not self._on_screen():
             self._tick = 0
             return GLib.SOURCE_REMOVE
         self.store.seconds += 1

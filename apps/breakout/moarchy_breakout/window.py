@@ -3,13 +3,18 @@
 Everything else here is a game of turns, where nothing moves unless somebody
 taps. This one runs, and three things follow from that.
 
-**The loop stops when the window does.** A game that kept stepping while the
-phone was in a pocket would be a game that lost three lives in a trouser leg,
-and a tick callback that kept firing would be sixty wakeups a second for a
-window nobody is looking at -- which on a phone is a battery reading somebody
-will blame on the wrong app. So the loop is installed when this becomes the
-active window and removed the moment it stops being, and the status line says
+**The loop stops when the window is not visible.** A game that kept stepping
+while the phone was in a pocket would be a game that lost three lives in a
+trouser leg, and a tick callback that kept firing would be sixty wakeups a
+second for a window nobody is looking at -- which on a phone is a battery
+reading somebody will blame on the wrong app. So the loop is installed when the
+window is on screen and removed the moment it is not, and the status line says
 "Paused" rather than leaving somebody to wonder.
+
+Visible, not focused -- see `_on_screen`. That distinction was found on the
+phone rather than reasoned about: the app drawer takes keyboard focus away from
+every toplevel at once, so a game that paused on focus paused under a drawer
+somebody had pulled up for a second, and said so over a board they could see.
 
 **A frame is capped.** The time between two frames is whatever the compositor
 says it is, and after a phone wakes up it can say two seconds -- so the step is
@@ -103,7 +108,8 @@ class BreakoutWindow(Adw.ApplicationWindow):
         self.add_controller(keys)
 
         self.connect("close-request", self._on_close)
-        self.connect("notify::is-active", lambda *_: self._sync_loop())
+        for signal in ("notify::is-active", "notify::suspended"):
+            self.connect(signal, lambda *_: self._sync_loop())
         self.refresh()
         self._open_requested()
 
@@ -203,7 +209,7 @@ class BreakoutWindow(Adw.ApplicationWindow):
     def _status_text(self) -> str:
         if self.world.dead:
             return f"Game over — {self.world.score} points"
-        if not self.is_active():
+        if not self._on_screen():
             return "Paused"
         if not self.world.served:
             return "Slide anywhere to aim"
@@ -213,7 +219,32 @@ class BreakoutWindow(Adw.ApplicationWindow):
 
     @property
     def _running(self) -> bool:
-        return not self.world.dead and self.is_active() and not self._frozen
+        return not self.world.dead and self._on_screen() and not self._frozen
+
+    def _on_screen(self) -> bool:
+        """Is this window visible to somebody?
+
+        `suspended` and not `is-active`, and the difference is the whole reason
+        this method exists. Active means *keyboard focus*, and on this phone the
+        app drawer is a layer-shell surface that takes focus away from every
+        toplevel at once -- `swaymsg -t get_seats` reports `focus: 0` while a
+        perfectly visible app is on screen. Pausing on that means pausing
+        whenever the drawer is pulled up over the game, and reporting "Paused"
+        on a window somebody is looking at.
+
+        Suspended means *not visible*: minimised, occluded, on another
+        workspace. That is the question a game actually wants answered, and it
+        still covers the case that matters for a battery -- an app buried under
+        another app is suspended.
+
+        Falls back to `is-active` where the property does not exist. It arrived
+        in GTK 4.12 and this phone runs 4.22, but the fallback costs one line
+        and the alternative is an app that will not start on an older stack.
+        """
+        try:
+            return not self.props.suspended
+        except (AttributeError, TypeError):  # pragma: no cover - old GTK
+            return self.is_active()
 
     def _sync_loop(self) -> None:
         """Start or stop the frame loop, whichever the window now wants."""
@@ -224,8 +255,12 @@ class BreakoutWindow(Adw.ApplicationWindow):
             self._field.remove_tick_callback(self._tick)
             self._tick = 0
             self._flush()
-        if not self._tick:
-            self._status.set_text(self._status_text())
+        # Always, not only when the loop has stopped. The first cut updated the
+        # line under the field on its way *into* a pause and not on its way out,
+        # so a game that had been backgrounded and come back went on saying
+        # "Paused" over a ball that was moving. It read as a frozen game on a
+        # phone that was working perfectly, which is the worst kind of wrong.
+        self._status.set_text(self._status_text())
 
     def _frame(self, _widget, clock) -> bool:
         if not self._running:

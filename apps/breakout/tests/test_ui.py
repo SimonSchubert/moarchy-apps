@@ -145,13 +145,21 @@ class TheLoop(WindowBase):
         self.assertFalse(window._running)
         self.assertEqual(window._tick, 0)
 
-    def test_it_agrees_with_the_window_about_being_active(self):
+    def test_it_agrees_with_the_window_about_being_on_screen(self):
         window = self.open()
         window.present()
         pump(seconds=0.2)
-        # Whether a headless window is ever "active" is the compositor's
+        # Whether a headless window is ever visible is the compositor's
         # business, so what is tested is that the loop and the window agree.
-        self.assertEqual(bool(window._tick), window.is_active())
+        self.assertEqual(bool(window._tick), window._on_screen())
+
+    def test_being_unfocused_is_not_the_same_as_being_off_screen(self):
+        # The distinction the phone forced. `is-active` is keyboard focus, and
+        # the app drawer there takes focus from every toplevel at once; a game
+        # that paused on focus paused under a drawer somebody had pulled up over
+        # a board they could still see.
+        window = self.open()
+        self.assertEqual(window._on_screen(), not window.props.suspended)
 
     def test_a_frozen_window_does_not_step(self):
         window = self.open()
@@ -159,10 +167,31 @@ class TheLoop(WindowBase):
         window.refresh()
         self.assertFalse(window._running)
 
-    def test_the_status_says_paused_when_it_is(self):
+    def test_the_status_says_paused_only_when_it_is_off_screen(self):
+        # Not "when it is unfocused", which is what this asserted before the
+        # phone showed the difference: on a virtual screen the window is never
+        # the active one and is perfectly visible, and it used to claim to be
+        # paused while the ball moved.
         window = self.open()
-        if not window.is_active():
+        if window._on_screen():
+            self.assertNotEqual(window._status_text(), "Paused")
+        else:
             self.assertEqual(window._status_text(), "Paused")
+
+    def test_the_status_stops_saying_paused_when_the_loop_comes_back(self):
+        # Found on the phone: the line under the field was only rewritten on the
+        # way *into* a pause, so a game backgrounded and brought back said
+        # "Paused" over a ball that was moving.
+        window = self.open()
+        window._frozen = True
+        window.refresh()
+        paused = window._status.get_text()
+        window._frozen = False
+        window._sync_loop()
+        if window.is_active():
+            self.assertNotEqual(window._status.get_text(), "Paused")
+        else:
+            self.assertEqual(window._status.get_text(), paused)
 
 
 class TheGame(WindowBase):

@@ -181,16 +181,23 @@ class TheClock(WindowBase):
         self.assertFalse(window._running)
         self.assertEqual(window._tick, 0)
 
-    def test_it_stops_when_the_window_does(self):
+    def test_it_stops_when_the_window_leaves_the_screen(self):
         window = self.open()
         window.present()
         pump(seconds=0.2)
         window._on_tap(window._field, index(4, 4, 8))
         self.assertTrue(window._running)
-        # Whether a headless window is ever "active" is the compositor's
+        # Whether a headless window is ever visible is the compositor's
         # business, so the tick is asked about rather than assumed -- what is
         # tested is that the two agree.
-        self.assertEqual(bool(window._tick), window.is_active())
+        self.assertEqual(bool(window._tick), window._on_screen())
+
+    def test_visible_is_not_the_same_question_as_focused(self):
+        # The distinction the phone forced: the app drawer there takes keyboard
+        # focus from every toplevel at once, so a clock that stopped on focus
+        # would stop under a drawer pulled up over a board somebody can see.
+        window = self.open()
+        self.assertEqual(window._on_screen(), not window.props.suspended)
 
     def test_it_stops_when_the_game_is_over(self):
         window = self.open()
