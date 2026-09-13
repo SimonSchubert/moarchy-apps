@@ -152,7 +152,7 @@ sudo pacman-key --lsign-key 3CA83612E7F3108F442006B418305B893569BAD3
 That single change is what makes every app in this repo listable, and it
 retires the "AUR only" verdict for `moarchy-keep` and `moarchy-airwaves` too.
 
-The repo is live and holds all four apps at their released versions. It is
+The repo is live and holds all eleven apps at their released versions. It is
 built in two halves, because the two tools it needs are on different machines:
 
 ```sh
