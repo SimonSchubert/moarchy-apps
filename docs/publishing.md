@@ -42,21 +42,27 @@ As of 2026-09-13, and this table is the thing to re-check rather than trust:
 | keep | `moarchy-keep` | 0.1.1 | yes | yes | no — still `deferred` in `verdicts.toml` |
 | habits | `moarchy-habits` | 0.1.2 | yes | yes | no |
 | vitals | `moarchy-vitals` | 0.1.0 | yes | yes | **yes**, tested on `pinephone-a64` |
-| chess | `moarchy-chess` | 0.1.0 | yes | yes | no |
-| reversi | `moarchy-reversi` | 0.1.0 | yes | yes | no |
-| tictactoe | `moarchy-tictactoe` | 0.1.0 | yes | yes | no |
-| solitaire | `moarchy-solitaire` | 0.1.0 | yes | yes | no |
-| pegsolitaire | `moarchy-pegsolitaire` | 0.1.0 | yes | yes | no |
-| minesweeper | `moarchy-minesweeper` | 0.1.0 | yes | yes | no |
-| mill | `moarchy-mill` | 0.1.0 | yes | yes | no |
-| fiveletters | `moarchy-fiveletters` | 0.1.0 | yes | yes | no |
-| breakout | `moarchy-breakout` | 0.1.0 | yes | yes | no |
+| chess | `moarchy-chess` | 0.1.0 | yes | yes | **yes** |
+| reversi | `moarchy-reversi` | 0.1.0 | yes | yes | **yes** |
+| tictactoe | `moarchy-tictactoe` | 0.1.0 | yes | yes | **yes** |
+| solitaire | `moarchy-solitaire` | 0.1.0 | yes | yes | **yes** |
+| pegsolitaire | `moarchy-pegsolitaire` | 0.1.0 | yes | yes | **yes** |
+| minesweeper | `moarchy-minesweeper` | 0.1.0 | yes | yes | **yes** |
+| mill | `moarchy-mill` | 0.1.0 | yes | yes | **yes** |
+| fiveletters | `moarchy-fiveletters` | 0.1.0 | yes | yes | **yes** |
+| breakout | `moarchy-breakout` | 0.1.0 | yes | yes | **yes** |
 | queens | `queens` | 1.0.8 | no — upstream's name to claim | no — it is in `[moarchy]` | **yes** |
 | puzzle-games | `puzzle-games` | 1.1.4 | no — upstream's name to claim | no — it is in `[moarchy]` | **yes** |
 
-Every app written here is now on the AUR and in the signed repo. Three of
-fourteen are in the store, which makes the catalogue the column that is behind —
-and gap 2 below is the reason to fix the image before filling it in.
+Twelve of fourteen are in all three. What is left is `keep` and `habits`, which
+have no catalogue row, and the two Flutter ones, which are listed and in
+`[moarchy]` but not on the AUR.
+
+The nine games were listed at catalogue serial 26 and measured on a PinePhone
+A64 rather than in the VM — the device already had seven of them installed, so
+the cost was two `pacman -S` from `[moarchy-apps]` and nine photographs. That
+makes `tested = "pinephone-a64"` on each of them a claim about hardware, which
+is the strongest thing that field can say.
 
 Each of the nine added on 2026-09-13 was checked before it was pushed, the same
 way the workflow checks: `namcap` clean, `.SRCINFO` identical to one generated
@@ -95,7 +101,10 @@ tests and run the rest, 60 to 179 of them per app.
    the phone — but that phone had the stanza added by hand. **Any catalogue row
    for a `[moarchy-apps]` package is a dead Install button on a stock image
    until `manifest.toml` grows a second repo.** That is the one blocker on this
-   list that makes a published row worse than no row.
+   list that makes a published row worse than no row, and serial 26 raised the
+   stakes: there are now ten rows in the catalogue whose Install button depends
+   on a stanza the image does not write. The phone this was measured on has it,
+   added by hand. A freshly flashed one does not.
 
 3. **queens and puzzle-games are in the other repo.** Both are `arch=aarch64`
    Flutter builds and were published into `[moarchy]` with the distro's own
