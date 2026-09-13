@@ -327,19 +327,6 @@ def _forked() -> Position:
     """A peg in the middle with two jumps open to it, and nothing else.
 
     Built rather than played into. On the English board every peg that can move
-    at all has exactly one jump for the first few turns, which is the case the
-    one-tap rule is for -- and testing the other branch needs a board where
-    somebody actually has a choice.
-    """
-    holes = figure_for("english").holes
-    pegs = (1 << CENTRE) | (1 << index(3, 2)) | (1 << index(2, 3))
-    return Position(holes, pegs)
-
-
-def _forked() -> Position:
-    """A peg in the middle with two jumps open to it, and nothing else.
-
-    Built rather than played into. On the English board every peg that can move
     at all has exactly one jump for the first several turns -- which is the case
     the one-tap rule exists for, and means testing the other branch needs a
     board where somebody genuinely has a choice.
