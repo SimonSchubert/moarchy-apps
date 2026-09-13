@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=Five Letters
+GenericName=Word Game
+Comment=Guess the five-letter word in six tries
+Exec=moarchy-fiveletters
+Terminal=false
+Icon=org.moarchy.FiveLetters
+Categories=Game;LogicGame;
+Keywords=word;letters;guess;puzzle;daily;
+StartupNotify=true
+StartupWMClass=org.moarchy.FiveLetters

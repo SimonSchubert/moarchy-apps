@@ -18,6 +18,7 @@ the aarch64 repos, the AUR or Flathub. This is where they get written.
 | [pegsolitaire](apps/pegsolitaire) | Peg solitaire: nine figures, all solvable, and a hint that is a proof | v0.1.0 |
 | [minesweeper](apps/minesweeper) | Minesweeper: a portrait board, a latching flag, and a clock that stops | v0.1.0 |
 | [mill](apps/mill) | Nine Men's Morris: three squares, an opponent on a clock, and the rule everybody forgets | v0.1.0 |
+| [fiveletters](apps/fiveletters) | A five-letter word a day: its own keyboard, and a mark as well as a colour | v0.1.0 |
 | [puzzle-games](apps/puzzle-games) | *Packaging only:* sidhant947's suite of 300+ small puzzles, minus the titlebar | 1.1.4 |
 
 Habits is gap #9 on that list — Loop has 72 translations and Linux has nothing;
