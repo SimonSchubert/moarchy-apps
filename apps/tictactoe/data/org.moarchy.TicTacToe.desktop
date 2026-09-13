@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=Tic-tac-toe
+GenericName=Board Game
+Comment=Noughts and crosses against the phone, or across a table
+Exec=moarchy-tictactoe
+Icon=org.moarchy.TicTacToe
+Terminal=false
+Categories=Game;BoardGame;
+Keywords=tic;tac;toe;noughts;crosses;xo;board;game;
+StartupNotify=true
+StartupWMClass=org.moarchy.TicTacToe

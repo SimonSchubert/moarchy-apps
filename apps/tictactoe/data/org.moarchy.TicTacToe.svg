@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Drawn as an Adwaita object rather than a full-bleed tile, for the reason
+     Keep's icon records: mobileomarchy's AppDrawer.qml paints the .desktop icon
+     bare, with no tile behind it, four to a row next to Contacts and
+     Calculator. An icon that fills its own square is the one thing in that grid
+     that reads as a tile instead of as a thing.
+
+     So this is a sheet of paper: an 88x88 face at x 20..108, y 16..104, sitting
+     on two 2px lips a step darker down a paper ramp (#f6f5f4, #deddda,
+     #c0bfbc), with the same 2px white specular at 0.187 inset from the left
+     edge every other icon in this repository carries.
+
+     One X and one O, not nine. Nine marks at the 42px the drawer actually asks
+     for is a grey smudge; two of them on an otherwise empty hash is the picture
+     everybody already has of this game. The hash is four rules with no border
+     around them, which is what separates it from a chessboard at that size.
+
+     Blue and red rather than the popular red and green, for the reason the app
+     gives: the colour is decoration over a distinction the shapes have already
+     made, and a hue that fails is still a hue that fails.
+
+     Nothing here is finer than 3px at 128, which is a pixel at 42. No clip
+     path: QtSvg ignores clip-path and paints an out-of-defs clipPath as a black
+     rectangle, which is how Chess's first icon drew as a black square. -->
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+  <rect x="20" y="24" width="88" height="88" rx="10" fill="#c0bfbc"/>
+  <rect x="20" y="20" width="88" height="88" rx="10" fill="#deddda"/>
+  <rect x="20" y="16" width="88" height="88" rx="10" fill="#f6f5f4"/>
+  <g stroke="#9a9996" stroke-width="3" stroke-linecap="round">
+    <path d="M49 26 V94 M79 26 V94"/>
+    <path d="M28 45 H100 M28 75 H100"/>
+  </g>
+  <rect x="22" y="20" width="2" height="80" fill="#ffffff" opacity="0.187"/>
+  <g stroke="#3584e4" stroke-width="6" stroke-linecap="round">
+    <path d="M27 23 L43 39 M43 23 L27 39"/>
+  </g>
+  <circle cx="64" cy="60" r="9" fill="none" stroke="#e01b24" stroke-width="6"/>
+</svg>
