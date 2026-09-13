@@ -1,5 +1,5 @@
 #!/bin/bash
-# Publish a built [moarchy] repo to GitHub Pages.
+# Publish a built [moarchy-apps] repo to GitHub Pages.
 #
 #   packaging/repo-add.sh packages/*.pkg.tar.*     # in the Arch container
 #   packaging/publish-pages.sh                     # here, where the key is
@@ -18,21 +18,21 @@
 #    phone refuses to sync, with an error about the database and nothing about
 #    the packages anybody spent the afternoon signing.
 #
-# 2. **It resolves the symlinks.** repo-add leaves `moarchy.db` as a symlink to
-#    `moarchy.db.tar.gz`, which is the convention on a real mirror and a broken
-#    file on GitHub Pages: git stores the link, Pages serves its target *path*
-#    as the body, and pacman downloads seventeen bytes of text where it wanted a
-#    database. `moarchy.db` is what pacman actually asks for, so it has to be
-#    the bytes.
+# 2. **It resolves the symlinks.** repo-add leaves `moarchy-apps.db` as a
+#    symlink to `moarchy-apps.db.tar.gz`, which is the convention on a real
+#    mirror and a broken file on GitHub Pages: git stores the link, Pages serves
+#    its target *path* as the body, and pacman downloads seventeen bytes of text
+#    where it wanted a database. `moarchy-apps.db` is what pacman actually asks
+#    for, so it has to be the bytes.
 #
 # 3. **It publishes the public key**, because a device cannot trust a signature
-#    from a key it has never seen. `pacman-key --add moarchy.gpg` and
+#    from a key it has never seen. `pacman-key --add moarchy-apps.gpg` and
 #    `pacman-key --lsign-key <fpr>` is the other half of the pinned stanza in
 #    /etc/pacman.conf.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
-REPO="${REPO:-moarchy}"
+REPO="${REPO:-moarchy-apps}"
 SRC="${SRC:-dist/repo/aarch64}"
 BRANCH="${BRANCH:-gh-pages}"
 SIGNER="${MOARCHY_SIGNING_FPR:-}"
@@ -59,9 +59,9 @@ mkdir -p "$site"
 cp -RL "$SRC/." "$site/"
 
 # Sign the database and the file list, and then again under the names pacman
-# actually fetches -- `moarchy.db`, not `moarchy.db.tar.gz`. They are the same
-# bytes, so one signature covers both, but the request is for the short name and
-# so is the request for its signature.
+# actually fetches -- `moarchy-apps.db`, not `moarchy-apps.db.tar.gz`. They are
+# the same bytes, so one signature covers both, but the request is for the short
+# name and so is the request for its signature.
 for base in db files; do
   target="$site/$REPO.$base.tar.gz"
   [[ -f $target ]] || continue

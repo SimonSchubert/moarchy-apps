@@ -103,7 +103,7 @@ checksum that still names exact code.
 shared/moarchy_ui/     the half of "theme" that is the same in every app
 apps/<name>/           one app: its package, data, tests, demo, shots, PKGBUILD
 packaging/release.sh   tag -> per-app tarball + sha256
-packaging/repo-add.sh  built packages -> a signed [moarchy] pacman repo
+packaging/repo-add.sh  built packages -> a signed [moarchy-apps] pacman repo
 packaging/publish-pages.sh    that repo -> the gh-pages branch it is served from
 scripts/check.sh       lint, tests, and a real run at 360x720
 scripts/screenshot.sh  the photo harness; apps/<name>/shots.sh says what to shoot
@@ -146,7 +146,7 @@ What changes is one stanza in the image's `/etc/pacman.conf`, with the key
 pinned — a decision made once, deliberately, rather than a hole.
 
 ```
-[moarchy]
+[moarchy-apps]
 SigLevel = Required TrustedOnly
 Server = https://simonschubert.github.io/moarchy-apps/aarch64
 ```
@@ -155,15 +155,25 @@ Server = https://simonschubert.github.io/moarchy-apps/aarch64
 anything:
 
 ```sh
-curl -O https://simonschubert.github.io/moarchy-apps/aarch64/moarchy.gpg
-sudo pacman-key --add moarchy.gpg
+curl -O https://simonschubert.github.io/moarchy-apps/aarch64/moarchy-apps.gpg
+sudo pacman-key --add moarchy-apps.gpg
 sudo pacman-key --lsign-key 3CA83612E7F3108F442006B418305B893569BAD3
 ```
+
+The section is `[moarchy-apps]` and not `[moarchy]` because the distro already
+owns that name: a phone's `/etc/pacman.conf` carries `[moarchy]` pointing at
+`github.com/SimonSchubert/moarchy/releases/download/repo`, and pacman section
+names are unique — the stanza these instructions used to give could not be added
+to an image at all. Nor is the name cosmetic. pacman fetches
+`<Server>/<section>.db`, so the section name *is* the filename on the far end,
+and a repo published under one name cannot be mounted under another. `REPO=`
+overrides it in both packaging scripts and now defaults to `moarchy-apps`, so
+the database and the stanza cannot drift apart by way of a forgotten variable.
 
 That single change is what makes every app in this repo listable, and it
 retires the "AUR only" verdict for `moarchy-keep` and `moarchy-airwaves` too.
 
-The repo is live and holds all eleven apps at their released versions. It is
+The repo is live and holds all twelve apps at their released versions. It is
 built in two halves, because the two tools it needs are on different machines:
 
 ```sh

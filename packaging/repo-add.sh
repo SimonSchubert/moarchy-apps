@@ -1,5 +1,5 @@
 #!/bin/bash
-# Build the [moarchy] pacman repository from built packages.
+# Build the [moarchy-apps] pacman repository from built packages.
 #
 #   packaging/repo-add.sh packages/*.pkg.tar.*
 #
@@ -34,16 +34,16 @@
 #
 # On the phone image
 # ------------------
-#   [moarchy]
+#   [moarchy-apps]
 #   SigLevel = Required TrustedOnly
 #   Server = https://simonschubert.github.io/moarchy-apps/aarch64
 #
 # and the signing key installed into pacman's keyring:
-#   pacman-key --add moarchy.gpg && pacman-key --lsign-key <fpr>
+#   pacman-key --add moarchy-apps.gpg && pacman-key --lsign-key <fpr>
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
-REPO="${REPO:-moarchy}"
+REPO="${REPO:-moarchy-apps}"
 OUT="${OUT:-dist/repo/aarch64}"
 KEY="${MOARCHY_SIGNING_KEY:-$HOME/.config/moarchy-store/signing-key.asc}"
 
