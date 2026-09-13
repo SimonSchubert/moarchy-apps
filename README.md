@@ -110,6 +110,8 @@ scripts/screenshot.sh  the photo harness; apps/<name>/shots.sh says what to shoo
 scripts/package.sh     build one app's package from the working tree
 scripts/text-input-check.sh   does the app raise the on-screen keyboard?
 docker/Dockerfile.dev  the GNOME stack the phone has and a Mac does not
+docs/publishing.md     the three channels every app ships in, and what is
+                       in which of them today
 ```
 
 Every harness takes the app as its first argument. The only thing that differs
@@ -171,7 +173,15 @@ overrides it in both packaging scripts and now defaults to `moarchy-apps`, so
 the database and the stanza cannot drift apart by way of a forgotten variable.
 
 That single change is what makes every app in this repo listable, and it
-retires the "AUR only" verdict for `moarchy-keep` and `moarchy-airwaves` too.
+retires the "AUR only" verdict for `moarchy-keep` too.
+
+It does not retire the AUR. The argument above is about the channel the *store*
+installs from, and the AUR was never aimed at the phone — it is where an Arch
+user looks for a GTK4 app drawn at 360px, which is a shape they have no other
+source for. Both, then, for every app: one PKGBUILD per app pinning one release
+tarball by checksum, so the two channels install the same bytes from the same
+tag and cannot drift. [`docs/publishing.md`](docs/publishing.md) says which apps
+have actually reached which.
 
 The repo is live and holds all twelve apps at their released versions. It is
 built in two halves, because the two tools it needs are on different machines:
@@ -228,8 +238,17 @@ to a directive that satisfies only one of them.
 3. `scripts/check.sh <name>` green, including the real run.
 4. Tag `<name>-v<version>`, `packaging/release.sh <name> <version>`, put the
    printed sha256 in the PKGBUILD, upload the tarball as the release asset.
-5. `packaging/repo-add.sh`, publish, then add the row to moarchy-store's
-   `catalogue.toml` — and measure it in the VM first, like any other entry.
+5. Push the PKGBUILD and a regenerated `.SRCINFO` to the AUR.
+6. `packaging/repo-add.sh`, `packaging/publish-pages.sh`, push `gh-pages`.
+7. Add the row to moarchy-store's `catalogue.toml` — and measure it in the VM
+   first, like any other entry.
+
+Steps 5 to 7 are three channels and not a choice between them: the AUR is for
+everyone not running our image, `[moarchy-apps]` is the only one the store's
+helper can install from, and the catalogue is how anybody finds it. `git grep`
+will not tell you which of them an app has actually reached, so
+[`docs/publishing.md`](docs/publishing.md) holds that table, the order the
+scripts run in, and the four gaps that are structural rather than unfinished.
 
 ## Licence
 
