@@ -10,6 +10,6 @@ pkgbase = moarchy-coins
 	depends = gtk4
 	depends = libadwaita
 	source = https://github.com/SimonSchubert/moarchy-apps/releases/download/coins-v0.1.0/moarchy-coins-0.1.0.tar.gz
-	sha256sums = SKIP
+	sha256sums = 2d38512b57af41796fe6aa168cef85a83de701076403857361a086515d51c8ce
 
 pkgname = moarchy-coins

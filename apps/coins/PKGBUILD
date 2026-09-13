@@ -20,12 +20,7 @@ license=('MIT')
 # dependency for `requests.get` would be a cost with nothing behind it.
 depends=('python' 'python-gobject' 'gtk4' 'libadwaita')
 source=("$url/releases/download/coins-v$pkgver/$pkgname-$pkgver.tar.gz")
-# NOT RELEASED YET. There is no coins-v0.1.0 tag and no release asset, so there
-# is nothing to checksum: `packaging/release.sh coins 0.1.0` prints the sha256
-# to put here once there is, and this must not go to the AUR until it does.
-# SKIP means makepkg would accept whatever it downloaded, which is exactly the
-# property the rest of these PKGBUILDs exist to avoid.
-sha256sums=('SKIP')
+sha256sums=('2d38512b57af41796fe6aa168cef85a83de701076403857361a086515d51c8ce')
 
 # The source tarball is assembled by packaging/release.sh from two subtrees of
 # one tag -- apps/coins and shared -- so it holds this app and the shared code it
