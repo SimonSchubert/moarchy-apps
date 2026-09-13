@@ -157,9 +157,11 @@ jobs:
       #
       # Read with awk rather than the `.*::\K` regex this step used to carry.
       # That pattern required a `name::url` source and every .SRCINFO here has a
-      # plain URL, so it matched nothing, curl was handed an empty string, and
-      # the step could only ever fail -- which nobody saw, because the only app
-      # it was wired to was updated by hand.
+      # plain URL, so grep matched nothing and exited 1 -- and under `sh -e`
+      # that assignment alone ended the step, before curl was ever reached. Run
+      # 34709633376 is the whole of it: pacman's output, then exit 1, with the
+      # "fetching" line never printed. Nobody saw it, because the only app it
+      # was wired to was updated by hand.
       - name: The release tarball exists and matches its checksum
         working-directory: apps/${{ matrix.app }}
         run: |
