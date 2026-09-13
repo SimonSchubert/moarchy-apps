@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=Minesweeper
+GenericName=Puzzle
+Comment=Clear the field without opening a mine
+Exec=moarchy-minesweeper
+Icon=org.moarchy.Minesweeper
+Terminal=false
+Categories=Game;LogicGame;
+Keywords=minesweeper;mines;sweeper;puzzle;flags;
+StartupNotify=true
+StartupWMClass=org.moarchy.Minesweeper
