@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=Coins
+GenericName=Coin Tracker
+Comment=The top coins by market cap, and the ones you star
+Exec=moarchy-coins
+Icon=org.moarchy.Coins
+Terminal=false
+Categories=Office;Finance;
+Keywords=coin;coins;crypto;cryptocurrency;bitcoin;ethereum;price;prices;market;ticker;tracker;watchlist;portfolio;coingecko;
+StartupNotify=true
+StartupWMClass=org.moarchy.Coins

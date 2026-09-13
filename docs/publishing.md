@@ -53,10 +53,15 @@ As of 2026-09-13, and this table is the thing to re-check rather than trust:
 | breakout | `moarchy-breakout` | 0.1.0 | yes | yes | **yes** |
 | queens | `queens` | 1.0.8 | no — upstream's name to claim | no — it is in `[moarchy]` | **yes** |
 | puzzle-games | `puzzle-games` | 1.1.4 | no — upstream's name to claim | no — it is in `[moarchy]` | **yes** |
+| coins | `moarchy-coins` | 0.1.0 | no — unreleased | no — unreleased | no |
 
-Twelve of fourteen are in all three. What is left is `keep` and `habits`, which
-have no catalogue row, and the two Flutter ones, which are listed and in
-`[moarchy]` but not on the AUR.
+Twelve of fifteen are in all three. What is left is `keep` and `habits`, which
+have no catalogue row; the two Flutter ones, which are listed and in
+`[moarchy]` but not on the AUR; and `coins`, which is in none of the three
+because it has never been tagged — there is no `coins-v0.1.0`, so there is no
+tarball to checksum and its PKGBUILD still says `SKIP`. Steps 4 to 7 of
+"Adding an app" in the repository README are what it is waiting for, in that
+order.
 
 The nine games were listed at catalogue serial 26 and measured on a PinePhone
 A64 rather than in the VM — the device already had seven of them installed, so

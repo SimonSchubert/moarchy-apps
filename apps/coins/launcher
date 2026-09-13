@@ -1,0 +1,20 @@
+#!/usr/bin/python3
+"""Launcher.
+
+The module lives in /usr/lib/moarchy-coins rather than site-packages on
+purpose: this is an arch=any package, and site-packages is versioned
+(/usr/lib/python3.13/...). Installing there bakes in whichever Python built the
+package, so a minor version bump would leave the app importing from a directory
+the new interpreter never looks in. A private directory plus sys.path is immune
+to that.
+"""
+
+import sys
+
+_PRIVATE = "/usr/lib/moarchy-coins"
+if _PRIVATE not in sys.path:
+    sys.path.insert(0, _PRIVATE)
+
+from moarchy_coins.app import main  # noqa: E402
+
+raise SystemExit(main())
