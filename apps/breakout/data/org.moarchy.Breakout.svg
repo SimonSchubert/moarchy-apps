@@ -16,11 +16,21 @@
 
      Nothing here is finer than 4px at 128, which is better than a pixel at 42.
      No clip path: QtSvg ignores clip-path and paints an out-of-defs clipPath as
-     a black rectangle, which is how Chess's first icon drew as a black square. -->
+     a black rectangle, which is how Chess's first icon drew as a black square.
+
+     The ramp is Adwaita Dark 1/2/3 and not 3/4 and darker, which is where it
+     started. A playfield is dark by nature and the bricks need it, but at
+     #3d3846 the face averaged 78 against 121..230 for the other eleven icons
+     here, and on a light theme's drawer sheet an 88x88 rounded square at that
+     tone is not an object on the surface, it is a hole in it. Two steps up the
+     same ramp reads as slate on a cream sheet and as slate on a near-black one,
+     and the wall keeps every one of its colours: red on #77767b is a weak
+     contrast ratio and an unmistakable difference in hue, which is the half
+     that matters for a block of colour this size. -->
 <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
-  <rect x="20" y="24" width="88" height="88" rx="10" fill="#241f31"/>
-  <rect x="20" y="20" width="88" height="88" rx="10" fill="#2d2733"/>
-  <rect x="20" y="16" width="88" height="88" rx="10" fill="#3d3846"/>
+  <rect x="20" y="24" width="88" height="88" rx="10" fill="#3d3846"/>
+  <rect x="20" y="20" width="88" height="88" rx="10" fill="#5e5c64"/>
+  <rect x="20" y="16" width="88" height="88" rx="10" fill="#77767b"/>
   <rect x="22" y="20" width="2" height="80" fill="#ffffff" opacity="0.187"/>
   <g>
     <rect x="26" y="26" width="24" height="10" rx="3" fill="#e01b24"/>

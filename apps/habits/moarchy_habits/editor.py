@@ -20,6 +20,7 @@ gi.require_version("Gtk", "4.0")
 gi.require_version("Adw", "1")
 
 from gi.repository import Adw, GObject, Gtk  # noqa: E402
+from moarchy_ui.entries import clearable  # noqa: E402
 
 from . import theme  # noqa: E402
 from .habits import BOOLEAN, MEASURABLE, Habit  # noqa: E402
@@ -87,13 +88,19 @@ class HabitEditor(Adw.Dialog):
     def _details_group(self) -> Adw.PreferencesGroup:
         group = Adw.PreferencesGroup()
 
+        # Every free-text row here gets a clear button. All three arrive
+        # pre-filled when an existing habit is opened, and on this phone the
+        # alternative to one tap is one backspace per character with the
+        # keyboard over the rest of the form (moarchy_ui/entries.py).
         self._name = Adw.EntryRow(title="Name")
         self._name.set_text(self.habit.name)
         self._name.connect("changed", lambda *_: self._validate())
+        clearable(self._name)
         group.add(self._name)
 
         self._question = Adw.EntryRow(title="Question (optional)")
         self._question.set_text(self.habit.question)
+        clearable(self._question)
         group.add(self._question)
 
         self._kind = Adw.ComboRow(title="Records")
@@ -113,6 +120,7 @@ class HabitEditor(Adw.Dialog):
 
         self._unit = Adw.EntryRow(title="Unit")
         self._unit.set_text(self.habit.unit)
+        clearable(self._unit)
         group.add(self._unit)
 
         self._frequency = Adw.ComboRow(title="How often")
