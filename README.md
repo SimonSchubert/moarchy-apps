@@ -20,6 +20,7 @@ the aarch64 repos, the AUR or Flathub. This is where they get written.
 | [mill](apps/mill) | Nine Men's Morris: three squares, an opponent on a clock, and the rule everybody forgets | v0.1.0 |
 | [fiveletters](apps/fiveletters) | A five-letter word a day: its own keyboard, and a mark as well as a colour | v0.1.0 |
 | [breakout](apps/breakout) | Breakout: a bat that follows your thumb, and a clock that stops with the window | v0.1.0 |
+| [vitals](apps/vitals) | A task manager: processor, memory, tasks and network, read from /proc | v0.1.0 |
 | [puzzle-games](apps/puzzle-games) | *Packaging only:* sidhant947's suite of 300+ small puzzles, minus the titlebar | 1.1.4 |
 
 Habits is gap #9 on that list — Loop has 72 translations and Linux has nothing;
@@ -56,6 +57,16 @@ gnome-chess` lists `gnuchess` as an *optional* dependency, so the board you
 install has nobody in it until you install a second package, and the search here
 is in the app. Whether either survives 360px is a question for moarchy-store's
 sweep, which exists to score exactly that.
+
+Vitals is the third of those, and the honest version of the argument is in its
+README: Linux is not short of system monitors, and moarchy-store's own catalogue
+already lists two — `gnome-usage`, and `bottom`, which is there because *btop
+does not fit a phone's terminal at 47 columns*. What a phone lacks is the
+content of btop with a thumb-sized switcher along the bottom: per-core bars,
+network throughput, heat and charge, and a task list that groups a browser's
+twenty processes into one row you can end with a tap. It also reads nothing but
+`/proc`, so it costs the stock image no package at all beyond the GUI stack that
+is already on it.
 
 The two share everything that is not the rules — the board is one cairo drawing
 area in both, for the same argument about sixty-four widgets, and the clock on
