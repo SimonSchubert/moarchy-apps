@@ -1,6 +1,6 @@
 # Maintainer: Simon Schubert <simon@librem.one>
 pkgname=moarchy-coins
-pkgver=0.1.0
+pkgver=0.1.1
 pkgrel=1
 pkgdesc="A coin tracker for a Linux phone: the top hundred, and the ones you star"
 arch=('any')

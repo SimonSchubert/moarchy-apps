@@ -41,7 +41,7 @@ API = "https://api.coingecko.com/api/v3/coins/markets"
 # Who is asking. CoinGecko asks for a UA that identifies the client, and an app
 # that names itself is one whose traffic can be recognised and blocked on its
 # own rather than with every other keyless caller.
-AGENT = "moarchy-coins/0.1.0 (+https://github.com/SimonSchubert/moarchy-apps)"
+AGENT = "moarchy-coins/0.1.1 (+https://github.com/SimonSchubert/moarchy-apps)"
 
 # Twelve seconds. A phone on a cell connection is slow rather than absent, and
 # the usual ten is short enough to fail a request that would have arrived; the
@@ -86,6 +86,11 @@ SIGNS = {
 # keyless limit is a handful of calls a minute per address, so a minute or two
 # is the difference between being let back in and being refused again.
 RATE_LIMIT_S = 120.0
+
+# The rank of a coin nobody has ranked. Larger than any list this app asks
+# for, so an unranked coin sorts to the end of one rather than into the middle
+# of it, and small enough to stay three digits in the disc it is drawn in.
+UNRANKED = 999
 
 # A number that is not there. An em dash rather than "0" or "n/a", because a
 # missing 24-hour change and a flat one are different facts and a column of
@@ -205,12 +210,23 @@ def _number(value: object) -> float | None:
     return None if math.isnan(number) or math.isinf(number) else number
 
 
-def parse(record: object, rank: int) -> Coin | None:
+def parse(record: object, position: int, *, ordered: bool = True) -> Coin | None:
     """One coin out of CoinGecko's shape, or None if it is not usable.
 
-    `rank` is where the coin sat in the answer, and stands in for a null
-    `market_cap_rank` -- which a coin can genuinely have while still being the
-    fortieth largest thing in a list ordered by market cap.
+    **In an ordered answer the rank is where the coin sat in it, and
+    `market_cap_rank` is ignored.** That field disagrees with the ordering it
+    arrives in: on 2026-09-14 the top twelve came back with Figure Heloc and
+    Zcash both carrying rank 9 -- correctly ordered by capitalisation, 22.5
+    billion then 17.8 -- and Hyperliquid behind them at 10. Drawn faithfully
+    that is a list numbered 8, 9, 9, 10, which reads as a broken app rather
+    than as a quirk of somebody else's field. The answer is sorted by market
+    cap descending because this module asked for it that way, so the position
+    *is* the rank, it cannot repeat, and it cannot skip.
+
+    `ordered=False` is for coins fetched by name, where there is no meaningful
+    position -- a watchlist coin arrives in a list of one -- so the reported
+    rank is the only number worth drawing, and a coin without one sorts to the
+    end rather than into the middle of the hundred.
     """
     if not isinstance(record, dict):
         return None
@@ -220,25 +236,29 @@ def parse(record: object, rank: int) -> Coin | None:
         # No price is not a coin worth a row: every column on the right of the
         # screen is derived from it.
         return None
-    reported = _number(record.get("market_cap_rank"))
+    if ordered:
+        rank = position
+    else:
+        reported = _number(record.get("market_cap_rank"))
+        rank = int(reported) if reported and reported > 0 else UNRANKED
     return Coin(
         id=identifier,
         symbol=str(record.get("symbol") or "")[:8].upper(),
         name=str(record.get("name") or identifier),
-        rank=int(reported) if reported and reported > 0 else rank,
+        rank=rank,
         price=price,
         change=_number(record.get("price_change_percentage_24h")),
         cap=_number(record.get("market_cap")) or 0.0,
     )
 
 
-def parse_markets(payload: object) -> list[Coin]:
+def parse_markets(payload: object, *, ordered: bool = True) -> list[Coin]:
     """The whole answer, with the unusable rows left out rather than fatal."""
     if not isinstance(payload, list):
         raise MarketError("CoinGecko sent something that is not a list of coins.")
     coins = []
     for position, record in enumerate(payload, start=1):
-        coin = parse(record, position)
+        coin = parse(record, position, ordered=ordered)
         if coin is not None:
             coins.append(coin)
     if not coins and payload:
@@ -346,7 +366,11 @@ class Live:
         if not wanted:
             return []
         url = self._url(ids=",".join(wanted), per_page=str(len(wanted)))
-        return parse_markets(_get(url, key=self.key, timeout=self.timeout))
+        # Not ordered: the answer is whichever coins were asked for, so its
+        # positions mean nothing and each coin's own rank is what is drawn.
+        return parse_markets(
+            _get(url, key=self.key, timeout=self.timeout), ordered=False
+        )
 
 
 # --- numbers as somebody reads them --------------------------------------

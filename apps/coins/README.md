@@ -182,12 +182,27 @@ fetch.
 | `MOARCHY_COINS_SEARCH` | open with the search box up, and this in it |
 | `MOARCHY_COINS_QUIT_AFTER` | quit after N seconds, for the headless checks |
 
-## Not released yet
+## Where to get it
 
-There is no `coins-v0.1.0` tag, no release asset and therefore no checksum: the
-PKGBUILD carries `sha256sums=('SKIP')` and a comment saying so, and it must not
-go to the AUR until `packaging/release.sh coins 0.1.0` has printed a real one.
-`docs/publishing.md` has the table of what has actually reached where.
+Three channels, the same as every app here, and `docs/publishing.md` is the
+table of which one this has actually reached — `git grep` cannot tell you that.
+
+```sh
+# the phone, through the signed repo the store's helper can install from
+sudo pacman -S moarchy-coins
+
+# anyone else on Arch or Arch Linux ARM
+paru -S moarchy-coins
+```
+
+0.1.1 is the first version worth installing. 0.1.0 drew the rank column
+straight from CoinGecko's `market_cap_rank`, which on 2026-09-14 came back with
+Figure Heloc and Zcash both at 9 — correctly ordered by capitalisation, and
+numbered 8, 9, 9, 10 on screen, which reads as a broken app rather than as a
+quirk of somebody else's field. The list is ordered by market cap because this
+app asked for it that way, so the position in it is now the rank: it cannot
+repeat and it cannot skip. A coin fetched by name, which has no position, still
+draws the rank it reports.
 
 ## Licence
 

@@ -68,10 +68,37 @@ class TestParsing(unittest.TestCase):
         self.assertIsNone(market.parse({**RECORD, "current_price": None}, 1))
         self.assertIsNone(market.parse({**RECORD, "current_price": 0}, 1))
 
-    def test_a_null_rank_falls_back_to_where_the_coin_was_listed(self):
-        """A coin can have no market_cap_rank and still be the fortieth row."""
+    def test_an_ordered_answer_is_numbered_by_where_the_coin_sat_in_it(self):
+        """market_cap_rank disagrees with the ordering it arrives in."""
+        parsed = market.parse({**RECORD, "market_cap_rank": 1}, 40)
+        self.assertEqual(parsed.rank, 40)
         parsed = market.parse({**RECORD, "market_cap_rank": None}, 40)
         self.assertEqual(parsed.rank, 40)
+
+    def test_a_rank_coingecko_repeats_is_not_drawn_twice(self):
+        """The real answer of 2026-09-14: Figure Heloc and Zcash both came back
+        as rank 9, correctly ordered by capitalisation, with Hyperliquid at 10.
+        Drawn faithfully that is a list numbered 9, 9, 10."""
+        answer = [
+            {**RECORD, "id": "figure-heloc", "market_cap_rank": 9, "market_cap": 22e9},
+            {**RECORD, "id": "zcash", "market_cap_rank": 9, "market_cap": 17e9},
+            {**RECORD, "id": "hyperliquid", "market_cap_rank": 10, "market_cap": 17e9},
+        ]
+        self.assertEqual([c.rank for c in market.parse_markets(answer)], [1, 2, 3])
+
+    def test_a_coin_fetched_by_name_keeps_the_rank_it_reports(self):
+        """There the position means nothing: it arrived in a list of one."""
+        coins = market.parse_markets(
+            [{**RECORD, "id": "monero", "market_cap_rank": 187}], ordered=False
+        )
+        self.assertEqual(coins[0].rank, 187)
+
+    def test_a_coin_nobody_has_ranked_sorts_to_the_end(self):
+        coins = market.parse_markets(
+            [{**RECORD, "id": "brand-new", "market_cap_rank": None}], ordered=False
+        )
+        self.assertEqual(coins[0].rank, market.UNRANKED)
+        self.assertGreater(market.UNRANKED, market.TOP)
 
     def test_a_bool_is_not_a_number(self):
         """isinstance(True, int) is True in Python, and $1.00 is a lie."""
