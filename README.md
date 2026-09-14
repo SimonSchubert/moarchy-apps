@@ -22,7 +22,7 @@ the aarch64 repos, the AUR or Flathub. This is where they get written.
 | [breakout](apps/breakout) | Breakout: a bat that follows your thumb, and a clock that stops with the window | v0.1.0 |
 | [vitals](apps/vitals) | A task manager: processor, memory, tasks and network, read from /proc | v0.1.0 |
 | [puzzle-games](apps/puzzle-games) | *Packaging only:* sidhant947's suite of 300+ small puzzles, minus the titlebar | 1.1.4 |
-| [coins](apps/coins) | A coin tracker: the top hundred by market cap, and the ones you star | unreleased |
+| [coins](apps/coins) | A coin tracker: the top hundred by market cap, and the ones you star | v0.1.1 |
 
 Habits is gap #9 on that list — Loop has 72 translations and Linux has nothing;
 `francis`, the nearest thing in the catalogue, is a pomodoro timer. Keep came in
@@ -194,7 +194,7 @@ tarball by checksum, so the two channels install the same bytes from the same
 tag and cannot drift. [`docs/publishing.md`](docs/publishing.md) says which apps
 have actually reached which.
 
-The repo is live and holds all twelve apps at their released versions. It is
+The repo is live and holds all thirteen apps at their released versions. It is
 built in two halves, because the two tools it needs are on different machines:
 
 ```sh

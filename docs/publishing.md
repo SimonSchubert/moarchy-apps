@@ -35,7 +35,7 @@ not is `.SRCINFO`, and that is generated from the PKGBUILD rather than written.
 
 ## What is where today
 
-As of 2026-09-13, and this table is the thing to re-check rather than trust:
+As of 2026-09-14, and this table is the thing to re-check rather than trust:
 
 | app | package | version | AUR | `[moarchy-apps]` | catalogue |
 |---|---|---|---|---|---|
@@ -53,15 +53,32 @@ As of 2026-09-13, and this table is the thing to re-check rather than trust:
 | breakout | `moarchy-breakout` | 0.1.0 | yes | yes | **yes** |
 | queens | `queens` | 1.0.8 | no — upstream's name to claim | no — it is in `[moarchy]` | **yes** |
 | puzzle-games | `puzzle-games` | 1.1.4 | no — upstream's name to claim | no — it is in `[moarchy]` | **yes** |
-| coins | `moarchy-coins` | 0.1.0 | no — unreleased | no — unreleased | no |
+| coins | `moarchy-coins` | 0.1.1 | yes | yes | **yes**, and the first of ours with no device behind it |
 
-Twelve of fifteen are in all three. What is left is `keep` and `habits`, which
-have no catalogue row; the two Flutter ones, which are listed and in
-`[moarchy]` but not on the AUR; and `coins`, which is in none of the three
-because it has never been tagged — there is no `coins-v0.1.0`, so there is no
-tarball to checksum and its PKGBUILD still says `SKIP`. Steps 4 to 7 of
-"Adding an app" in the repository README are what it is waiting for, in that
-order.
+Thirteen of fifteen are in all three. What is left is `keep` and `habits`,
+which have no catalogue row, and the two Flutter ones, which are listed and in
+`[moarchy]` but not on the AUR.
+
+`coins` went through all three on 2026-09-14, in the order this file gives, and
+it is the row that proves the order matters: the catalogue lint fails an entry
+whose package is in no sync database the phone can read, so the signed repo had
+to be published — and its cached copy of that database refreshed — before the
+row could pass. What it did **not** go through is a device. The
+omarchy-mobile checkout is not on the machine that did this, so `tested` and
+`measured` are both empty, the store renders the entry as *"Not yet tested on a
+device"*, and `lint-catalogue.py` prints a warning naming it. That warning is
+correct and should stay until somebody runs `scripts/sweep-measure.sh` against
+it. Every other row of ours says `pinephone-a64` because somebody held the
+phone; this one says nothing, and the difference is the whole point of the
+field.
+
+It also released twice in an afternoon. 0.1.0 drew the rank column from
+CoinGecko's `market_cap_rank`, which on the day came back with two coins at 9
+and drew a list numbered 8, 9, 9, 10 — found by pointing the app at the live
+endpoint to take the catalogue screenshot, which is the one thing a fixture
+cannot do. 0.1.1 numbers by position in the answer. The AUR and the signed repo
+both carry 0.1.1; 0.1.0 remains a GitHub release, because a tag that has been
+pushed is not a thing to move.
 
 The nine games were listed at catalogue serial 26 and measured on a PinePhone
 A64 rather than in the VM — the device already had seven of them installed, so
