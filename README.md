@@ -23,6 +23,12 @@ the aarch64 repos, the AUR or Flathub. This is where they get written.
 | [vitals](apps/vitals) | A task manager: processor, memory, tasks and network, read from /proc | v0.1.0 |
 | [puzzle-games](apps/puzzle-games) | *Packaging only:* sidhant947's suite of 300+ small puzzles, minus the titlebar | 1.1.4 |
 | [coins](apps/coins) | A coin tracker: the top hundred by market cap, and the ones you star | v0.1.1 |
+| [food](apps/food) | Point the camera at a barcode: nutrition facts from Open Food Facts | v0.1.0 |
+
+Food is the Open Food Facts row on that list: barcode to nutrition, and Linux
+has `qrca` and `decoder`, which read a code and do not say what the packet is.
+There is no typed entry. A camera the phone does not have is an empty state,
+which is the honest version of requiring one.
 
 Habits is gap #9 on that list — Loop has 72 translations and Linux has nothing;
 `francis`, the nearest thing in the catalogue, is a pomodoro timer. Keep came in

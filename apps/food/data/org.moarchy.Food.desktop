@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=Food
+GenericName=Food Facts
+Comment=Point the camera at a barcode for nutrition facts
+Exec=moarchy-food
+Icon=org.moarchy.Food
+Terminal=false
+Categories=Utility;GTK;
+Keywords=food;nutrition;barcode;scan;camera;nutriscore;nova;allergens;ingredients;openfoodfacts;
+StartupNotify=true
+StartupWMClass=org.moarchy.Food
