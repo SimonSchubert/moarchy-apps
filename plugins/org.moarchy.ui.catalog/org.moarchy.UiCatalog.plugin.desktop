@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=Chrome
+GenericName=UI catalog
+Comment=Shared Quickshell chrome, all on one screen
+Exec=omarchy-shell shell toggle org.moarchy.ui.catalog
+Icon=org.moarchy.UiCatalog
+Terminal=false
+Categories=Development;
+Keywords=ui;chrome;catalog;widgets;
+StartupNotify=false
+X-Moarchy-Plugin=org.moarchy.ui.catalog

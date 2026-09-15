@@ -7,3 +7,5 @@ build/
 apps/*/docs/screenshots/device/
 .device-seed/
 dist/
+# shared/qs_ui vendored into a plugin by run-local.sh or install-on-device.sh.
+plugins/*/ui/

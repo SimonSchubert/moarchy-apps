@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "id": "org.moarchy.ui.catalog",
+  "name": "Chrome",
+  "version": "0.1.0",
+  "author": "Simon Schubert",
+  "license": "MIT",
+  "description": "Review window for the shared Quickshell chrome kit.",
+  "kinds": ["overlay"],
+  "keepLoaded": true,
+  "entryPoints": {
+    "overlay": "Catalog.qml"
+  }
+}
