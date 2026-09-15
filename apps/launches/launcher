@@ -1,0 +1,29 @@
+#!/usr/bin/python3
+"""Launcher.
+
+The module lives in /usr/lib/moarchy-launches rather than site-packages on
+purpose: this is an arch=any package, and site-packages is versioned
+(/usr/lib/python3.13/...). Installing there bakes in whichever Python built the
+package, so a minor version bump would leave the app importing from a directory
+the new interpreter never looks in. A private directory plus sys.path is immune
+to that.
+"""
+
+import os
+import sys
+
+# Mali-400 has no usable GL. GTK tries to create a GL context, fails, and
+# falls back to cairo -- but the failed probe is the difference between a
+# ~1.6s first frame and a ~5s one on this phone. Pin both so it does not try.
+# setdefault: a debug session that set GSK_RENDERER still wins.
+os.environ.setdefault("GSK_RENDERER", "cairo")
+os.environ.setdefault("GDK_DISABLE", "gl,vulkan")
+
+
+_PRIVATE = "/usr/lib/moarchy-launches"
+if _PRIVATE not in sys.path:
+    sys.path.insert(0, _PRIVATE)
+
+from moarchy_launches.app import main  # noqa: E402
+
+raise SystemExit(main())

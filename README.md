@@ -24,11 +24,17 @@ the aarch64 repos, the AUR or Flathub. This is where they get written.
 | [puzzle-games](apps/puzzle-games) | *Packaging only:* sidhant947's suite of 300+ small puzzles, minus the titlebar | 1.1.4 |
 | [coins](apps/coins) | A coin tracker: the top hundred by market cap, and the ones you star | v0.1.1 |
 | [food](apps/food) | Point the camera at a barcode: nutrition facts from Open Food Facts | v0.1.0 |
+| [launches](apps/launches) | Upcoming rockets: a countdown, a pad, and the ones you star | v0.1.0 |
 
 Food is the Open Food Facts row on that list: barcode to nutrition, and Linux
 has `qrca` and `decoder`, which read a code and do not say what the packet is.
 There is no typed entry. A camera the phone does not have is an empty state,
 which is the honest version of requiring one.
+
+Launches is not on that list. Space Launch Now is the F-Droid analogue and it
+did not survive the filter; the probe the list describes still comes back
+empty, the same way Coins' did. One GET of Launch Library 2, a countdown that
+stops lying when the NET is a quarter, and no livestream.
 
 Habits is gap #9 on that list — Loop has 72 translations and Linux has nothing;
 `francis`, the nearest thing in the catalogue, is a pomodoro timer. Keep came in

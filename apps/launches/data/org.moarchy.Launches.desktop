@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=Launches
+GenericName=Launch Tracker
+Comment=Upcoming rocket launches, and the ones you star
+Exec=moarchy-launches
+Icon=org.moarchy.Launches
+Terminal=false
+Categories=Science;
+Keywords=launch;rocket;spacex;nasa;countdown;space;orbit;pad;ariane;electron;soyuz;
+StartupNotify=true
+StartupWMClass=org.moarchy.Launches
