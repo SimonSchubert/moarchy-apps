@@ -95,6 +95,50 @@ last one is not ceremony: `makepkg` runs `check()` for every AUR user, so a test
 needing a display would break the install for all of them. They skip the widget
 tests and run the rest, 60 to 179 of them per app.
 
+## The QML plugins are a fourth shape, and only one half of them can be published
+
+`plugins/` holds apps that are not processes. A shell plugin is QML the running
+`omarchy-shell` loads and keeps loaded, so summoning Keep or Launches is
+`visible = true` on a window that already exists rather than four seconds of
+starting Python and GTK. That is the whole reason they exist, and it is also
+why none of the three channels above fits them without an argument.
+
+What a plugin needs is not what a package can promise. Quickshell, a Wayland
+compositor with layer shell, the plugin host's `manifest.json` contract and the
+`shell` object it injects, and an id listed in `~/.config/omarchy/shell.json`
+before anything loads it. The last one is user configuration: a package can
+ship files, it cannot enable itself. And it is unverified whether the host
+scans a system-wide plugin directory at all — every installer here writes to
+`~/.config/omarchy/plugins`, which is a path no pacman package may touch.
+**Check `PluginRegistry`'s scan roots before writing a PKGBUILD for a plugin**;
+if there is only the user directory, there is nothing to package.
+
+The standalone half is publishable, and as of 2026-09-15 it exists.
+`shared/qs_ui` no longer imports anything from the shell, so an app built on it
+runs under a plain Quickshell: `plugins/<id>/shell.qml` is the same app as its
+own process, and `run-local.sh` vendors the kit and starts it. Three couplings
+had to go, and each was replaced with something that still resolves to the
+shell's own answer on the phone rather than an approximation of it:
+
+- `Style.font.body` → `Metrics.shellBody()`, which compiles `import qs.Commons`
+  as a string once at startup. An unresolved QML import fails the whole file at
+  load time, so a string is the only way to make one optional. Inside the shell
+  it returns the shell's body size, and text scaling still reaches the app.
+- `qs.Ui.TextField` → a plain `TextInput`. The on-screen keyboard was never the
+  shell's to hand out: `moarchy-keyboard` binds `zwp_input_method_v2` and Qt
+  speaks text-input-v3 for whatever holds focus.
+- `Util.alpha` → `Theme.alpha`, the same `Qt.rgba` call.
+
+So a QML app can be an AUR package: the QML tree plus `shared/qs_ui` vendored
+into it at build time, `depends=('quickshell' 'adwaita-icon-theme')`, a
+`.desktop` whose `Exec` is `quickshell -p`. What that package is *worth* is a
+separate question, and the honest answer is: less than the GTK one. `quickshell`
+is itself AUR-only, so the dependency cannot be resolved by `pacman` alone, and
+an Arch user who wants a launch tracker is being asked to install a shell
+toolkit to get it. The GTK app stays the one aimed at people who are not on our
+image. The portability is worth having anyway, because it is what stops the kit
+from quietly becoming a thing only our shell can run.
+
 ## The gaps that are structural, not just unfinished rows
 
 1. **~~CI publishes one app.~~** Fixed: `.github/workflows/aur.yml` is matrixed
