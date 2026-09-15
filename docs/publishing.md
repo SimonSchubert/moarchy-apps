@@ -107,11 +107,27 @@ What a plugin needs is not what a package can promise. Quickshell, a Wayland
 compositor with layer shell, the plugin host's `manifest.json` contract and the
 `shell` object it injects, and an id listed in `~/.config/omarchy/shell.json`
 before anything loads it. The last one is user configuration: a package can
-ship files, it cannot enable itself. And it is unverified whether the host
-scans a system-wide plugin directory at all — every installer here writes to
-`~/.config/omarchy/plugins`, which is a path no pacman package may touch.
-**Check `PluginRegistry`'s scan roots before writing a PKGBUILD for a plugin**;
-if there is only the user directory, there is nothing to package.
+ship files, it cannot enable itself.
+
+**The scan roots were the check to do first, and they answer yes.** It did not
+need the phone, only the patch that builds its shell:
+`pkgbuilds/omarchy-config/port-4x.patch` in the moarchy repo gives
+`PluginRegistry` a second root, `systemPluginsDir = /usr/share/moarchy/plugins`,
+and scans it *before* `~/.config/omarchy/plugins` so a user copy of the same id
+still wins. moarchy ships its own nine plugins through it rather than copying
+them into every home, for the reason a package exists at all — upgrading the
+package upgrades the shell. An app package writes there beside them and owns
+every file it puts down, which is the property `scripts/device.sh` is built on
+and the one every `install-on-device.sh` here currently breaks.
+
+So there is something to package, and what is left of the objection is the
+enable step alone: the id in `~/.config/omarchy/shell.json`. Writing that file
+from a package is not the answer — it is per-user, and a user copy masks the
+packaged defaults, which is a property moarchy's own `image/verify.sh` asserts.
+The answer is a second hunk in the same patch, making a plugin found under
+`systemPluginsDir` enabled unless `shell.json` names it as disabled. Until that
+lands the standalone entry point below covers it, so this is a question of how
+fast the app opens, not whether it runs.
 
 The standalone half is publishable, and as of 2026-09-15 it exists.
 `shared/qs_ui` no longer imports anything from the shell, so an app built on it
@@ -130,14 +146,26 @@ shell's own answer on the phone rather than an approximation of it:
 - `Util.alpha` → `Theme.alpha`, the same `Qt.rgba` call.
 
 So a QML app can be an AUR package: the QML tree plus `shared/qs_ui` vendored
-into it at build time, `depends=('quickshell' 'adwaita-icon-theme')`, a
-`.desktop` whose `Exec` is `quickshell -p`. What that package is *worth* is a
-separate question, and the honest answer is: less than the GTK one. `quickshell`
-is itself AUR-only, so the dependency cannot be resolved by `pacman` alone, and
-an Arch user who wants a launch tracker is being asked to install a shell
-toolkit to get it. The GTK app stays the one aimed at people who are not on our
-image. The portability is worth having anyway, because it is what stops the kit
-from quietly becoming a thing only our shell can run.
+into it at build time, `depends=('quickshell' 'qt6-5compat' 'adwaita-icon-theme')`,
+a `.desktop` whose `Exec` is `quickshell -p`. `qt6-5compat` is named because
+`Icon.qml` tints through `Qt5Compat.GraphicalEffects`, and `qt6-declarative` is
+not, because `quickshell` already depends on it — `namcap` runs on every publish
+and a redundant dependency is what it is for.
+
+**`quickshell` is not AUR-only, and that changes what the package is worth.**
+It is `extra/quickshell 0.3.1-1`, `Architecture: aarch64`, and `pacman -Sp
+quickshell` resolves the whole closure — qt6-base, qt6-declarative, qt6-svg,
+qt6-wayland and the rest — out of the repositories with no AUR helper anywhere
+in it. Measured in a clean Arch Linux ARM container rather than assumed, which
+is the only reason the sentence that used to sit here was wrong: it was true
+when quickshell was young, and it stopped being true without anything in this
+repo noticing.
+
+What is left of the honest caveat is smaller and still worth saying: an Arch
+user who wants a launch tracker is installing a shell toolkit to get one, and
+that is a real cost even when `pacman` pays it in one transaction. The
+portability is worth having regardless, because it is what stops the kit from
+quietly becoming a thing only our shell can run.
 
 ## The gaps that are structural, not just unfinished rows
 
