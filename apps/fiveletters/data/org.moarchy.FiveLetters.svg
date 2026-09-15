@@ -1,44 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Drawn as an Adwaita object rather than a full-bleed tile, for the reason
-     Keep's icon records: mobileomarchy's AppDrawer.qml paints the .desktop icon
-     bare, with no tile behind it, four to a row next to Contacts and
-     Calculator. An icon that fills its own square is the one thing in that grid
-     that reads as a tile instead of as a thing.
+<!-- Three tiles in the three states a guess comes back in: right, nearly, and
+     not in the word.
 
-     So this is three tiles of a row, each an Adwaita object in its own right,
-     each on two 2px lips a step darker down its own ramp: green for a letter in
-     its place, amber for one in the word somewhere else, grey for one that is
-     not in the word. The 2px white specular at 0.187 sits on the first.
+     One row rather than two. Six small tiles read as a colour palette at 42px;
+     three big ones read as a word being guessed, which is the app.
 
-     Three tiles and not thirty. A whole board at the 42px the drawer actually
-     asks for is a grid of dots; three tiles in a row with their three colours
-     is the picture of this game, and it is also the only part of it that has to
-     be recognisable without reading anything.
-
-     The corner marks are the app's own and are the reason it is playable
-     without telling green from amber: a filled dot on a letter in its place, an
-     open ring on one in the wrong place, nothing on one that is not there.
-
-     Nothing here is finer than 3px at 128, which is a pixel at 42. No clip
-     path: QtSvg ignores clip-path and paints an out-of-defs clipPath as a black
-     rectangle, which is how Chess's first icon drew as a black square. -->
+     Each tile carries a mark as well as a colour — a tick, a ring, a bar — for
+     the same reason the app does: roughly one man in twelve cannot tell the
+     green from the yellow, and the colour alone would be the whole answer. -->
 <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
-  <g>
-    <rect x="10" y="50" width="34" height="34" rx="6" fill="#1a7a4e"/>
-    <rect x="10" y="46" width="34" height="34" rx="6" fill="#26a269"/>
-    <rect x="10" y="42" width="34" height="34" rx="6" fill="#2ec27e"/>
-    <rect x="12" y="46" width="2" height="26" fill="#ffffff" opacity="0.187"/>
-    <circle cx="37" cy="49" r="4" fill="#ffffff"/>
-  </g>
-  <g>
-    <rect x="47" y="50" width="34" height="34" rx="6" fill="#a06a06"/>
-    <rect x="47" y="46" width="34" height="34" rx="6" fill="#c68e12"/>
-    <rect x="47" y="42" width="34" height="34" rx="6" fill="#f5c211"/>
-    <circle cx="74" cy="49" r="4" fill="none" stroke="#ffffff" stroke-width="2.5"/>
-  </g>
-  <g>
-    <rect x="84" y="50" width="34" height="34" rx="6" fill="#5e5c64"/>
-    <rect x="84" y="46" width="34" height="34" rx="6" fill="#77767b"/>
-    <rect x="84" y="42" width="34" height="34" rx="6" fill="#9a9996"/>
-  </g>
+
+  <rect x="6" y="40" width="36" height="48" rx="7" fill="#26a269"/>
+  <rect x="46" y="40" width="36" height="48" rx="7" fill="#e5a50a"/>
+  <rect x="86" y="40" width="36" height="48" rx="7" fill="#77767b"/>
+  <path d="M15 64l6 7 12-14" fill="none" stroke="#ffffff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="64" cy="64" r="10" fill="none" stroke="#ffffff" stroke-width="6"/>
+  <rect x="94" y="61" width="20" height="6" rx="3" fill="#ffffff" opacity="0.85"/>
 </svg>

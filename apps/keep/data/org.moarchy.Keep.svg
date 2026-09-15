@@ -1,46 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Drawn to sit beside GNOME's own icons, because in mobileomarchy's drawer it
-     literally does: AppDrawer.qml paints the .desktop icon bare, with no tile
-     behind it, four to a row next to Contacts, Calculator and Text Editor. An
-     Adwaita app icon is an *object* on the surface, so a full-bleed rounded
-     square, which this was until now, is the one thing in that grid that reads
-     as a tile rather than as a thing.
+<!-- A sheet of paper with a checklist on it, folded at one corner.
 
-     The construction is Adwaita's, measured off org.gnome.Contacts.svg so the
-     optical weight matches: an 88x112 object at x 20..108, y 8..120; depth from
-     stacking the same rect three times with 2px lips at the bottom, each a step
-     darker down the yellow ramp (#f6d32d, #e5a50a, #b5830a) the way Contacts
-     steps its blues; Contacts' own #deddda/#fff/#c0bfbc gradient between them
-     for the cut edge of the pages; and a 2px white specular at 0.187, inset
-     from the left edge, the detail that keeps flat colour from looking printed
-     on.
-
-     Yellow because that is the colour this icon has always been, and the one
-     the drawer's users know it by. The checked box is the second, saturated
-     accent every Adwaita icon carries (Calculator's orange column, Contacts'
-     colour tabs), and it is also the honest one: the .desktop file promises
-     "Text notes and checklists", where the bulb that stood here promised an
-     idea. Nothing here is finer than 2px at 128, which is half a pixel at the
-     42px the drawer actually asks for. -->
+     The sheet is the object, so this one needed no plate to begin with — it
+     had one anyway. The fold is what stops a yellow rectangle reading as a
+     button: paper has a corner, a tile does not. -->
 <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
-  <linearGradient id="pages" gradientUnits="userSpaceOnUse" x1="20" x2="108" y1="0" y2="0">
-    <stop offset="0" stop-color="#deddda"/>
-    <stop offset="0.511" stop-color="#ffffff"/>
-    <stop offset="1" stop-color="#c0bfbc"/>
-  </linearGradient>
-  <rect x="20" y="28" width="88" height="92" rx="8" fill="#b5830a"/>
-  <rect x="20" y="48" width="88" height="70" rx="8" fill="url(#pages)"/>
-  <rect x="20" y="28" width="88" height="84" rx="8" fill="#e5a50a"/>
-  <rect x="20" y="8" width="88" height="102" rx="8" fill="#f6d32d"/>
-  <rect x="22" y="12" width="2" height="94" fill="#ffffff" opacity="0.187"/>
-  <rect x="33" y="29" width="16" height="16" rx="5" fill="#2ec27e"/>
-  <path d="M37 37.5 L40.5 41 L45.5 34.5" fill="none" stroke="#ffffff"
-        stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-  <g fill="#3d3846">
-    <rect x="55" y="33" width="39" height="8" rx="4"/>
-    <rect x="33" y="53" width="16" height="16" rx="5" opacity="0.32"/>
-    <rect x="55" y="57" width="39" height="8" rx="4"/>
-    <rect x="33" y="77" width="16" height="16" rx="5" opacity="0.32"/>
-    <rect x="55" y="81" width="27" height="8" rx="4"/>
-  </g>
+
+  <path d="M26 14h58l20 20v80H26z" fill="#f6d32d"/>
+  <path d="M84 14l20 20H84z" fill="#b5830a"/>
+  <rect x="38" y="48" width="14" height="14" rx="3" fill="#26a269"/>
+  <path d="M41.5 55l3 3 6-6.5" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  <rect x="58" y="52" width="34" height="6" rx="3" fill="#b5830a"/>
+  <rect x="38" y="72" width="14" height="14" rx="3" fill="#e5a50a"/>
+  <rect x="58" y="76" width="34" height="6" rx="3" fill="#b5830a"/>
+  <rect x="38" y="94" width="14" height="6" rx="3" fill="#e5a50a"/>
+  <rect x="58" y="94" width="34" height="6" rx="3" fill="#b5830a"/>
 </svg>

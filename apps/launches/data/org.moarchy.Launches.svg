@@ -1,28 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- A rocket. The silhouette is a triangle, which nothing else in this set
-     is: Coins is a disc, Food is a carton, Habits is a grid, and at 42px in
-     the drawer the silhouette is the whole of what tells them apart.
+<!-- A rocket, nose up, with the flame under it.
 
-     Drawn as an Adwaita object rather than a full bleed tile, which is the
-     house pattern here and the reason is in apps/keep/data/org.moarchy.Keep.svg
-     at length: the drawer paints the .desktop icon bare, four to a row beside
-     Contacts and Calculator, so an icon that fills its own square reads as a
-     tile rather than as a thing. The same 88x88 face at x 20..108, y 16..104
-     on two 2px lips a step darker down the Adwaita slate ramp, with the 2px
-     white specular at 0.187 every icon in this set carries.
-
-     The body is the theme's own light, the flame is the orange a hold wears
-     in the list. No clip path anywhere. The drawer renders with QtSvg, which
-     ignores clipping and paints the clip shape instead. -->
+     Drawn as the object rather than as a launch button: the app is a list of
+     rockets and the drawer is a grid of objects — a handset, a briefcase, a
+     book — so a rocket belongs there and a grey square with a rocket in it
+     does not. -->
 <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
-  <rect x="20" y="24" width="88" height="88" rx="10" fill="#3d3846"/>
-  <rect x="20" y="20" width="88" height="88" rx="10" fill="#5e5c64"/>
-  <rect x="20" y="16" width="88" height="88" rx="10" fill="#77767b"/>
-  <rect x="22" y="20" width="2" height="80" fill="#ffffff" opacity="0.187"/>
-  <polygon points="64,30 78,76 50,76" fill="#f6f5f4"/>
-  <polygon points="50,70 44,86 56,76" fill="#f6f5f4"/>
-  <polygon points="78,70 84,86 72,76" fill="#f6f5f4"/>
-  <circle cx="64" cy="50" r="5" fill="#5e5c64"/>
-  <polygon points="56,78 64,100 72,78" fill="#ff7800"/>
-  <polygon points="60,78 64,92 68,78" fill="#f5c211"/>
+
+  <path d="M64 10c14 14 21 32 21 52v18H43V62c0-20 7-38 21-52z" fill="#f6f5f4"/>
+  <path d="M64 10c14 14 21 32 21 52v18H64z" fill="#deddda"/>
+  <circle cx="64" cy="54" r="12" fill="#3584e4"/>
+  <circle cx="64" cy="54" r="7" fill="#1c71d8"/>
+  <path d="M43 68 26 92v10h17z" fill="#e01b24"/>
+  <path d="M85 68l17 24v10H85z" fill="#c01c28"/>
+  <path d="M52 100h24l-12 20z" fill="#ff7800"/>
+  <path d="M58 100h12l-6 11z" fill="#f5c211"/>
 </svg>

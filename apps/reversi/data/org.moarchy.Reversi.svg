@@ -1,35 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Drawn as an Adwaita object rather than a full-bleed tile, for the reason
-     Keep's icon records: mobileomarchy's AppDrawer.qml paints the .desktop icon
-     bare, with no tile behind it, four to a row next to Contacts and
-     Calculator. An icon that fills its own square is the one thing in that grid
-     that reads as a tile instead of as a thing.
+<!-- Two discs, one of each colour, side by side.
 
-     So this is a board: an 88x88 face at x 20..108, y 16..104, sitting on two
-     2px lips a step darker down the green ramp (#2ec27e, #26a269, #1a7a4e) the
-     way Contacts steps its blues, and the same 2px white specular at 0.187
-     inset from the left edge.
+     The board went: a green square with discs on it is a board, and two discs
+     are the game.
 
-     Four cells across, not eight. Eight lines of 11px each is mush at the 42px
-     the drawer actually asks for, and the four discs in the middle are what
-     makes this Othello and not a chessboard — it is the one opening position
-     every set of rules agrees on, and the thing a player recognises. Nothing
-     here is finer than 2px at 128, which is half a pixel at 42. -->
+     The dark one is outlined rather than filled flat, and that is the whole
+     difficulty with this icon. A black disc on the drawer's dark background is
+     not a disc, it is a hole — the first two attempts both read as one white
+     ball with a bite taken out of it. The outline is what makes the pair
+     legible, and the overlap is small enough that both are still circles. -->
 <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
-  <rect x="20" y="24" width="88" height="88" rx="10" fill="#1a7a4e"/>
-  <rect x="20" y="20" width="88" height="88" rx="10" fill="#26a269"/>
-  <rect x="20" y="16" width="88" height="88" rx="10" fill="#2ec27e"/>
-  <g stroke="#26a269" stroke-width="2" stroke-linecap="round">
-    <path d="M42 20 V100 M64 20 V100 M86 20 V100"/>
-    <path d="M24 38 H104 M24 60 H104 M24 82 H104"/>
-  </g>
-  <rect x="22" y="20" width="2" height="80" fill="#ffffff" opacity="0.187"/>
-  <g fill="#241f31">
-    <circle cx="53" cy="49" r="9"/>
-    <circle cx="75" cy="71" r="9"/>
-  </g>
-  <g fill="#f6f5f4">
-    <circle cx="75" cy="49" r="9"/>
-    <circle cx="53" cy="71" r="9"/>
-  </g>
+
+  <circle cx="44" cy="64" r="34" fill="#241f31" stroke="#9a9996" stroke-width="5"/>
+  <circle cx="34" cy="52" r="7" fill="#ffffff" opacity="0.3"/>
+  <circle cx="86" cy="64" r="34" fill="#f6f5f4" stroke="#c0bfbc" stroke-width="5"/>
+  <circle cx="76" cy="52" r="7" fill="#ffffff" opacity="0.9"/>
 </svg>
