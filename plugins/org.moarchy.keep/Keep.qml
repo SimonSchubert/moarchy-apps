@@ -10,10 +10,12 @@ import QtQuick
 import QtQuick.Layouts
 import Quickshell
 import Quickshell.Io
-import qs.Commons
-import qs.Ui as Ui
+import "ui" as Chrome
+import "ui/Theme.js" as Theme
+import "ui/Metrics.js" as Metrics
+import "ui/Plugin.js" as Plugin
 import "Store.js" as Store
-import "Theme.js" as Theme
+import "Notes.js" as Notes
 
 Item {
   id: root
@@ -41,19 +43,31 @@ Item {
   property bool colourOpen: false
   property bool doneOpen: true
   property bool loaded: false
-  property var palette: Theme.fallback()
+  // `colours` and not `palette`: QQuickItem already has a `palette`, and
+  // shadowing it makes a binding resolve to whichever the compiler picked --
+  // The property-override warning names it, and it is the one warning here
+  // that could silently draw the wrong thing. (A comment must not open with
+  // the linter's own name: it reads the rest of the line as a directive.)
+  readonly property var colours: themeFile.colours
 
-  // Same numbers the GTK app paints. Color.menu is the shell's mapping of
-  // this file; we parse the file itself so a coral card matches GTK Keep
+  // The shell's text size where there is a shell to ask, 16 otherwise. This
+  // and Metrics.space are what `Style.font.body` and `Style.space` were before
+  // this file came off qs.Commons: the same answers on the phone, and answers
+  // at all everywhere else.
+  property int bodySize: Metrics.BODY
+  Component.onCompleted: root.bodySize = Metrics.shellBody(root)
+
+  // Same numbers the GTK app paints: the palette is parsed out of colors.toml
+  // here rather than taken from the shell, so a coral card matches GTK Keep
   // rather than a Settings row.
-  readonly property color surface: palette.surface
-  readonly property color background: palette.background
-  readonly property color textOnSurface: palette.foreground
-  readonly property color dim: palette.dim
-  readonly property color line: palette.line
-  readonly property color accent: palette.accent
-  readonly property color subdued: palette.dim
-  readonly property color danger: (palette.hues && palette.hues.red) ? palette.hues.red : "#e01b24"
+  readonly property color surface: colours.surface
+  readonly property color background: colours.background
+  readonly property color textOnSurface: colours.foreground
+  readonly property color dim: colours.dim
+  readonly property color line: colours.line
+  readonly property color accent: colours.accent
+  readonly property color subdued: colours.dim
+  readonly property color danger: (colours.hues && colours.hues.red) ? colours.hues.red : "#e01b24"
   readonly property color textOnAccent: "#ffffff"
   readonly property int doneCount: {
     if (!root.editing || !root.editing.items) return 0
@@ -65,21 +79,13 @@ Item {
   readonly property int radiusCard: 12
   readonly property string noteFont: "Adwaita Sans"
 
-  readonly property string colorsPath: {
-    var home = Quickshell.env("HOME") || ""
-    return home + "/.local/state/omarchy/current/theme/colors.toml"
-  }
-
   readonly property color pageColor: root.editing
-                                     ? Theme.noteFill(root.palette, root.editing.colour)
+                                     ? Notes.fill(root.colours, root.editing.colour)
                                      : root.background
 
-  readonly property string notesDir: {
-    var home = Quickshell.env("HOME") || ""
-    var xdg = Quickshell.env("XDG_DATA_HOME") || ""
-    var base = xdg.length ? xdg : (home + "/.local/share")
-    return base + "/moarchy-keep"
-  }
+  readonly property string notesDir: Plugin.dataDir(
+    "keep", Quickshell.env("HOME"), Quickshell.env("XDG_DATA_HOME"),
+    Quickshell.env("MOARCHY_KEEP_DIR"))
   readonly property string notesPath: root.notesDir + "/notes.json"
 
   readonly property var shown: Store.sections(root.notes, root.query)
@@ -87,11 +93,7 @@ Item {
   readonly property var othersCol: Store.splitColumns(root.shown.others)
 
   function open(payloadJson) {
-    if (root.shell && typeof root.shell.isPluginOpen === "function") {
-      var others = ["moarchy.shade", "moarchy.drawer", "moarchy.themes"]
-      for (var i = 0; i < others.length; i++)
-        if (root.shell.isPluginOpen(others[i])) root.shell.hide(others[i])
-    }
+    Plugin.hideOverlays(root.shell)
     root.returnTo = ""
     try {
       var payload = JSON.parse(String(payloadJson || "{}"))
@@ -264,7 +266,7 @@ Item {
   }
 
   function noteFill(key) {
-    return Theme.noteFill(root.palette, key)
+    return Notes.fill(root.colours, key)
   }
 
   function hideKeyboard() {
@@ -308,16 +310,9 @@ Item {
     onFileChanged: Qt.callLater(function () { disk.reload() })
   }
 
-  FileView {
-    id: themeFile
-    path: root.colorsPath
-    watchChanges: true
-    printErrors: false
-    onLoaded: root.palette = Theme.parse(text())
-    onFileChanged: Qt.callLater(function () { themeFile.reload() })
-  }
+  Chrome.ThemeFile { id: themeFile }
 
-  AppWindow {
+  Chrome.AppWindow {
     id: keepWindow
     shell: root.shell
     appName: "Notes"
@@ -356,7 +351,7 @@ Item {
           Layout.bottomMargin: 4
           spacing: 4
 
-          Icon {
+          Chrome.Icon {
             visible: !!root.editing
             color: root.textOnSurface
             names: ["go-previous-symbolic", "pan-start-symbolic"]
@@ -377,26 +372,27 @@ Item {
               anchors.leftMargin: 10
               anchors.rightMargin: 4
               spacing: 4
-              Icon {
+              Chrome.Icon {
                 slot: 22
                 size: 14
                 color: root.dim
                 names: ["system-search-symbolic"]
               }
-              Ui.TextField {
+              Chrome.TextField {
                 id: searchField
                 Layout.fillWidth: true
-                background: null
-                verticalPadding: 0
-                leftPadding: 0
-                rightPadding: 0
+                // Bare: the pill belongs to the row around it, not to the
+                // field. The kit's TextField draws its own, so it is asked
+                // for a transparent one rather than handed a null Item --
+                // which is what Ui.TextField wanted and this is not.
+                color: "transparent"
                 placeholderText: "Search your notes"
                 foreground: root.textOnSurface
                 accent: root.accent
                 text: root.query
                 onTextChanged: root.query = text
               }
-              Icon {
+              Chrome.Icon {
                 slot: 32
                 size: 16
                 color: root.textOnSurface
@@ -416,7 +412,7 @@ Item {
 
           Item { Layout.fillWidth: true; visible: !!root.editing }
 
-          Icon {
+          Chrome.Icon {
             visible: !!root.editing
             color: root.textOnSurface
             names: ["view-more-symbolic", "open-menu-symbolic"]
@@ -425,7 +421,7 @@ Item {
               onClicked: { root.moreOpen = !root.moreOpen; root.colourOpen = false }
             }
           }
-          Icon {
+          Chrome.Icon {
             visible: !!root.editing
             color: root.textOnSurface
             names: ["color-select-symbolic"]
@@ -434,7 +430,7 @@ Item {
               onClicked: { root.colourOpen = !root.colourOpen; root.moreOpen = false }
             }
           }
-          Icon {
+          Chrome.Icon {
             visible: !!root.editing
             color: root.textOnSurface
             names: ["view-pin-symbolic", "starred-symbolic"]
@@ -460,16 +456,16 @@ Item {
           Column {
             id: gridColumn
             width: gridFlick.width
-            leftPadding: Style.space(12)
-            rightPadding: Style.space(12)
+            leftPadding: Metrics.space(12, root)
+            rightPadding: Metrics.space(12, root)
             bottomPadding: 80
-            spacing: Style.space(10)
+            spacing: Metrics.space(10, root)
 
             Text {
               visible: root.shown.pinned.length && root.shown.others.length && !root.query
               text: "PINNED"
               font.family: root.noteFont
-              font.pixelSize: Math.round(Style.font.body * 0.75)
+              font.pixelSize: Math.round(root.bodySize * 0.75)
               font.weight: Font.DemiBold
               font.letterSpacing: 1.2
               color: root.dim
@@ -484,7 +480,7 @@ Item {
               visible: root.shown.pinned.length && root.shown.others.length && !root.query
               text: "OTHERS"
               font.family: root.noteFont
-              font.pixelSize: Math.round(Style.font.body * 0.75)
+              font.pixelSize: Math.round(root.bodySize * 0.75)
               font.weight: Font.DemiBold
               font.letterSpacing: 1.2
               color: root.dim
@@ -500,11 +496,11 @@ Item {
               width: parent.width - parent.leftPadding - parent.rightPadding
               text: root.query ? "Nothing here matches that." : "Take a note."
               font.family: root.noteFont
-              font.pixelSize: Style.font.body
+              font.pixelSize: root.bodySize
               color: root.subdued
               wrapMode: Text.WordWrap
               horizontalAlignment: Text.AlignHCenter
-              topPadding: Style.space(40)
+              topPadding: Metrics.space(40, root)
             }
           }
         }
@@ -533,13 +529,17 @@ Item {
               topPadding: 8
               spacing: 10
 
-              Ui.TextField {
+              Chrome.TextField {
                 width: parent.width - parent.leftPadding - parent.rightPadding
-                background: null
+                // Bare: the pill belongs to the row around it, not to the
+                // field. The kit's TextField draws its own, so it is asked
+                // for a transparent one rather than handed a null Item --
+                // which is what Ui.TextField wanted and this is not.
+                color: "transparent"
                 placeholderText: "Title"
                 foreground: root.textOnSurface
                 accent: root.accent
-                font.pixelSize: Math.round(Style.font.body * 1.4)
+                font.pixelSize: Math.round(root.bodySize * 1.4)
                 font.weight: Font.DemiBold
                 text: root.editing ? root.editing.title : ""
                 onTextChanged: {
@@ -556,7 +556,7 @@ Item {
                 text: root.editing && root.editing.kind !== "list" ? (root.editing.body || "") : ""
                 color: root.textOnSurface
                 font.family: root.noteFont
-                font.pixelSize: Math.round(Style.font.body * 1.05)
+                font.pixelSize: Math.round(root.bodySize * 1.05)
                 font.weight: Font.Normal
                 wrapMode: TextEdit.Wrap
                 onTextChanged: {
@@ -585,7 +585,7 @@ Item {
                       color: modelData.done ? root.accent : "transparent"
                       border.color: modelData.done ? root.accent : root.dim
                       border.width: 1.5
-                      Icon {
+                      Chrome.Icon {
                         visible: modelData.done
                         anchors.centerIn: parent
                         slot: 16; size: 12
@@ -599,9 +599,13 @@ Item {
                     }
                   }
 
-                  Ui.TextField {
+                  Chrome.TextField {
                     Layout.fillWidth: true
-                    background: null
+                    // Bare: the pill belongs to the row around it, not to the
+                // field. The kit's TextField draws its own, so it is asked
+                // for a transparent one rather than handed a null Item --
+                // which is what Ui.TextField wanted and this is not.
+                color: "transparent"
                     foreground: root.textOnSurface
                     accent: root.accent
                     text: modelData.text
@@ -614,7 +618,7 @@ Item {
                     }
                   }
 
-                  Icon {
+                  Chrome.Icon {
                     slot: 36; size: 16
                     color: root.dim
                     names: ["window-close-symbolic"]
@@ -633,11 +637,11 @@ Item {
                 Row {
                   anchors.verticalCenter: parent.verticalCenter
                   spacing: 10
-                  Icon { slot: 28; size: 16; color: root.dim; names: ["list-add-symbolic"] }
+                  Chrome.Icon { slot: 28; size: 16; color: root.dim; names: ["list-add-symbolic"] }
                   Text {
                     text: "List item"
                     font.family: root.noteFont
-                    font.pixelSize: Style.font.body
+                    font.pixelSize: root.bodySize
                     color: root.dim
                   }
                 }
@@ -656,7 +660,7 @@ Item {
                 Row {
                   anchors.verticalCenter: parent.verticalCenter
                   spacing: 10
-                  Icon {
+                  Chrome.Icon {
                     slot: 28; size: 16
                     color: root.dim
                     names: root.doneOpen ? ["pan-down-symbolic"] : ["pan-end-symbolic"]
@@ -664,7 +668,7 @@ Item {
                   Text {
                     text: root.doneCount + " ticked item" + (root.doneCount === 1 ? "" : "s")
                     font.family: root.noteFont
-                    font.pixelSize: Style.font.body
+                    font.pixelSize: root.bodySize
                     color: root.dim
                   }
                 }
@@ -684,7 +688,7 @@ Item {
             Layout.bottomMargin: 8
             text: root.editing ? Store.editedLabel(root.editing.edited) : ""
             font.family: root.noteFont
-            font.pixelSize: Math.round(Style.font.body * 0.85)
+            font.pixelSize: Math.round(root.bodySize * 0.85)
             color: root.dim
           }
         }
@@ -701,7 +705,7 @@ Item {
         anchors.rightMargin: 16
         anchors.bottomMargin: 16
         color: root.accent
-        Icon {
+        Chrome.Icon {
           anchors.centerIn: parent
           slot: 56
           size: 22
@@ -745,11 +749,11 @@ Item {
               Row {
                 anchors.verticalCenter: parent.verticalCenter
                 spacing: 10
-                Icon { slot: 28; size: 16; color: root.textOnSurface; names: ["view-pin-symbolic"] }
+                Chrome.Icon { slot: 28; size: 16; color: root.textOnSurface; names: ["view-pin-symbolic"] }
                 Text {
                   text: root.menuNote && root.menuNote.pinned ? "Unpin" : "Pin"
                   font.family: root.noteFont
-                  font.pixelSize: Style.font.body
+                  font.pixelSize: root.bodySize
                   color: root.textOnSurface
                 }
               }
@@ -771,7 +775,7 @@ Item {
                   color: root.noteFill(modelData)
                   border.color: root.menuNote && root.menuNote.colour === modelData ? root.accent : root.line
                   border.width: root.menuNote && root.menuNote.colour === modelData ? 2 : 1
-                  Icon {
+                  Chrome.Icon {
                     visible: modelData === "default"
                     anchors.centerIn: parent
                     slot: 22; size: 14
@@ -792,11 +796,11 @@ Item {
               Row {
                 anchors.verticalCenter: parent.verticalCenter
                 spacing: 10
-                Icon { slot: 28; size: 16; color: root.textOnSurface; names: ["user-trash-symbolic"] }
+                Chrome.Icon { slot: 28; size: 16; color: root.textOnSurface; names: ["user-trash-symbolic"] }
                 Text {
                   text: "Delete"
                   font.family: root.noteFont
-                  font.pixelSize: Style.font.body
+                  font.pixelSize: root.bodySize
                   color: root.textOnSurface
                 }
               }
@@ -833,11 +837,11 @@ Item {
               Row {
                 anchors.verticalCenter: parent.verticalCenter
                 spacing: 10
-                Icon { slot: 28; size: 16; color: root.textOnSurface; names: ["checkbox-checked-symbolic"] }
+                Chrome.Icon { slot: 28; size: 16; color: root.textOnSurface; names: ["checkbox-checked-symbolic"] }
                 Text {
                   text: root.editing && root.editing.kind === "list" ? "Hide tick boxes" : "Tick boxes"
                   font.family: root.noteFont
-                  font.pixelSize: Style.font.body
+                  font.pixelSize: root.bodySize
                   color: root.textOnSurface
                 }
               }
@@ -857,11 +861,11 @@ Item {
               Row {
                 anchors.verticalCenter: parent.verticalCenter
                 spacing: 10
-                Icon { slot: 28; size: 16; color: root.textOnSurface; names: ["user-trash-symbolic"] }
+                Chrome.Icon { slot: 28; size: 16; color: root.textOnSurface; names: ["user-trash-symbolic"] }
                 Text {
                   text: "Delete note"
                   font.family: root.noteFont
-                  font.pixelSize: Style.font.body
+                  font.pixelSize: root.bodySize
                   color: root.textOnSurface
                 }
               }
@@ -901,7 +905,7 @@ Item {
                 color: root.noteFill(modelData)
                 border.color: root.editing && root.editing.colour === modelData ? root.accent : root.line
                 border.width: root.editing && root.editing.colour === modelData ? 2 : 1
-                Icon {
+                Chrome.Icon {
                   visible: modelData === "default"
                   anchors.centerIn: parent
                   slot: 22; size: 14
@@ -936,7 +940,7 @@ Item {
       id: listCol
       visible: cols.listView
       width: parent.width
-      spacing: Style.space(10)
+      spacing: Metrics.space(10, root)
       Repeater {
         model: cols.notes
         delegate: NoteCard { width: listCol.width; note: modelData }
@@ -946,11 +950,11 @@ Item {
     Row {
       visible: !cols.listView
       width: parent.width
-      spacing: Style.space(10)
+      spacing: Metrics.space(10, root)
       Column {
         id: leftCol
         width: (parent.width - parent.spacing) / 2
-        spacing: Style.space(10)
+        spacing: Metrics.space(10, root)
         Repeater {
           model: cols.split.left
           delegate: NoteCard { width: leftCol.width; note: modelData }
@@ -959,7 +963,7 @@ Item {
       Column {
         id: rightCol
         width: (parent.width - parent.spacing) / 2
-        spacing: Style.space(10)
+        spacing: Metrics.space(10, root)
         Repeater {
           model: cols.split.right
           delegate: NoteCard { width: rightCol.width; note: modelData }
@@ -990,7 +994,7 @@ Item {
         width: parent.width
         text: note ? note.title : ""
         font.family: root.noteFont
-        font.pixelSize: Math.round(Style.font.body * 1.05)
+        font.pixelSize: Math.round(root.bodySize * 1.05)
         font.weight: Font.DemiBold
         color: root.textOnSurface
         wrapMode: Text.Wrap
@@ -1002,7 +1006,7 @@ Item {
         width: parent.width
         text: note ? (note.body || "") : ""
         font.family: root.noteFont
-        font.pixelSize: Math.round(Style.font.body * 0.95)
+        font.pixelSize: Math.round(root.bodySize * 0.95)
         font.weight: Font.Normal
         color: root.textOnSurface
         wrapMode: Text.Wrap
@@ -1026,7 +1030,7 @@ Item {
               border.color: root.dim
               border.width: 1.5
             }
-            Icon {
+            Chrome.Icon {
               visible: modelData.done
               anchors.centerIn: parent
               slot: 14; size: 12
@@ -1038,7 +1042,7 @@ Item {
             width: cardCol.width - 22
             text: modelData.text
             font.family: root.noteFont
-            font.pixelSize: Math.round(Style.font.body * 0.95)
+            font.pixelSize: Math.round(root.bodySize * 0.95)
             font.weight: Font.Normal
             font.strikeout: !!modelData.done
             color: modelData.done ? root.dim : root.textOnSurface

@@ -38,6 +38,31 @@ omarchy-shell shell toggle org.moarchy.keep
 omarchy plugin validate org.moarchy.keep
 ```
 
+## Run it without the shell
+
+`shell.qml` is the same app as its own Quickshell process, for a machine that
+has Quickshell and none of omarchy:
+
+```sh
+plugins/org.moarchy.keep/run-local.sh     # vendors ui/, then quickshell -p
+```
+
+This did not work until the chrome moved to `shared/qs_ui`. Keep was written
+against `qs.Commons` and `qs.Ui`, so it could only ever run inside the shell --
+which meant no check could start it, no screenshot could be taken of it, and a
+laptop could not open it at all. Four files went with those imports:
+`AppWindow.qml`, `Theme.js`, `Icon.qml` and `PressVeil.qml` were all local
+copies of what the kit now provides, and the kit's versions had since grown a
+fallback walk for missing icons and a light-theme palette this one never had.
+
+What stayed is what is genuinely Keep's: `Notes.js`, the nine note colours and
+the wash they are mixed at.
+
+`Style.space` was the one coupling the kit had no answer for -- the shell's rem
+for margins, which follows the text size. `Metrics.space(px, parent)` now probes
+it exactly as `Metrics.shellBody` probes the font size, and falls back to the
+numbers this file was written with when there is no shell to ask.
+
 ## What it does not do yet
 
 Masonry is two columns of greedy packing, not the GTK widget. Undo after
