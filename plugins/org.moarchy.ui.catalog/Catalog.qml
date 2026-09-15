@@ -7,6 +7,7 @@ import Quickshell.Io
 import "ui" as Chrome
 import "ui/Theme.js" as Theme
 import "ui/Metrics.js" as Metrics
+import "ui/Plugin.js" as Plugin
 
 Item {
   id: root
@@ -22,7 +23,12 @@ Item {
   readonly property var appWindow: catalogWindow
 
   property string returnTo: ""
-  property var palette: Theme.fallback()
+  // `colours` and not `palette`: QQuickItem already has a `palette`, and
+  // shadowing it makes a binding resolve to whichever the compiler picked --
+  // The property-override warning names it, and it is the one warning here
+  // that could silently draw the wrong thing. (A comment must not open with
+  // the linter's own name: it reads the rest of the line as a directive.)
+  readonly property var colours: themeFile.colours
   property int bodySize: Metrics.BODY
   Component.onCompleted: root.bodySize = Metrics.shellBody(root)
   property bool listed: true
@@ -36,24 +42,15 @@ Item {
   property string both: "Starship"
   property string tabLabel: "Upcoming"
 
-  readonly property color surface: palette.surface
-  readonly property color background: palette.background
-  readonly property color textOnSurface: palette.foreground
-  readonly property color dim: palette.dim
-  readonly property color line: palette.line
-  readonly property color accent: palette.accent
-
-  readonly property string colorsPath: {
-    var home = Quickshell.env("HOME") || ""
-    return home + "/.local/state/omarchy/current/theme/colors.toml"
-  }
+  readonly property color surface: colours.surface
+  readonly property color background: colours.background
+  readonly property color textOnSurface: colours.foreground
+  readonly property color dim: colours.dim
+  readonly property color line: colours.line
+  readonly property color accent: colours.accent
 
   function open(payloadJson) {
-    if (root.shell && typeof root.shell.isPluginOpen === "function") {
-      var others = ["moarchy.shade", "moarchy.drawer", "moarchy.themes"]
-      for (var i = 0; i < others.length; i++)
-        if (root.shell.isPluginOpen(others[i])) root.shell.hide(others[i])
-    }
+    Plugin.hideOverlays(root.shell)
     root.returnTo = ""
     try {
       var payload = JSON.parse(String(payloadJson || "{}"))
@@ -80,14 +77,7 @@ Item {
     onTriggered: root.spinning = false
   }
 
-  FileView {
-    id: themeFile
-    path: root.colorsPath
-    watchChanges: true
-    printErrors: false
-    onLoaded: root.palette = Theme.parse(text())
-    onFileChanged: Qt.callLater(function () { themeFile.reload() })
-  }
+  Chrome.ThemeFile { id: themeFile }
 
   Chrome.AppWindow {
     id: catalogWindow
@@ -333,7 +323,7 @@ Item {
                 checked: root.listed
                 text: root.listed ? "On a list — tap the label" : "Off the list — tap the label"
                 foreground: root.textOnSurface
-                tickColor: root.palette.dark ? "#ffffff" : root.background
+                tickColor: root.colours.dark ? "#ffffff" : root.background
                 accent: root.accent
                 dim: root.dim
                 bodySize: root.bodySize
@@ -344,7 +334,7 @@ Item {
                 interactive: false
                 text: "Display only"
                 foreground: root.textOnSurface
-                tickColor: root.palette.dark ? "#ffffff" : root.background
+                tickColor: root.colours.dark ? "#ffffff" : root.background
                 accent: root.accent
                 dim: root.dim
                 bodySize: root.bodySize
@@ -432,8 +422,8 @@ Item {
         background: root.surface
         line: root.line
         foreground: root.textOnSurface
-        danger: (root.palette.hues && root.palette.hues.red)
-                ? root.palette.hues.red : "#e01b24"
+        danger: (root.colours.hues && root.colours.hues.red)
+                ? root.colours.hues.red : "#e01b24"
         bodySize: root.bodySize
         placement: "topEnd"
         onDismissed: root.menuOpen = false
@@ -462,8 +452,8 @@ Item {
           names: ["user-trash-symbolic"]
           text: "Delete"
           foreground: root.textOnSurface
-          danger: (root.palette.hues && root.palette.hues.red)
-                  ? root.palette.hues.red : "#e01b24"
+          danger: (root.colours.hues && root.colours.hues.red)
+                  ? root.colours.hues.red : "#e01b24"
           destructive: true
           bodySize: root.bodySize
           onClicked: {

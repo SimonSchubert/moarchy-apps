@@ -14,6 +14,7 @@ import Quickshell.Io
 import "ui" as Chrome
 import "ui/Theme.js" as Theme
 import "ui/Metrics.js" as Metrics
+import "ui/Plugin.js" as Plugin
 import "Launches.js" as Launches
 import "Store.js" as Store
 
@@ -31,7 +32,12 @@ Item {
   readonly property var appWindow: launchWindow
 
   property string returnTo: ""
-  property var palette: Theme.fallback()
+  // `colours` and not `palette`: QQuickItem already has a `palette`, and
+  // shadowing it makes a binding resolve to whichever the compiler picked --
+  // The property-override warning names it, and it is the one warning here
+  // that could silently draw the wrong thing. (A comment must not open with
+  // the linter's own name: it reads the rest of the line as a directive.)
+  readonly property var colours: themeFile.colours
   // The shell's text size when the shell is there to ask, 16 otherwise.
   property int bodySize: Metrics.BODY
   Component.onCompleted: root.bodySize = Metrics.shellBody(root)
@@ -52,32 +58,23 @@ Item {
   property real retryAt: 0
   property bool dirty: false
   property bool loaded: false
-  property string toast: ""
 
   readonly property var backoff: [60, 150, 300, 600]
 
-  readonly property color surface: palette.surface
-  readonly property color background: palette.background
-  readonly property color textOnSurface: palette.foreground
-  readonly property color dim: palette.dim
-  readonly property color line: palette.line
-  readonly property color accent: palette.accent
+  readonly property color surface: colours.surface
+  readonly property color background: colours.background
+  readonly property color textOnSurface: colours.foreground
+  readonly property color dim: colours.dim
+  readonly property color line: colours.line
+  readonly property color accent: colours.accent
 
   readonly property var shownList: Launches.filter(root.launches, root.query)
   readonly property var starredList: Launches.starred(root.launches, root.favourites, root.query)
   readonly property var current: Launches.find(root.launches, root.openId)
 
-  readonly property string dataDir: {
-    var home = Quickshell.env("HOME") || ""
-    var xdg = Quickshell.env("XDG_DATA_HOME") || ""
-    var base = xdg.length ? xdg : (home + "/.local/share")
-    return base + "/moarchy-launches"
-  }
-
-  readonly property string colorsPath: {
-    var home = Quickshell.env("HOME") || ""
-    return home + "/.local/state/omarchy/current/theme/colors.toml"
-  }
+  readonly property string dataDir: Plugin.dataDir(
+    "launches", Quickshell.env("HOME"), Quickshell.env("XDG_DATA_HOME"),
+    Quickshell.env("MOARCHY_LAUNCHES_DIR"))
 
   // --- what the header says --------------------------------------------
 
@@ -91,7 +88,7 @@ Item {
   }
 
   function hueColor(name) {
-    var hues = root.palette.hues || {}
+    var hues = root.colours.hues || {}
     return hues[name] || root.accent
   }
 
@@ -104,26 +101,19 @@ Item {
   }
 
   function badgeFill(item) {
-    return Theme.mix(root.hueColor(Launches.hue(item)), root.palette.background, 0.28)
+    return Theme.mix(root.hueColor(Launches.hue(item)), root.colours.background, 0.28)
   }
 
   function isStarred(id) {
     return root.favourites.indexOf(id) >= 0
   }
 
-  function say(text) {
-    root.toast = text
-    toastTimer.restart()
-  }
+  function say(text) { toast.show(text) }
 
   // --- the shell's plugin contract --------------------------------------
 
   function open(payloadJson) {
-    if (root.shell && typeof root.shell.isPluginOpen === "function") {
-      var others = ["moarchy.shade", "moarchy.drawer", "moarchy.themes"]
-      for (var i = 0; i < others.length; i++)
-        if (root.shell.isPluginOpen(others[i])) root.shell.hide(others[i])
-    }
+    Plugin.hideOverlays(root.shell)
     root.returnTo = ""
     try {
       var payload = JSON.parse(String(payloadJson || "{}"))
@@ -253,12 +243,6 @@ Item {
   // --- plumbing ---------------------------------------------------------
 
   Timer {
-    id: toastTimer
-    interval: 3000
-    onTriggered: root.toast = ""
-  }
-
-  Timer {
     id: tick
     interval: 1000
     repeat: true
@@ -280,7 +264,13 @@ Item {
     property bool manual: false
     running: false
     stdout: StdioCollector { id: fetchOut; waitForEnd: true }
+    // The disable is Quickshell's gap, not ours: `exited` carries a
+    // QProcess::ExitStatus, and that enum is not in the type information the
+    // module ships, so the linter cannot resolve a parameter this handler
+    // does not even read. Narrow on purpose -- one category, one line.
+    // qmllint disable signal-handler-parameters
     onExited: function (code, status) { root.arrived(code, fetchOut.text) }
+    // qmllint enable signal-handler-parameters
   }
 
   FileView {
@@ -309,14 +299,7 @@ Item {
     onFileChanged: Qt.callLater(function () { cacheFile.reload() })
   }
 
-  FileView {
-    id: themeFile
-    path: root.colorsPath
-    watchChanges: true
-    printErrors: false
-    onLoaded: root.palette = Theme.parse(text())
-    onFileChanged: Qt.callLater(function () { themeFile.reload() })
-  }
+  Chrome.ThemeFile { id: themeFile }
 
   IpcHandler {
     target: "launches"
@@ -466,7 +449,7 @@ Item {
 
                   Rectangle {
                     anchors.fill: parent
-                    color: rowTap.pressed ? Theme.mix(root.palette.foreground, root.palette.background, 0.06)
+                    color: rowTap.pressed ? Theme.mix(root.colours.foreground, root.colours.background, 0.06)
                                           : "transparent"
                   }
 
@@ -721,27 +704,13 @@ Item {
 
           // --- a sentence, not a spinner --------------------------------------
 
-          Rectangle {
+          Chrome.Toast {
+            id: toast
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.bottom: parent.bottom
-            anchors.bottomMargin: 16
-            width: Math.min(parent.width - 32, toastText.implicitWidth + 28)
-            height: 40
-            radius: 20
-            visible: root.toast.length > 0
-            color: Theme.mix(root.palette.foreground, root.palette.background, 0.92)
-
-            Chrome.TypedText {
-              id: toastText
-              anchors.centerIn: parent
-              width: parent.width - 28
-              role: "caption"
-              text: root.toast
-              color: root.background
-              bodySize: root.bodySize
-              elide: Text.ElideRight
-              maximumLineCount: 1
-            }
+            anchors.bottomMargin: 14
+            colours: root.colours
+            bodySize: root.bodySize
           }
         }
 

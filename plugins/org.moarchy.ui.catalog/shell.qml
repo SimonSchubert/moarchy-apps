@@ -6,6 +6,7 @@
 // components, same file, no plugin host. Colours fall back to the built-in
 // palette when colors.toml is not staged, which is itself worth looking at --
 // it is what the kit looks like on somebody else's system.
+import QtQuick
 import Quickshell
 
 ShellRoot {

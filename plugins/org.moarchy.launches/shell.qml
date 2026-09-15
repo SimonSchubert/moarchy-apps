@@ -12,6 +12,7 @@
 // Launches.qml are already written to be absent: `shell` stays null, so the
 // summon/hide calls it guards are skipped, and the theme FileView on
 // colors.toml simply never loads, which leaves the fallback palette.
+import QtQuick
 import Quickshell
 
 ShellRoot {
