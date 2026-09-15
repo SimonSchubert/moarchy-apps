@@ -80,26 +80,43 @@ function parseToml(text) {
   return data
 }
 
-function fallback() {
+// Stand-ins for a desktop with no Omarchy, a theme with no colors.toml, or a
+// malformed one. Themed by the file's presence, never broken by its absence --
+// which is theme.py's rule (docs/style.md I2), and these are its own two sets.
+var GNOME_DARK = { background: "#1d1d20", surface: "#28282c", foreground: "#ffffff" }
+var GNOME_LIGHT = { background: "#fafafa", surface: "#ffffff", foreground: "#2e3436" }
+
+// `dark` defaults true because that is what an app has before it has read
+// anything. A light desktop that has never run omarchy-theme-set used to get
+// white text on near-black here, which is not a fallback so much as a bug with
+// a palette.
+function fallback(dark) {
+  var light = dark === false
+  var base = light ? GNOME_LIGHT : GNOME_DARK
   return {
     accent: "#3584e4",
-    background: "#1d1d20",
-    surface: "#28282c",
-    raised: "#28282c",
-    foreground: "#ffffff",
+    background: base.background,
+    surface: base.surface,
+    raised: base.surface,
+    foreground: base.foreground,
     dim: "#9a9996",
-    line: mix("#ffffff", "#1d1d20", 0.16),
+    line: mix(base.foreground, base.background, 0.16),
     hues: GNOME,
-    dark: true
+    dark: !light
   }
 }
 
 function fromData(data) {
+  // `mode` is read before the bail-out on purpose: a theme can name a mode and
+  // still be missing the three colours below, and a light desktop should get
+  // the light stand-ins rather than the dark ones.
+  var dark = String(data.mode || "dark").toLowerCase() !== "light"
   var accent = pick(data, ["accent", "blue"])
   var background = pick(data, ["background"])
   var foreground = pick(data, ["bright_foreground", "foreground"])
-  if (!(accent && background && foreground)) return fallback()
-  var dark = String(data.mode || "dark").toLowerCase() !== "light"
+  // Missing any of these leaves half the app themed and half not, which looks
+  // worse than not theming it at all -- theme.py:load() says the same.
+  if (!(accent && background && foreground)) return fallback(dark)
   var hues = {}
   for (var role in GNOME) {
     hues[role] = pick(data, [role, "bright_" + role]) || GNOME[role]

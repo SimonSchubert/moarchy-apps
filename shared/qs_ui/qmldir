@@ -12,3 +12,6 @@ MenuItem 1.0 MenuItem.qml
 ContextMenu 1.0 ContextMenu.qml
 BottomNav 1.0 BottomNav.qml
 BottomNavItem 1.0 BottomNavItem.qml
+JsonFile 1.0 JsonFile.qml
+ThemeFile 1.0 ThemeFile.qml
+Toast 1.0 Toast.qml

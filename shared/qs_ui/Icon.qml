@@ -44,7 +44,11 @@ Item {
     "object-select-symbolic": "/usr/share/icons/Adwaita/symbolic/actions/object-select-symbolic.svg",
     "view-refresh-symbolic": "/usr/share/icons/Adwaita/symbolic/actions/view-refresh-symbolic.svg",
     "edit-clear-symbolic": "/usr/share/icons/Adwaita/symbolic/actions/edit-clear-symbolic.svg",
-    "edit-find-symbolic": "/usr/share/icons/Adwaita/symbolic/actions/edit-find-symbolic.svg"
+    "edit-find-symbolic": "/usr/share/icons/Adwaita/symbolic/actions/edit-find-symbolic.svg",
+    "computer-symbolic": "/usr/share/icons/Adwaita/symbolic/devices/computer-symbolic.svg",
+    "drive-harddisk-symbolic": "/usr/share/icons/Adwaita/symbolic/devices/drive-harddisk-symbolic.svg",
+    "network-wireless-symbolic": "/usr/share/icons/Adwaita/symbolic/devices/network-wireless-symbolic.svg",
+    "system-run-symbolic": "/usr/share/icons/Adwaita/symbolic/actions/system-run-symbolic.svg"
   })
 
   // Which candidate we are on. An Adwaita install somewhere other than

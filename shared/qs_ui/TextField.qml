@@ -1,3 +1,8 @@
+// Bound because the caret is a delegate. TextInput instantiates it, it reads
+// `root` from inside cursorDelegate, and says so: it captures across the
+// component boundary rather than resolving it by accident.
+pragma ComponentBehavior: Bound
+
 import QtQuick
 import QtQuick.Layouts
 import "Metrics.js" as Metrics

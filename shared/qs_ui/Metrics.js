@@ -52,6 +52,44 @@ function shellBody(parent) {
   }
 }
 
+// The shell's spacing scale, or 1.0 anywhere else.
+//
+// The fourth coupling, and the one the kit's README does not list because no
+// app needed it until Keep came off `qs.Commons`. `Style.space(px)` is the
+// shell's rem for margins and gaps -- px times a scale that follows the text
+// size, so a roomier theme moves the gaps with the type. Probed exactly as
+// shellBody is, once, and for the same reason: an import that cannot resolve
+// fails the whole file, so it has to be compiled as a string to be optional.
+var SPACING_SCALE = -1
+
+function spacingScale(parent) {
+  if (SPACING_SCALE >= 0) return SPACING_SCALE
+  SPACING_SCALE = 1.0
+  try {
+    var probe = Qt.createQmlObject(
+      "import QtQuick\nimport qs.Commons\n" +
+      "QtObject { readonly property real scale: Style.effectiveSpacingScale }",
+      parent, "ShellSpacingProbe")
+    if (probe) {
+      var scale = probe.scale
+      probe.destroy()
+      if (scale > 0) SPACING_SCALE = scale
+    }
+  } catch (e) {
+    // Not in the shell: the numbers an app was written with are the numbers.
+  }
+  return SPACING_SCALE
+}
+
+// px at the shell's scale, never below one. `Style.space` rounds and floors at
+// 1 for the same reason: a gap that scales to nothing is a layout that has
+// quietly lost a separator.
+function space(px, parent) {
+  var n = Number(px)
+  if (!isFinite(n) || n <= 0) return 0
+  return Math.max(1, Math.round(n * spacingScale(parent)))
+}
+
 function typeSize(body, role) {
   var b = body || BODY
   if (role === "title") return Math.round(b * 1.4)
