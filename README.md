@@ -25,6 +25,10 @@ the aarch64 repos, the AUR or Flathub. This is where they get written.
 | [coins](apps/coins) | A coin tracker: the top hundred by market cap, and the ones you star | v0.1.1 |
 | [food](apps/food) | Point the camera at a barcode: nutrition facts from Open Food Facts | v0.1.0 |
 | [launches](apps/launches) | Upcoming rockets: a countdown, a pad, and the ones you star | v0.1.0 |
+| [calculator](plugins/org.moarchy.calculator) | *Shell plugin only:* the four operations, and arithmetic that counts in tens | v0.1.0 |
+| [weather](plugins/org.moarchy.weather) | *Shell plugin only:* now, the next day and the week, for the places you named | v0.1.0 |
+| [calendar](plugins/org.moarchy.calendar) | *Shell plugin only:* the month, the day under it, and what is next | v0.1.0 |
+| [clock](plugins/org.moarchy.clock) | *Shell plugin only:* an alarm that rings late and says so, a stopwatch and a timer | v0.1.0 |
 
 Food is the Open Food Facts row on that list: barcode to nutrition, and Linux
 has `qrca` and `decoder`, which read a code and do not say what the packet is.
@@ -91,6 +95,89 @@ thing than somewhere to look at what they cost, which is why this one has no
 wallet, no portfolio and no amount in it anywhere — and why the only thing it
 ever sends is the name of a starred coin that has fallen out of the top hundred.
 
+Calculator is the one row that is not a directory in `apps/`. It has no GTK
+half and is not going to get one: it was written as a shell plugin, which is
+what a calculator should have been all along. The argument `plugins/` exists to
+make is that summoning an app can be `visible = true` on a window the shell
+already holds rather than four seconds of starting Python and GTK, and a
+calculator is the app that argument is *about* — it is opened for eleven
+seconds, several times a day, usually while somebody is holding something else
+in their other hand. It is also not a gap, and its README says so in as many
+words: `gnome-calculator` is in `extra`, it is adaptive, and it knows more
+mathematics than this ever will. What it is not is a keypad whose keys are 62px
+with the sum sitting on them and no second screen anywhere. The part worth reading is `Decimal.js`, which is there
+because `0.1 + 0.2` in JavaScript is 0.30000000000000004 and a calculator is the
+one program on the phone where that is a wrong answer rather than a rounding
+detail — Python's half of this repository would reach for `decimal`, and QML has
+none, so this is one.
+
+Weather is the second plugin with no app behind it, and it is the first one
+here that has to say what it *is not*. moarchy-store's `docs/android-gaps.md`
+puts Breezy Weather in tier one — "radar, air quality, pollen, warnings, many
+sources" — and names it one of the three worth writing first. This is none of
+those five things, so that row stays open. What the same catalogue already has
+is `gnome-weather`, listed, featured, and swept as *"Ran at 360x674 and drew
+correctly; follows the theme. 1 packages, 0.15 MB"*, with `kweather` beside it.
+So the honest version is the calculator's argument again, and the two phone
+things here are that it is already running when it is summoned, and that now,
+today and the week are one column you scroll rather than three places to
+navigate between — the towns live behind the title, because choosing one is
+something you do twice a year and reading the sky is something you do at a bus
+stop. It also asks nothing about where the phone is: there is no geolocation
+and no IP lookup, a place is on the list because somebody typed it, and that
+is what makes the whole of its network behaviour a sentence — one request per
+town being looked at, four times an hour, while the window is on the screen.
+
+`scripts/qml-shot.sh` arrived with it, and closes something
+`plugins/org.moarchy.launches/README.md` had been carrying as a known gap:
+there was no screenshot harness for plugins, because `scripts/screenshot.sh`
+photographs an X server with `import` and a Quickshell app is a Wayland client.
+It runs the plugin under headless sway — the compositor the phone runs — and
+takes the picture with `grim`. Same division of labour as the GTK harness:
+*what* to photograph is `plugins/<id>/shots.sh`.
+
+Calendar is the third of these with no app behind it, and the first whose
+argument is a number. The gaps list has no calendar row because the store
+already has one: `gnome-calendar` is in `extra`, catalogued, *featured*, and
+swept as fitting — "a seven-column month grid with week numbers at 360px is as
+tight as that can be drawn, and it is legible". What the sweep does not measure
+is what it costs to put there. On the container these checks run in — Qt,
+Quickshell and no GTK at all — `pacman -S gnome-calendar` wants **112
+packages**, because a calendar with accounts in it needs
+`evolution-data-server`, which is 30 MB installed, brings GTK3 alongside the
+GTK4 that is already there, and brings a WebKit to show somebody a Google
+consent screen; then `libedataserverui4` brings the *other* WebKit, because it
+is built against GTK4 and the first one is not. Two browser engines behind a
+month grid, and none of it anybody's fault: that is the price of accounts, and
+a fair one if accounts are what is wanted. This is the other thing — one JSON
+file, no daemon, nothing on the network, and three screens drawn for 360px
+rather than reflowed onto it. Its README lists the four things it does not do
+before it says anything it does, because "it does not ring" is the first thing
+somebody should know about a calendar.
+
+Clock is the fourth, and it is the one where being a plugin stops being an
+argument about startup time and becomes the only arrangement that works.
+`"keepLoaded": true` means the plugin host holds the `Item` from the moment the
+shell starts, so the timer watching for an alarm runs inside a process that is
+already running for the bar and the gestures — with no window anywhere on the
+screen. A GTK app in `apps/` had two shapes available to it and both are worse:
+an alarm that rings only while somebody is looking at the app, or a second
+package holding a systemd service, with the alarms then living in a process the
+app cannot see. `gnome-clocks` is in `extra` and this is not a gap either, and
+its README says so before it says anything else — along with the 73 packages
+and 60 MB that `pacman -S gnome-clocks` wants on a container with no GTK on it,
+five of them a geolocation stack down to `libmm-glib`, so that a clock can ask
+the modem where it is. That is the price of the world-clock page, and it is the
+page this app does not have. What that README says *next*
+is the part worth reading: nothing a user process can do will wake a suspended
+phone — `WakeSystem=true` is root's and so is `rtcwake` — so an alarm that came
+due while the phone was off rings when it comes back and says *4 minutes late*,
+and past an hour does not ring at all and says it went by instead. Ringing at
+ten for a seven o'clock alarm is not a late alarm, it is a confusing one. It is
+also the first app here to need something back from the shared kit:
+`shared/qs_ui/Icon.qml` now takes a name that is already a path, because
+Adwaita has an alarm clock and has neither a stopwatch nor an hourglass.
+
 The two share everything that is not the rules — the board is one cairo drawing
 area in both, for the same argument about sixty-four widgets, and the clock on
 the opponent is the same clock. What they do not share is code: two hundred
@@ -124,7 +211,9 @@ checksum that still names exact code.
 
 ```
 shared/moarchy_ui/     the half of "theme" that is the same in every app
+shared/qs_ui/          the same half in QML, vendored into each plugin as ui/
 apps/<name>/           one app: its package, data, tests, demo, shots, PKGBUILD
+plugins/<id>/          one shell plugin: manifest, QML, tests, shots, installer
 packaging/release.sh   tag -> per-app tarball + sha256
 packaging/repo-add.sh  built packages -> a signed [moarchy-apps] pacman repo
 packaging/publish-pages.sh    that repo -> the gh-pages branch it is served from
@@ -132,7 +221,11 @@ scripts/check.sh       lint, tests, and a real run at 360x720
 scripts/screenshot.sh  the photo harness; apps/<name>/shots.sh says what to shoot
 scripts/package.sh     build one app's package from the working tree
 scripts/text-input-check.sh   does the app raise the on-screen keyboard?
+scripts/qml-check.sh   a plugin's check: qmllint, its tests, a real quickshell
+scripts/qml-shot.sh    a plugin's photo harness, under the compositor the phone
+                       runs; plugins/<id>/shots.sh says what to shoot
 docker/Dockerfile.dev  the GNOME stack the phone has and a Mac does not
+docker/Dockerfile.qml  the Qt and Quickshell stack, for the two above
 docs/publishing.md     the three channels every app ships in, and what is
                        in which of them today
 ```

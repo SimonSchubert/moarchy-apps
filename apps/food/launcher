@@ -9,7 +9,16 @@ the new interpreter never looks in. A private directory plus sys.path is immune
 to that.
 """
 
+import os
 import sys
+
+# Mali-400 has no usable GL. GTK tries to create a GL context, fails, and
+# falls back to cairo -- but the failed probe is the difference between a
+# ~1.6s first frame and a ~5s one on this phone. Pin both so it does not try.
+# setdefault: a debug session that set GSK_RENDERER still wins.
+os.environ.setdefault("GSK_RENDERER", "cairo")
+os.environ.setdefault("GDK_DISABLE", "gl,vulkan")
+
 
 _PRIVATE = "/usr/lib/moarchy-food"
 if _PRIVATE not in sys.path:

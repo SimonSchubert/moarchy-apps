@@ -48,8 +48,73 @@ Item {
     "computer-symbolic": "/usr/share/icons/Adwaita/symbolic/devices/computer-symbolic.svg",
     "drive-harddisk-symbolic": "/usr/share/icons/Adwaita/symbolic/devices/drive-harddisk-symbolic.svg",
     "network-wireless-symbolic": "/usr/share/icons/Adwaita/symbolic/devices/network-wireless-symbolic.svg",
-    "system-run-symbolic": "/usr/share/icons/Adwaita/symbolic/actions/system-run-symbolic.svg"
+    "system-run-symbolic": "/usr/share/icons/Adwaita/symbolic/actions/system-run-symbolic.svg",
+    "pan-up-symbolic": "/usr/share/icons/Adwaita/symbolic/ui/pan-up-symbolic.svg",
+    "alarm-symbolic": "/usr/share/icons/Adwaita/symbolic/status/alarm-symbolic.svg",
+    "mark-location-symbolic": "/usr/share/icons/Adwaita/symbolic/actions/mark-location-symbolic.svg",
+    "appointment-new-symbolic": "/usr/share/icons/Adwaita/symbolic/actions/appointment-new-symbolic.svg",
+    "edit-delete-symbolic": "/usr/share/icons/Adwaita/symbolic/actions/edit-delete-symbolic.svg",
+    "media-playlist-repeat-symbolic": "/usr/share/icons/Adwaita/symbolic/status/media-playlist-repeat-symbolic.svg",
+    "x-office-calendar-symbolic": "/usr/share/icons/Adwaita/symbolic/mimetypes/x-office-calendar-symbolic.svg",
+    "preferences-system-time-symbolic": "/usr/share/icons/Adwaita/symbolic/legacy/preferences-system-time-symbolic.svg",
+    "media-playback-start-symbolic": "/usr/share/icons/Adwaita/symbolic/actions/media-playback-start-symbolic.svg",
+    "media-playback-pause-symbolic": "/usr/share/icons/Adwaita/symbolic/actions/media-playback-pause-symbolic.svg",
+    "media-playback-stop-symbolic": "/usr/share/icons/Adwaita/symbolic/actions/media-playback-stop-symbolic.svg",
+    "list-remove-symbolic": "/usr/share/icons/Adwaita/symbolic/actions/list-remove-symbolic.svg",
+    "document-edit-symbolic": "/usr/share/icons/Adwaita/symbolic/actions/document-edit-symbolic.svg",
+
+    // A file manager draws one glyph per row and has no say in how many rows
+    // there are, so its names are the one block here that is a *set*: a folder,
+    // the eight mimetypes Adwaita actually ships, and the places and devices
+    // that make up a sidebar. Adwaita has no glyph for "a file of some other
+    // kind" beyond text-x-generic, which is why that one is every row's last
+    // resort rather than a type of its own.
+    "folder-symbolic": "/usr/share/icons/Adwaita/symbolic/places/folder-symbolic.svg",
+    "inode-directory-symbolic": "/usr/share/icons/Adwaita/symbolic/mimetypes/inode-directory-symbolic.svg",
+    "text-x-generic-symbolic": "/usr/share/icons/Adwaita/symbolic/mimetypes/text-x-generic-symbolic.svg",
+    "image-x-generic-symbolic": "/usr/share/icons/Adwaita/symbolic/mimetypes/image-x-generic-symbolic.svg",
+    "audio-x-generic-symbolic": "/usr/share/icons/Adwaita/symbolic/mimetypes/audio-x-generic-symbolic.svg",
+    "video-x-generic-symbolic": "/usr/share/icons/Adwaita/symbolic/mimetypes/video-x-generic-symbolic.svg",
+    "font-x-generic-symbolic": "/usr/share/icons/Adwaita/symbolic/mimetypes/font-x-generic-symbolic.svg",
+    "package-x-generic-symbolic": "/usr/share/icons/Adwaita/symbolic/mimetypes/package-x-generic-symbolic.svg",
+    "x-office-document-symbolic": "/usr/share/icons/Adwaita/symbolic/mimetypes/x-office-document-symbolic.svg",
+    "x-office-spreadsheet-symbolic": "/usr/share/icons/Adwaita/symbolic/mimetypes/x-office-spreadsheet-symbolic.svg",
+    "x-office-presentation-symbolic": "/usr/share/icons/Adwaita/symbolic/mimetypes/x-office-presentation-symbolic.svg",
+    "user-home-symbolic": "/usr/share/icons/Adwaita/symbolic/places/user-home-symbolic.svg",
+    "user-desktop-symbolic": "/usr/share/icons/Adwaita/symbolic/places/user-desktop-symbolic.svg",
+    "folder-download-symbolic": "/usr/share/icons/Adwaita/symbolic/places/folder-download-symbolic.svg",
+    "folder-documents-symbolic": "/usr/share/icons/Adwaita/symbolic/places/folder-documents-symbolic.svg",
+    "folder-pictures-symbolic": "/usr/share/icons/Adwaita/symbolic/places/folder-pictures-symbolic.svg",
+    "folder-music-symbolic": "/usr/share/icons/Adwaita/symbolic/places/folder-music-symbolic.svg",
+    "folder-videos-symbolic": "/usr/share/icons/Adwaita/symbolic/places/folder-videos-symbolic.svg",
+    "drive-removable-media-symbolic": "/usr/share/icons/Adwaita/symbolic/devices/drive-removable-media-symbolic.svg",
+    "folder-new-symbolic": "/usr/share/icons/Adwaita/symbolic/actions/folder-new-symbolic.svg",
+    "edit-copy-symbolic": "/usr/share/icons/Adwaita/symbolic/actions/edit-copy-symbolic.svg",
+    "edit-cut-symbolic": "/usr/share/icons/Adwaita/symbolic/actions/edit-cut-symbolic.svg",
+    "edit-paste-symbolic": "/usr/share/icons/Adwaita/symbolic/actions/edit-paste-symbolic.svg",
+    "document-open-symbolic": "/usr/share/icons/Adwaita/symbolic/actions/document-open-symbolic.svg",
+    "go-up-symbolic": "/usr/share/icons/Adwaita/symbolic/actions/go-up-symbolic.svg",
+    "go-home-symbolic": "/usr/share/icons/Adwaita/symbolic/actions/go-home-symbolic.svg",
+    "view-sort-ascending-symbolic": "/usr/share/icons/Adwaita/symbolic/actions/view-sort-ascending-symbolic.svg"
   })
+
+  // A name that is already a path is used as it is: "/usr/share/...",
+  // "file://..." or whatever Qt.resolvedUrl() hands back for a file sitting
+  // beside the QML that asked for it.
+  //
+  // The map above can only name files that are on the image, and an app whose
+  // subject is a glyph no icon theme here has -- a stopwatch, an hourglass --
+  // would otherwise need a second copy of this file to draw one. Such a plugin
+  // ships the SVG next to its QML and passes
+  // `Qt.resolvedUrl("glyph-stopwatch.svg")` instead, with a themed name after
+  // it in the list as the fallback.
+  function direct(name: string): string {
+    var text = String(name)
+    if (text.indexOf("file:") === 0 || text.indexOf("qrc:") === 0
+        || text.charAt(0) === "/")
+      return text
+    return ""
+  }
 
   // Which candidate we are on. An Adwaita install somewhere other than
   // /usr/share/icons, or a system with a different theme entirely, only shows
@@ -61,9 +126,11 @@ Item {
     var list = root.names || []
     var i
     for (i = 0; i < list.length; i++) {
-      var path = root.files[String(list[i])]
+      var path = root.direct(list[i]) || root.files[String(list[i])]
       if (!path) continue
-      if (n === 0) return "file://" + path
+      // The map's entries are bare paths and a direct name may already carry a
+      // scheme, so one is added only where there is not one.
+      if (n === 0) return path.charAt(0) === "/" ? "file://" + path : path
       n--
     }
     // The themed lookup is the portable half, and it is second because it is

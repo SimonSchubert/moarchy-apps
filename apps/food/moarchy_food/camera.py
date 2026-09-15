@@ -19,7 +19,9 @@ of a barcode, and how the decoder is tested without a lens.
 
 from __future__ import annotations
 
+import fcntl
 import os
+import struct
 import time
 from pathlib import Path
 
@@ -56,18 +58,62 @@ def _gst():
         return None
 
 
+# struct v4l2_capability is 104 bytes on every LP64 we ship: driver[16],
+# card[32], bus_info[32], version, capabilities, device_caps, reserved[3].
+# VIDIOC_QUERYCAP is _IOR('V', 0, that struct).
+_VIDIOC_QUERYCAP = 0x80685600
+_V4L2_CAP_VIDEO_CAPTURE = 0x00000001
+_V4L2_CAP_DEVICE_CAPS = 0x80000000
+
+
+def v4l2_is_capture(buf: bytes) -> bool:
+    """Does a QUERYCAP buffer advertise video capture?
+
+    Pulled out so a test can hand it a buffer rather than a device. A PinePhone
+    exposes four `/dev/video*` nodes and only one is a camera: the others are
+    a rotator, a video decoder and a deinterlacer. Opening those as v4l2src
+    is how a launch spends seconds in PLAYING on something that will never
+    produce a frame.
+    """
+    if len(buf) < 92:
+        return False
+    caps, device_caps = struct.unpack_from("<II", buf, 84)
+    flags = device_caps if caps & _V4L2_CAP_DEVICE_CAPS else caps
+    return bool(flags & _V4L2_CAP_VIDEO_CAPTURE)
+
+
+def _node_is_capture(path: Path) -> bool:
+    try:
+        fd = os.open(path, os.O_RDONLY | os.O_NONBLOCK)
+    except OSError:
+        return False
+    try:
+        buf = bytearray(104)
+        fcntl.ioctl(fd, _VIDIOC_QUERYCAP, buf)
+    except OSError:
+        return False
+    finally:
+        os.close(fd)
+    return v4l2_is_capture(bytes(buf))
+
+
 def devices() -> list[Path]:
     """Capture nodes that might be a camera.
 
-    `/dev/video*` includes metadata devices on a libcamera stack; those fail
-    at PLAYING and the caller tries the next one. An unreadable node is
-    skipped: the app is not going to open it.
+    `/dev/video*` on this phone is mostly not a camera. Nodes that do not
+    advertise `V4L2_CAP_VIDEO_CAPTURE` are skipped; an unreadable node is
+    skipped because the app is not going to open it. If the ioctl is refused
+    on every node, the whole list is returned rather than claiming there is
+    no camera -- a container without V4L2 still has to be able to say so by
+    having no nodes at all.
     """
-    found: list[Path] = []
-    for path in sorted(Path("/dev").glob("video*")):
-        if path.exists() and os.access(path, os.R_OK):
-            found.append(path)
-    return found
+    nodes = [
+        path
+        for path in sorted(Path("/dev").glob("video*"))
+        if path.exists() and os.access(path, os.R_OK)
+    ]
+    capture = [path for path in nodes if _node_is_capture(path)]
+    return capture or nodes
 
 
 def preview_path() -> Path | None:

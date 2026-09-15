@@ -34,6 +34,15 @@ Rectangle {
   signal trailingClicked
   signal accepted
 
+  // The keyboard, on demand.
+  //
+  // `field` is private to this file, and forcing focus onto the pill itself
+  // does nothing -- the TextInput inside it is what the compositor gives a
+  // keyboard to. Without a way in, every form on the phone opens with its
+  // first field waiting to be tapped before it can be typed into, which is a
+  // tap spent reaching a keyboard that was always going to be needed.
+  function focusInput(): void { field.forceActiveFocus() }
+
   implicitHeight: Metrics.PILL
   implicitWidth: 240
   radius: height / 2

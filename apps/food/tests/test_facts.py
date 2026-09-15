@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import io
 import json
+import struct
 import sys
 import unittest
 import urllib.error
@@ -20,6 +21,7 @@ HERE = Path(__file__).resolve().parent.parent
 sys.path[:0] = [str(HERE), str(HERE.parent.parent / "shared")]
 
 from moarchy_food import facts  # noqa: E402
+from moarchy_food.camera import v4l2_is_capture  # noqa: E402
 from moarchy_food.facts import FactsError, Live, Product  # noqa: E402
 from moarchy_food.store import Store  # noqa: E402
 
@@ -224,3 +226,28 @@ class TestStore(unittest.TestCase):
         self.store.remember(second)
         self.store.remember(first)
         self.assertEqual(self.store.history, [NUTELLA, "5449000000996"])
+
+
+def _querycap(caps: int, device_caps: int = 0) -> bytes:
+    buf = bytearray(104)
+    struct.pack_into("<II", buf, 84, caps, device_caps)
+    return bytes(buf)
+
+
+class TestCaptureNodes(unittest.TestCase):
+    def test_a_csi_node_is_a_camera(self):
+        # PinePhone /dev/video3: sun6i-csi-capture.
+        self.assertTrue(v4l2_is_capture(_querycap(0x00000001)))
+
+    def test_device_caps_win_when_the_card_advertises_them(self):
+        # capabilities has the DEVICE_CAPS flag; the per-node bits are in
+        # device_caps. A decoder that also lists capture in the union would
+        # otherwise look like a camera.
+        self.assertFalse(v4l2_is_capture(_querycap(0x80000001, device_caps=0x00000004)))
+        self.assertTrue(v4l2_is_capture(_querycap(0x80000004, device_caps=0x00000001)))
+
+    def test_a_rotator_is_not_a_camera(self):
+        # PinePhone /dev/video0: sun8i-rotate. Opening it as v4l2src is how
+        # a launch spent seconds in PLAYING on a node that will never frame.
+        self.assertFalse(v4l2_is_capture(_querycap(0)))
+        self.assertFalse(v4l2_is_capture(b""))

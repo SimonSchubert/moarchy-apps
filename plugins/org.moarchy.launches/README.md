@@ -67,5 +67,8 @@ port of this, it is running this.
 ## What is not here yet
 
 The GTK app's environment variables for the harness
-(`MOARCHY_LAUNCHES_PAGE`, `_OPEN`, `_SEARCH`, `_NOW`, `_OFFLINE`) are not
-read: there is no screenshot harness for plugins yet. Only `_KEY` is.
+(`MOARCHY_LAUNCHES_PAGE`, `_OPEN`, `_SEARCH`, `_NOW`, `_OFFLINE`) are still not
+read; only `_KEY` is. What has changed is the reason. There *is* a screenshot
+harness for plugins now — `scripts/qml-shot.sh`, which runs one under headless
+sway and takes the picture with `grim` — so these are a job left undone rather
+than a job with nothing to do it.

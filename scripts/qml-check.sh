@@ -46,7 +46,10 @@ for id in "${ids[@]}"; do
   # thing linted and the thing run is the thing shipped -- and so a checkout
   # never grows a plugins/*/ui/ nobody meant to commit.
   work=$(mktemp -d)
-  cp "$dir"/*.qml "$dir"/*.js "$dir"/manifest.json "$work/" 2>/dev/null
+  # *.svg as well as the QML: a plugin may ship artwork of its own -- a glyph
+  # no icon theme on this phone has -- and Chrome.Icon takes it by path. Left
+  # out, the app lints and runs with three empty tab icons and nothing said.
+  cp "$dir"/*.qml "$dir"/*.js "$dir"/*.svg "$dir"/manifest.json "$work/" 2>/dev/null
   mkdir -p "$work/ui"
   cp shared/qs_ui/*.qml shared/qs_ui/*.js shared/qs_ui/qmldir "$work/ui/"
 

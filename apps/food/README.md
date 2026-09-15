@@ -119,6 +119,15 @@ entry already says so. This app still requires one: that is the job. On a
 phone whose sensor works, it is a scanner. On one whose sensor does not, it
 is an empty state, and that is honest.
 
+On this phone a first frame is about three and a half seconds, the same as
+Keep. That is Python plus GTK. Two things used to sit in front of it:
+
+- GTK's GL probe, which always fails on a Mali-400 and took a couple of
+  seconds to fail. The launcher pins cairo.
+- Opening `/dev/video0` as the camera. On this board that node is a rotator.
+  Only nodes that advertise capture are opened, and GStreamer starts after
+  the first frame rather than instead of it.
+
 ## Where to get it
 
 Three channels, the same as every app here, and `docs/publishing.md` is the

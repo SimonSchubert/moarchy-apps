@@ -142,7 +142,32 @@ class FoodWindow(Adw.ApplicationWindow):
 
     def _on_map(self) -> None:
         self._mapped = True
-        self._sync_camera()
+        # First paint before GStreamer. Gst.init plus PLAYING on a v4l2 node is
+        # the better part of a second on this phone, and doing it from map
+        # holds the first frame until it finishes. The reticle goes up now;
+        # the pipeline is attached from an idle once GTK has had a chance to
+        # draw.
+        if self._on_scan_tab() and not self._fetching:
+            self.scan_page.show_live()
+        GLib.idle_add(self._start_camera_later)
+
+    def _start_camera_later(self) -> bool:
+        if not self._mapped:
+            return GLib.SOURCE_REMOVE
+        # Tests hand in a stand-in with no GStreamer behind it; starting that
+        # from idle is enough. The real camera inits Gst on a side thread so
+        # the main loop can keep painting, then PLAYING is back on this thread
+        # because the pipeline is not safe to build anywhere else.
+        if not isinstance(self._camera, camera_mod.Camera):
+            self._sync_camera()
+            return GLib.SOURCE_REMOVE
+
+        def prepare() -> None:
+            camera_mod._gst()
+            GLib.idle_add(self._sync_camera)
+
+        threading.Thread(target=prepare, daemon=True, name="food-gst-init").start()
+        return GLib.SOURCE_REMOVE
 
     def _on_unmap(self) -> None:
         self._mapped = False
