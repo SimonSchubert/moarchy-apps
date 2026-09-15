@@ -7,7 +7,12 @@
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")" && pwd)"
 KIT="$(cd "$ROOT/../../shared/qs_ui" && pwd)"
-PHONE="${PHONE:-moarchy@192.168.0.18}"
+# moarchy.local and not an address: the phone's systemd-resolved answers mDNS
+# (+mDNS is on by default and avahi is not installed), so this follows it from
+# one lease to the next. The literal that used to be here, 192.168.0.18, had
+# stopped being the phone at all -- and the router is no help, because its DNS
+# returns every lease the name has ever held, four of them dead, one per query.
+PHONE="${PHONE:-moarchy@moarchy.local}"
 ID="org.moarchy.launches"
 DEST=".config/omarchy/plugins/$ID"
 

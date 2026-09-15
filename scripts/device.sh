@@ -18,7 +18,7 @@
 # filesystem by hand: packages are installed with pacman, which owns every file
 # it places, and `remove` takes all of them away again.
 #
-#   PHONE   ssh target (default moarchy@192.168.0.18)
+#   PHONE   ssh target (default moarchy@moarchy.local)
 #
 # The account is `moarchy`, not DanctNIX's `alarm`, and its password is locked:
 # publickey is the only way in, and sudo is passwordless. Anything that goes
@@ -49,7 +49,12 @@
 set -uo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-PHONE="${PHONE:-moarchy@192.168.0.18}"
+# moarchy.local and not an address: the phone's systemd-resolved answers mDNS
+# (+mDNS is on by default and avahi is not installed), so this follows it from
+# one lease to the next. The literal that used to be here, 192.168.0.18, had
+# stopped being the phone at all -- and the router is no help, because its DNS
+# returns every lease the name has ever held, four of them dead, one per query.
+PHONE="${PHONE:-moarchy@moarchy.local}"
 # One multiplexed connection for the whole run. Several sessions each opening a
 # fresh connection per scp is what trips sshd's MaxStartups on this phone, and
 # it presents as "Connection reset by peer" rather than as anything about

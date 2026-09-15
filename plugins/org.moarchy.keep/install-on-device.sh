@@ -1,21 +1,26 @@
 #!/bin/bash
-# Copy this plugin onto the phone and make the drawer able to summon it.
+# Copy Keep onto the phone, with shared/qs_ui vendored as ui/.
 #
 #   plugins/org.moarchy.keep/install-on-device.sh
 #
 # PHONE defaults to the same target scripts/device.sh uses.
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")" && pwd)"
-PHONE="${PHONE:-moarchy@192.168.0.18}"
+KIT="$(cd "$ROOT/../../shared/qs_ui" && pwd)"
+# moarchy.local and not an address: the phone's systemd-resolved answers mDNS
+# (+mDNS is on by default and avahi is not installed), so this follows it from
+# one lease to the next. The literal that used to be here, 192.168.0.18, had
+# stopped being the phone at all -- and the router is no help, because its DNS
+# returns every lease the name has ever held, four of them dead, one per query.
+PHONE="${PHONE:-moarchy@moarchy.local}"
 ID="org.moarchy.keep"
 DEST=".config/omarchy/plugins/$ID"
 
 echo "==> copy $ID to $PHONE:$DEST"
-ssh "$PHONE" "mkdir -p $DEST ~/.local/share/applications ~/.local/share/icons/hicolor/scalable/apps"
-# No rsync on this machine; no symlinks, omarchy plugin validate rejects them.
-scp "$ROOT/manifest.json" "$ROOT/Keep.qml" "$ROOT/Store.js" "$ROOT/Theme.js" \
-    "$ROOT/AppWindow.qml" "$ROOT/PressVeil.qml" "$ROOT/Icon.qml" "$ROOT/icon.svg" \
-    "$PHONE:$DEST/"
+ssh "$PHONE" "mkdir -p $DEST/ui ~/.local/share/applications ~/.local/share/icons/hicolor/scalable/apps"
+scp "$ROOT/manifest.json" "$ROOT/Keep.qml" "$ROOT/Notes.js"  "$ROOT/Store.js" \
+    "$ROOT/icon.svg" "$PHONE:$DEST/"
+scp "$KIT/"*.qml "$KIT/"*.js "$KIT/qmldir" "$PHONE:$DEST/ui/"
 scp "$ROOT/icon.svg" "$PHONE:.local/share/icons/hicolor/scalable/apps/org.moarchy.Keep.svg"
 scp "$ROOT/org.moarchy.Keep.plugin.desktop" \
   "$PHONE:.local/share/applications/org.moarchy.Keep.plugin.desktop"
@@ -25,10 +30,7 @@ ssh "$PHONE" bash -s <<'ENDSSH'
 set -euo pipefail
 ID=org.moarchy.keep
 omarchy plugin validate ~/.config/omarchy/plugins/$ID
-# enable is idempotent; a plugin already in shell.json stays there.
 omarchy plugin enable $ID 2>/dev/null || omarchy plugin enable $ID --yes 2>/dev/null || true
-# Make sure shell.json names it. enable should have done this; if the CLI
-# wants a TTY confirm, append the id ourselves.
 python3 - <<'PY'
 import json
 from pathlib import Path
@@ -60,8 +62,6 @@ p.parent.mkdir(parents=True, exist_ok=True)
 p.write_text(json.dumps(data, indent=2) + "\n")
 PY
 update-desktop-database ~/.local/share/applications >/dev/null 2>&1 || true
-# Upstream omarchy-restart-shell wants hyprctl. Start Quickshell the way
-# this image does: Sway socket, OMARCHY_PATH, then qs.
 export XDG_RUNTIME_DIR="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}"
 export WAYLAND_DISPLAY="${WAYLAND_DISPLAY:-wayland-1}"
 export SWAYSOCK="${SWAYSOCK:-$(ls "$XDG_RUNTIME_DIR"/sway-ipc.* 2>/dev/null | head -1)}"
