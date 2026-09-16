@@ -29,6 +29,8 @@ the aarch64 repos, the AUR or Flathub. This is where they get written.
 | [weather](plugins/org.moarchy.weather) | *Shell plugin only:* now, the next day and the week, where you are and in the places you named | v0.1.0 |
 | [calendar](plugins/org.moarchy.calendar) | *Shell plugin only:* the month, the day under it, and what is next | v0.1.0 |
 | [clock](plugins/org.moarchy.clock) | *Shell plugin only:* an alarm that rings late and says so, a stopwatch and a timer | v0.1.0 |
+| [phone](plugins/org.moarchy.phone) | *Shell plugin only:* a keypad, the calls that happened, and the one ringing now | v0.1.0 |
+| [messages](plugins/org.moarchy.messages) | *Shell plugin only:* texts by person, kept in one file and never only on the modem | v0.1.0 |
 
 Food is the Open Food Facts row on that list: barcode to nutrition, and Linux
 has `qrca` and `decoder`, which read a code and do not say what the packet is.
