@@ -133,6 +133,14 @@ TestCase {
     compare(accept.slice(3), ["mmcli", "-o", "/org/freedesktop/ModemManager1/Call/1", "--accept"])
   }
 
+  function test_the_monitor_dies_with_the_shell() {
+    var monitor = Modem.monitorCommand()
+    verify(monitor[2].indexOf("exec setpriv --pdeathsig TERM gdbus monitor") >= 0)
+    // And still starts where setpriv cannot do that.
+    verify(monitor[2].indexOf("\nexec gdbus monitor --system") >= 0)
+    compare(monitor[3], "org.freedesktop.ModemManager1")
+  }
+
   function test_only_real_keys_are_sent_as_tones() {
     compare(Modem.dtmfCommand("/p", "#").slice(4), ["-o", "/p", "--send-dtmf=#"])
     compare(Modem.dtmfCommand("/p", "12").length, 0)

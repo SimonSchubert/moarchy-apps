@@ -147,8 +147,20 @@ function mmcli(args) {
   return ["sh", "-c", "exec mmcli \"$@\"", "mmcli"].concat(args)
 }
 
+// With a parent-death signal. A shell that is restarted does not take its
+// children with it, and gdbus has nothing to notice that it is gone: it sleeps
+// on the bus and only finds its stdout closed the next time ModemManager says
+// something. Measured on the Pixel with a locked SIM, where that is never --
+// three restarts left six orphaned monitors behind. `setpriv --pdeathsig`
+// makes the kernel send TERM when the shell goes; where util-linux is too old
+// to have it, the monitor is started plainly.
 function monitorCommand() {
-  return ["sh", "-c", "exec gdbus monitor --system --dest \"$0\"", BUS]
+  var script =
+    "if setpriv --pdeathsig TERM true 2>/dev/null; then\n" +
+    "  exec setpriv --pdeathsig TERM gdbus monitor --system --dest \"$0\"\n" +
+    "fi\n" +
+    "exec gdbus monitor --system --dest \"$0\"\n"
+  return ["sh", "-c", script, BUS]
 }
 
 // Exit 3 when the list itself failed -- no modem, ModemManager restarting --
