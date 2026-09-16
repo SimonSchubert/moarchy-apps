@@ -29,6 +29,7 @@ the aarch64 repos, the AUR or Flathub. This is where they get written.
 | [weather](plugins/org.moarchy.weather) | *Shell plugin only:* now, the next day and the week, where you are and in the places you named | v0.1.0 |
 | [calendar](plugins/org.moarchy.calendar) | *Shell plugin only:* the month, the day under it, and what is next | v0.1.0 |
 | [clock](plugins/org.moarchy.clock) | *Shell plugin only:* an alarm that rings late and says so, a stopwatch and a timer | v0.1.0 |
+| [editor](plugins/org.moarchy.editor) | *Shell plugin only:* one text file at a time, and an `$EDITOR` that waits | v0.1.0 |
 | [phone](plugins/org.moarchy.phone) | *Shell plugin only:* a keypad, the calls that happened, and the one ringing now | v0.1.0 |
 | [messages](plugins/org.moarchy.messages) | *Shell plugin only:* texts by person, kept in one file and never only on the modem | v0.1.0 |
 
@@ -181,6 +182,18 @@ ten for a seven o'clock alarm is not a late alarm, it is a confusing one. It is
 also the first app here to need something back from the shared kit:
 `shared/qs_ui/Icon.qml` now takes a name that is already a path, because
 Adwaita has an alarm clock and has neither a stopwatch nor an hourglass.
+
+Text Editor is the fifth, and the phone's editor rather than an app beside
+one: it replaces `gnome-text-editor` in moarchy's package set, both as what
+opens when a text file is tapped and as `$EDITOR`. The second is the part a
+plugin is bad at, because opening a file in something the shell already holds
+returns at once, and `git commit` reads its message back the moment the editor
+returns. `bin/moarchy-editor --wait` is the process that stays: it hands the
+plugin a marker path, and the plugin touches it when the file is closed. Its
+README also lists the characters it will not write back — Qt's text control was
+measured turning a no-break space into a space and U+2028 into a newline, so a
+file with one in it opens read only and says why, rather than being changed
+where nobody typed.
 
 The two share everything that is not the rules — the board is one cairo drawing
 area in both, for the same argument about sixty-four widgets, and the clock on
