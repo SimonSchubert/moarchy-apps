@@ -140,9 +140,11 @@ shell's own answer on the phone rather than an approximation of it:
   as a string once at startup. An unresolved QML import fails the whole file at
   load time, so a string is the only way to make one optional. Inside the shell
   it returns the shell's body size, and text scaling still reaches the app.
-- `qs.Ui.TextField` → a plain `TextInput`. The on-screen keyboard was never the
-  shell's to hand out: `moarchy-keyboard` binds `zwp_input_method_v2` and Qt
-  speaks text-input-v3 for whatever holds focus.
+- `qs.Ui.TextField` → a plain `TextInput`. Text reaches it without the shell:
+  `moarchy-keyboard` binds `zwp_input_method_v2` and Qt speaks text-input-v3
+  for whatever holds focus. Focus does not raise the keyboard, though, so the
+  kit's `Osk` asks `sm.puri.OSK0` on a press, and on another desktop that call
+  finds nobody and does nothing.
 - `Util.alpha` → `Theme.alpha`, the same `Qt.rgba` call.
 
 So a QML app can be an AUR package: the QML tree plus `shared/qs_ui` vendored

@@ -120,10 +120,11 @@ keeps the phone's behaviour intact rather than approximating it:
   qs.Commons` as a string once at startup and returns the shell's own body
   size when that import resolves, 16 when it does not. Text size set in
   Settings still reaches every app on the phone.
-- **`Ui.TextField`** — replaced by a `TextInput` in `TextField.qml`. The
-  on-screen keyboard was never the shell's to hand out: `moarchy-keyboard`
-  binds `zwp_input_method_v2`, Qt speaks text-input-v3 for whatever holds
-  focus, so a field raises it through the compositor either way.
+- **`Ui.TextField`** — replaced by a `TextInput` in `TextField.qml`. Text
+  reaches it without the shell: `moarchy-keyboard` binds `zwp_input_method_v2`
+  and Qt speaks text-input-v3 for whatever holds focus. Focus does not raise the
+  keyboard, so a press on the field asks `sm.puri.OSK0` through `Osk.qml`; with
+  no keyboard on that bus name the call does nothing.
 - **`Util.alpha`** — `Theme.alpha`, the same `Qt.rgba` call.
 
 Icons resolve Adwaita's absolute paths first and fall back to

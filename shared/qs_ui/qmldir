@@ -3,6 +3,7 @@ IconButton 1.0 IconButton.qml
 BackButton 1.0 BackButton.qml
 AppBar 1.0 AppBar.qml
 TextField 1.0 TextField.qml
+Osk 1.0 Osk.qml
 Check 1.0 Check.qml
 TypedText 1.0 TypedText.qml
 Fab 1.0 Fab.qml

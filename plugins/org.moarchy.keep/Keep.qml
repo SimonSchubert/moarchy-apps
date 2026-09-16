@@ -302,12 +302,6 @@ Item {
   // it is in the grid: on the note.
   readonly property color noteColour: root.noteFill(root.editing ? root.editing.colour : "default")
 
-  function hideKeyboard() {
-    Quickshell.execDetached(["busctl", "--user", "call", "sm.puri.OSK0",
-                             "/sm/puri/OSK0", "sm.puri.OSK0", "SetVisible",
-                             "b", "false"])
-  }
-
   IpcHandler {
     target: "keep"
     function state(): string { return root.opened ? "open" : "closed" }
@@ -356,7 +350,8 @@ Item {
     onUnmapped: {
       root.leaveEditor()
       root.menuOpen = false
-      root.hideKeyboard()
+      // The keyboard is left where it is. moarchy's gestures.md G14: nothing
+      // puts it down but the back swipe, and switching apps leaves it alone.
     }
 
     Rectangle {
@@ -619,6 +614,18 @@ Item {
                   font.pixelSize: Math.round(root.bodySize * 1.05)
                   font.weight: Font.Normal
                   wrapMode: TextEdit.Wrap
+                  // The body is not a Chrome.TextField, so it asks for the
+                  // keyboard itself: a press that starts here, passed on so the
+                  // caret still lands where the finger did (G14).
+                  Chrome.Osk { id: bodyOsk }
+                  MouseArea {
+                    anchors.fill: parent
+                    propagateComposedEvents: true
+                    onPressed: mouse => {
+                      bodyOsk.show()
+                      mouse.accepted = false
+                    }
+                  }
                   onTextChanged: {
                     if (!root.editing || root.editing.kind === "list") return
                     if (text === root.editing.body) return

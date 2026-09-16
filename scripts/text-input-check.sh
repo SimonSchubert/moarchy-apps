@@ -2,10 +2,11 @@
 # Does the app enable Wayland text input?
 #
 # This is the property that decides whether the app can be typed into on a
-# phone. moarchy-keyboard -- like every Wayland on-screen keyboard -- raises
-# itself when the focused client enables zwp_text_input_v3, so a client that
-# never enables it leaves the keyboard down and the note untypable, with
-# nothing in any log to say why.
+# phone. moarchy-keyboard commits text through zwp_input_method_v2 to whichever
+# client has enabled zwp_text_input_v3, so a client that never enables it gets
+# no text even with the keyboard up, with nothing in any log to say why.
+# (Enabling it no longer raises the keyboard -- moarchy-keyboard's SPEC.md AC 50
+# -- so this checks typing, not whether the keyboard appears.)
 #
 # X11 has no such protocol, so scripts/check.sh cannot see this at all. Here the
 # app runs under headless sway -- the compositor the phone runs -- and the

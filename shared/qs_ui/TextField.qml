@@ -12,9 +12,10 @@ import "Metrics.js" as Metrics
 //
 // The inner control was the shell's Ui.TextField. It is a plain TextInput now,
 // because the keyboard is not the shell's to give: moarchy-keyboard binds
-// zwp_input_method_v2 and Qt speaks text-input-v3 for whatever holds focus, so
-// a field raises the OSK through the compositor rather than through an API
-// that only exists on our image.
+// zwp_input_method_v2 and Qt speaks text-input-v3 for whatever holds focus.
+// That is how text reaches the field, not how the keyboard comes up: focus
+// arriving on its own raises nothing (moarchy's gestures.md G14), so a press on
+// this field asks sm.puri.OSK0, the same way the restore handle does.
 //
 // Icons sit outside the input: putting them in a suffix that can take focus
 // would drop the keyboard the way a Gtk.Button on an Entry does.
@@ -27,6 +28,17 @@ Rectangle {
   property alias text: field.text
   property alias placeholderText: placeholder.text
   property alias font: field.font
+  // A password is typed into one of these too, and an address wants a
+  // keyboard that does not capitalise it. Mail's sign-in form was the first
+  // to need either.
+  property alias echoMode: field.echoMode
+  property alias inputMethodHints: field.inputMethodHints
+  // Whether the caret is in this field -- for a form that shows suggestions
+  // under whichever field is being typed in.
+  readonly property alias inputFocus: field.activeFocus
+  // Where the caret is. A field filled in for you -- a reply's To -- scrolls
+  // to its end, and 0 is how it shows its start instead.
+  property alias cursorPosition: field.cursorPosition
   property color foreground: "#ffffff"
   property color accent: "#3584e4"
   property color iconColor: "#9a9996"
@@ -39,14 +51,23 @@ Rectangle {
   signal trailingClicked
   signal accepted
 
-  // The keyboard, on demand.
+  // Place the caret.
   //
   // `field` is private to this file, and forcing focus onto the pill itself
-  // does nothing -- the TextInput inside it is what the compositor gives a
-  // keyboard to. Without a way in, every form on the phone opens with its
-  // first field waiting to be tapped before it can be typed into, which is a
-  // tap spent reaching a keyboard that was always going to be needed.
+  // does nothing -- the TextInput inside it is what takes the text. It does not
+  // raise the keyboard: a form that focuses its first field for you is not a
+  // person asking (G14). A press that starts on `field` is.
   function focusInput(): void { field.forceActiveFocus() }
+
+  Osk { id: osk }
+  // Armed a moment after the field exists, so a finger already down when it
+  // slides into place -- an app opening under a swipe -- does not count.
+  property bool raiseArmed: false
+  Timer {
+    interval: 200
+    running: true
+    onTriggered: root.raiseArmed = true
+  }
 
   implicitHeight: Metrics.PILL
   implicitWidth: 240
@@ -84,6 +105,18 @@ Rectangle {
       selectionColor: root.accent
       selectedTextColor: root.foreground
       onAccepted: root.accepted()
+      // A press that starts on this field, passed on so the TextInput still
+      // places the caret. onPressed rather than a TapHandler: onTapped fires on
+      // the release of a finger that began elsewhere, which is how the keyboard
+      // came up by itself.
+      MouseArea {
+        anchors.fill: parent
+        propagateComposedEvents: true
+        onPressed: mouse => {
+          if (root.raiseArmed) osk.show()
+          mouse.accepted = false
+        }
+      }
 
       // TextInput draws the caret in `color`; a search field wants it in the
       // accent, the way every other field on the phone has it. Blinking and
