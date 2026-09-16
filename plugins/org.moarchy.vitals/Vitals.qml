@@ -108,11 +108,30 @@ Item {
 
   function collect() {
     if (reader.running) return
-    // The process half is only read on the page that shows it: walking /proc is
-    // a few hundred files, and doing it to draw a memory bar is the difference
-    // between an app you can leave open and one you cannot.
-    reader.command = Collect.command(root.sysroot, root.tab === 2 || !!root.openPid)
+    // The process half is read on every page that names processes, which is
+    // all of them but the network. It is a few hundred files, and reading them
+    // to draw an interface's rates is work nobody sees.
+    reader.command = Collect.command(root.sysroot, root.tab !== 3 || !!root.openPid)
     reader.running = true
+  }
+
+  // Five: enough to say what is using the machine, few enough to leave the
+  // rest of the page in reach. The whole list is the Tasks page.
+  readonly property int topCount: 5
+  readonly property var busiest: root.sample ? Sysinfo.busiest(root.sample.apps, root.topCount) : []
+  readonly property var largest: root.sample ? Sysinfo.largest(root.sample.apps, root.topCount) : []
+
+  // The line under an app's name: how many processes it is, and the half of
+  // its footprint the page is not about. A row on the processor page says its
+  // memory and a row on the memory page its share of the processor, so either
+  // list answers both questions.
+  function appDetail(app, page) {
+    if (app.kernel) return app.pids.length + " threads"
+    var parts = [app.pids.length > 1 ? app.pids.length + " processes" : "pid " + app.pids[0]]
+    parts.push(page === "processor"
+               ? Sysinfo.humanBytes(app.rss)
+               : Sysinfo.taskPercent(app.cpu) + " processor")
+    return parts.join(" · ")
   }
 
   function arrived(code, blob) {
@@ -305,6 +324,45 @@ Item {
                 }
               }
 
+              // What the percentage is made of, straight under it, because it
+              // is the question the percentage asks. Above the cores: which core
+              // is busy is the less useful half of the same answer.
+              Chrome.Section {
+                id: busySection
+                Layout.fillWidth: true
+                colours: root.colours
+                bodySize: root.bodySize
+                title: "Busiest"
+                pad: Metrics.GROUP_PAD
+                radius: Metrics.radius(root.colours, Metrics.RADIUS_LG)
+                cardSpacing: 0
+                visible: root.busiest.length > 0
+
+                Repeater {
+                  model: root.busiest
+                  delegate: Chrome.ListRow {
+                    id: busyRow
+                    required property var modelData
+                    Layout.fillWidth: true
+                    interactive: false
+                    radius: busySection.innerRadius
+                    colours: root.colours
+                    bodySize: root.bodySize
+                    title: busyRow.modelData.name
+                    titleColour: busyRow.modelData.kernel ? root.dim : root.textOnSurface
+                    subtitle: root.appDetail(busyRow.modelData, "processor")
+
+                    trailing: Chrome.TypedText {
+                      anchors.verticalCenter: parent.verticalCenter
+                      role: "body"
+                      text: Sysinfo.taskPercent(busyRow.modelData.cpu)
+                      color: root.loadColour(busyRow.modelData.cpu)
+                      bodySize: root.bodySize
+                    }
+                  }
+                }
+              }
+
               Chrome.Section {
                 Layout.fillWidth: true
                 colours: root.colours
@@ -443,6 +501,44 @@ Item {
               }
 
               Chrome.Section {
+                id: largeSection
+                Layout.fillWidth: true
+                colours: root.colours
+                bodySize: root.bodySize
+                title: "Most memory"
+                pad: Metrics.GROUP_PAD
+                radius: Metrics.radius(root.colours, Metrics.RADIUS_LG)
+                cardSpacing: 0
+                visible: root.largest.length > 0
+
+                Repeater {
+                  model: root.largest
+                  delegate: Chrome.ListRow {
+                    id: largeRow
+                    required property var modelData
+                    Layout.fillWidth: true
+                    interactive: false
+                    radius: largeSection.innerRadius
+                    colours: root.colours
+                    bodySize: root.bodySize
+                    title: largeRow.modelData.name
+                    subtitle: root.appDetail(largeRow.modelData, "memory")
+
+                    // App ink rather than a load colour: a share of the
+                    // processor has a level that is worth noticing, and an
+                    // app's size on its own does not.
+                    trailing: Chrome.TypedText {
+                      anchors.verticalCenter: parent.verticalCenter
+                      role: "body"
+                      text: Sysinfo.humanBytes(largeRow.modelData.rss)
+                      color: root.textOnSurface
+                      bodySize: root.bodySize
+                    }
+                  }
+                }
+              }
+
+              Chrome.Section {
                 Layout.fillWidth: true
                 colours: root.colours
                 bodySize: root.bodySize
@@ -511,7 +607,7 @@ Item {
             // of empty box on a machine that is doing nothing.
             height: Math.min(parent.height - Metrics.GUTTER * 2,
                              taskList.contentHeight + taskFrame.pad * 2)
-            visible: root.tab === 2
+            visible: root.tab === 2 && root.sample !== null && root.sample.processes.length > 0
             colours: root.colours
 
             ListView {
@@ -710,6 +806,20 @@ Item {
             names: ["system-run-symbolic"]
             title: "Reading /proc"
             detail: "The first sample is two seconds away; every rate on these screens is measured against it."
+          }
+
+          // Arriving from the network page, which does not read processes, the
+          // reading on screen has none in it until the next tick. An empty
+          // frame there read as a phone running nothing.
+          Chrome.EmptyState {
+            anchors.centerIn: parent
+            width: parent.width - Metrics.GUTTER * 2
+            visible: root.tab === 2 && root.sample !== null && root.sample.processes.length === 0
+            colours: root.colours
+            bodySize: root.bodySize
+            names: ["system-run-symbolic"]
+            title: "Reading processes"
+            detail: "The list is on the next sample, two seconds away at most."
           }
 
           Chrome.Toast {

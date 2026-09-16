@@ -339,4 +339,92 @@ TestCase {
     // since-boot average is still what sorts the list.
     verify(Sysinfo.processesOf(files, 9990.001, null, null, 8)[0].cpu > 0)
   }
+
+  // A /proc/<pid>/stat line with the fields this app reads, and zeroes for the
+  // rest.
+  function statLine(pid, comm, ppid, ticks, started, pages) {
+    var tail = ""
+    for (var i = 0; i < 30; i++) tail += "0 "
+    return pid + " (" + comm + ") S " + ppid + " " + pid + " " + pid + " 0 -1 0 0 0 0 0 " +
+           ticks + " 0 0 0 20 0 1 0 " + started + " 0 " + pages + " " + tail
+  }
+
+  function test_the_collector_is_not_in_its_own_listing() {
+    // Its shell, and the awk and tr that shell started. On the first reading
+    // each is a millisecond old with a millisecond of processor, which is a
+    // whole core at the top of the processor page.
+    var files = Sysinfo.split(blob({
+      "collector": "500\n",
+      "proc/1/stat": statLine(1, "systemd", 0, 100, 0, 10), "proc/1/cmdline": "/sbin/init ",
+      "proc/500/stat": statLine(500, "sh", 400, 1, 999000, 10), "proc/500/cmdline": "sh -c x ",
+      "proc/501/stat": statLine(501, "awk", 500, 1, 999000, 10), "proc/501/cmdline": "awk x ",
+      "proc/502/stat": statLine(502, "tr", 500, 1, 999000, 10), "proc/502/cmdline": "tr x "
+    }))
+    var got = Sysinfo.processesOf(files, 9990.001, null, null, 8)
+    compare(got.length, 1)
+    compare(got[0].name, "systemd")
+  }
+
+  function test_a_reading_without_processes_keeps_the_last_table_to_measure_against() {
+    // The network page reads no processes. The page after it measures against
+    // the last table that was read, over the time since -- not against nothing,
+    // which was a column of zeroes for a tick.
+    var a = Sysinfo.read(blob({ "proc/uptime": "100.00 0\n",
+                                "proc/7/stat": statLine(7, "busy", 1, 0, 0, 10),
+                                "proc/7/cmdline": "busy " }), null)
+    var b = Sysinfo.read(blob({ "proc/uptime": "102.00 0\n" }), a)
+    compare(b.processes.length, 0)
+    compare(b.apps.length, 0)
+    // 200 ticks is two seconds of processor, four seconds after the table was
+    // taken. No proc/stat, so no cores counted, so a share of one.
+    var c = Sysinfo.read(blob({ "proc/uptime": "104.00 0\n",
+                                "proc/7/stat": statLine(7, "busy", 1, 200, 0, 10),
+                                "proc/7/cmdline": "busy " }), b)
+    fuzzyCompare(c.processes[0].cpu, 0.5, 1e-9)
+  }
+
+  function test_processes_of_one_name_are_one_app() {
+    var apps = Sysinfo.appsOf([
+      { pid: 900, ppid: 1, name: "firefox", cpu: 0.05, rss: 300 },
+      { pid: 960, ppid: 900, name: "Isolated Web Co", cpu: 0.01, rss: 100 },
+      { pid: 950, ppid: 900, name: "Isolated Web Co", cpu: 0.02, rss: 200 }
+    ])
+    compare(apps.length, 2)
+    var web = apps[1]
+    compare(web.name, "Isolated Web Co")
+    // Lowest pid first: the one that started the others.
+    compare(web.pids, [950, 960])
+    fuzzyCompare(web.cpu, 0.03, 1e-9)
+    compare(web.rss, 300)
+  }
+
+  function test_kernel_threads_are_one_app() {
+    // kthreadd and its children. Ninety rows of them would crowd a list of five.
+    var apps = Sysinfo.appsOf([
+      { pid: 2, ppid: 0, name: "kthreadd", cpu: 0, rss: 0 },
+      { pid: 40, ppid: 2, name: "kworker/0:1", cpu: 0.003, rss: 0 },
+      { pid: 41, ppid: 2, name: "sugov:0", cpu: 0.002, rss: 0 },
+      { pid: 700, ppid: 1, name: "sway", cpu: 0.001, rss: 5000 }
+    ])
+    compare(apps.length, 2)
+    compare(apps[0].name, "Kernel threads")
+    verify(apps[0].kernel)
+    compare(apps[0].pids, [2, 40, 41])
+    fuzzyCompare(apps[0].cpu, 0.005, 1e-9)
+    verify(!apps[1].kernel)
+  }
+
+  function test_the_busiest_and_the_largest_lists() {
+    var apps = [
+      { name: "b", cpu: 0, rss: 10, kernel: false },
+      { name: "a", cpu: 0, rss: 50, kernel: false },
+      { name: "c", cpu: 0.2, rss: 1, kernel: false },
+      { name: "Kernel threads", cpu: 0.01, rss: 0, kernel: true }
+    ]
+    function names(list) { return list.map(function (app) { return app.name }) }
+    // A tie at 0.0% is broken by memory, not left in the order it was read.
+    compare(names(Sysinfo.busiest(apps, 3)), ["c", "Kernel threads", "a"])
+    // Kernel threads have no memory of their own to list.
+    compare(names(Sysinfo.largest(apps, 5)), ["a", "b", "c"])
+  }
 }

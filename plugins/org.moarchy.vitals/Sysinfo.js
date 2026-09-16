@@ -8,9 +8,9 @@
 // What changes is the reading, not the parsing. Python opened each file
 // itself; QML has no filesystem, and a FileView per file would be a dozen
 // watchers plus one per process. So Collect.js builds a single shell command
-// that cats the lot with markers between, and `split()` below turns its output
-// back into the same strings Python's Sysroot.read() returned. One fork a
-// tick, whatever the machine is doing.
+// that prints the lot with markers between, and `split()` below turns its
+// output back into the same strings Python's Sysroot.read() returned. Three
+// processes a tick -- sh, awk and tr -- whatever the machine is doing.
 .pragma library
 
 // /proc/<pid>/stat, counted from field 1 as proc(5) numbers them. The comm is
@@ -499,9 +499,19 @@ function read(blob, before) {
 
   var cpuNow = cpuCounters(files)
   var cpu = cpuOf(files, cpuFractions(cpuNow, before ? before._cpuRaw : null))
-  var procs = processesOf(files, uptime, before, elapsed, cpu.cores.length)
   var netNow = netCounters(files)
   var ioNow = ioCounters(files)
+
+  // The network page does not read the process half. When a reading has none,
+  // the last table that did is carried forward with the time it was taken, so
+  // the page after it measures against that -- a rate over the minute spent on
+  // the network page -- rather than printing a column of zeroes for a tick.
+  var procsRead = hasProcesses(files)
+  var last = before && before._procRaw ? before : null
+  var procs = procsRead
+              ? processesOf(files, uptime, last, last ? uptime - last._procAt : null,
+                            cpu.cores.length)
+              : []
 
   return {
     uptime: uptime,
@@ -511,11 +521,18 @@ function read(blob, before) {
     io: ioOf(ioNow, before ? before._ioRaw : null, elapsed),
     battery: batteryOf(files),
     processes: procs,
-    _procRaw: procs._raw,
+    apps: appsOf(procs),
+    _procRaw: procsRead ? procs._raw : (last ? last._procRaw : null),
+    _procAt: procsRead ? uptime : (last ? last._procAt : 0),
     _cpuRaw: cpuNow,
     _netRaw: netNow,
     _ioRaw: ioNow
   }
+}
+
+function hasProcesses(files) {
+  for (var key in files) if (/^proc\/\d+\/stat$/.test(key)) return true
+  return false
 }
 
 // The task list. Every process's share is measured against the previous
@@ -525,16 +542,23 @@ function read(blob, before) {
 // overview reports it, so one process pegging one core of eight is 12.5% and
 // not 100%. Leaving it out put the collector's own `sh` at the top of the list
 // at 100% on every tick, which is how this was found.
+//
+// The collector is left out: its shell, and the awk and tr that shell started.
+// They are in the listing they print, they are gone before the next one, and on
+// the first reading each is a whole core -- a process a millisecond old that
+// has used a millisecond of processor.
 function processesOf(files, uptime, before, elapsed, cores) {
   var out = []
   var previous = before ? before._procRaw : null
   var now = ({})
+  var collector = parseInt(files["collector"], 10)
   for (var key in files) {
     var m = /^proc\/(\d+)\/stat$/.exec(key)
     if (!m) continue
     var pid = parseInt(m[1], 10)
     var st = parseStat(files[key])
     if (!st) continue
+    if (pid === collector || st.ppid === collector) continue
     var cmdline = cmdlineOf(files["proc/" + pid + "/cmdline"])
     now[pid] = { seconds: st.seconds, started: st.started }
 
@@ -580,4 +604,73 @@ function processesOf(files, uptime, before, elapsed, cores) {
   // Carried on the sample so the next read can measure against it.
   out._raw = now
   return out
+}
+
+// --- apps ------------------------------------------------------------------
+
+// Processes, gathered into what somebody would call one thing.
+//
+// The GTK app believes the session first: a desktop entry launched through a
+// systemd user session runs in an app-<id>.scope, and every helper it forks
+// inherits it. This phone has none of those. Sway starts every app itself, so
+// all of them share the login's session-N.scope, and the cgroup says nothing
+// the name does not -- so the name is the whole grouping here, and the file is
+// not read.
+//
+// Kernel threads are one group, as they are there. The Pixel 3a has 172 of
+// them, none is an app by any reading, and a list of five they can crowd is a
+// list where the app eating the battery is not on it.
+function appsOf(processes) {
+  var byKey = ({})
+  var out = []
+  for (var i = 0; i < processes.length; i++) {
+    var p = processes[i]
+    // kthreadd is pid 2 and every kernel thread is its child. `kernel` on the
+    // row is "no command line", which a zombie has as well.
+    var kernel = p.pid === 2 || p.ppid === 2
+    var key = kernel ? "kernel" : "name:" + p.name
+    var app = byKey[key]
+    if (app === undefined) {
+      app = byKey[key] = {
+        key: key, name: kernel ? "Kernel threads" : p.name, kernel: kernel,
+        pids: [], cpu: 0, rss: 0
+      }
+      out.push(app)
+    }
+    app.pids.push(p.pid)
+    app.cpu += p.cpu
+    // A sum of resident sizes counts a page two processes share twice, so an
+    // app of many processes reads larger than it is. Proportional size is in
+    // smaps_rollup, which walks every page table to produce it, and doing that
+    // for every process every two seconds is the cost this app is for catching.
+    app.rss += p.rss
+  }
+  for (var j = 0; j < out.length; j++) {
+    // Lowest pid first: for anything with helper processes that is the one
+    // that started them.
+    out[j].pids.sort(function (a, b) { return a - b })
+    out[j].cpu = clamp(out[j].cpu)
+  }
+  return out
+}
+
+function byName(a, b) {
+  return a.name < b.name ? -1 : (a.name > b.name ? 1 : 0)
+}
+
+// The processor page's list. Memory breaks a tie, which on an idle phone is
+// most of the list: five apps at 0.0% in the order they were read would be a
+// list sorted by nothing.
+function busiest(apps, count) {
+  return apps.slice().sort(function (a, b) {
+    return (b.cpu - a.cpu) || (b.rss - a.rss) || byName(a, b)
+  }).slice(0, count)
+}
+
+// The memory page's. Kernel threads have no address space and are left out
+// rather than listed at 0 B.
+function largest(apps, count) {
+  return apps.filter(function (app) { return app.rss > 0 }).sort(function (a, b) {
+    return (b.rss - a.rss) || (b.cpu - a.cpu) || byName(a, b)
+  }).slice(0, count)
 }
