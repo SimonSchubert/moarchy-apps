@@ -32,6 +32,7 @@ the aarch64 repos, the AUR or Flathub. This is where they get written.
 | [editor](plugins/org.moarchy.editor) | *Shell plugin only:* one text file at a time, and an `$EDITOR` that waits | v0.1.0 |
 | [phone](plugins/org.moarchy.phone) | *Shell plugin only:* a keypad, the calls that happened, and the one ringing now | v0.1.0 |
 | [messages](plugins/org.moarchy.messages) | *Shell plugin only:* texts by person, kept in one file and never only on the modem | v0.1.0 |
+| [mail](plugins/org.moarchy.mail) | *Shell plugin only:* one account over IMAP and SMTP, no HTML drawn, and new mail noticed with the window closed | v0.1.0 |
 
 Food is the Open Food Facts row on that list: barcode to nutrition, and Linux
 has `qrca` and `decoder`, which read a code and do not say what the packet is.
@@ -194,6 +195,17 @@ README also lists the characters it will not write back — Qt's text control wa
 measured turning a no-break space into a space and U+2028 into a newline, so a
 file with one in it opens read only and says why, rather than being changed
 where nobody typed.
+
+Mail is the sixth, and it replaces Geary, which moarchy-store's sweep had
+already rejected for this screen and which, like Fractal, waits for a keyring
+prompt that maps behind its own window. It is the first plugin that cannot do
+its job in QML at all — there is no TLS socket to open — so
+`bin/moarchy-mail` does every conversation with a server, one short run per
+request, in Python's standard library, and the plugin keeps what it was told in
+files it alone writes. Two things in its README are worth the reading: nothing
+it draws is HTML, so no message can make the phone fetch a picture, and its
+checks run the helper against a real Dovecot, installed into the container for
+the run, rather than against a fake of one.
 
 The two share everything that is not the rules — the board is one cairo drawing
 area in both, for the same argument about sixty-four widgets, and the clock on
