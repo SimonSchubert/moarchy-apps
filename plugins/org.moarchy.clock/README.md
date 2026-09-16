@@ -3,20 +3,20 @@
 The time, an alarm that says when it is late, a stopwatch and a timer.
 
 <p align="center">
-  <img src="docs/screenshots/alarm.png" width="24%" alt="A clock face with sixty ticks and a blue seconds hand over a dark teal band, 10:09 under it in light type, then four alarm cards: 06:40 Work Weekdays, 07:30 Swim Tue Thu, 13:00 Pills Every day, and 22:30 Wind down switched off">
-  <img src="docs/screenshots/stopwatch.png" width="24%" alt="A blue ring two thirds round with 03:41.6 inside it and LAP 4 under that, a grey Lap key beside a red Stop key, and four lap rows with the quickest in green and the slowest in red">
+  <img src="docs/screenshots/alarm.png" width="24%" alt="A clock face with sixty ticks and a blue seconds hand, 10:09 under it in light type, then four alarm cards: 06:40 Work Weekdays, 07:30 Swim Tue Thu, 13:00 Pills Every day, and 22:30 Wind down switched off">
+  <img src="docs/screenshots/stopwatch.png" width="24%" alt="A blue ring two thirds round with 03:41.6 inside it and LAP 4 under that, a grey Lap key beside a red Stop key, and a box of four lap rows with the quickest in green and the slowest in red">
   <img src="docs/screenshots/timer.png" width="24%" alt="A ring with a gap opening clockwise from twelve, 03:22 inside it, 'of 5 min' under that, and three keys: +1 min, Pause, Cancel">
-  <img src="docs/screenshots/ringing.png" width="24%" alt="A dark blue screen with a pulsing ring round an alarm clock glyph, the word Work, 10:05 in large light type, '4 minutes late' in orange, and two large keys at the bottom: Snooze 9 min and Stop">
+  <img src="docs/screenshots/ringing.png" width="24%" alt="A dark screen with a pulsing blue ring round an alarm clock glyph, the word Work, 10:05 in large light type, '4 minutes late' in orange, and two large keys at the bottom: Snooze 9 min and Stop">
 </p>
 
 <p align="center">
   <img src="docs/screenshots/keypad.png" width="30%" alt="A timer being typed: 00 in grey then 15:00 in white, '15 min' under it in blue, five preset chips, a twelve-key pad with 00 and a backspace, and a blue Start key">
-  <img src="docs/screenshots/editor.png" width="30%" alt="An alarm being set: two number wheels reading 06 and 40 between two rules, 'tomorrow, in 20 h 30 min' in blue, four repeat chips with Weekdays selected, seven day circles with Monday to Friday filled, and a label field reading Work">
+  <img src="docs/screenshots/editor.png" width="30%" alt="An alarm being set, as three boxes: two number wheels reading 06 and 40 on a lit band with 'tomorrow, in 20 h 30 min' in blue under them; a box labelled Repeats holding four chips with Weekdays selected and seven day circles with Monday to Friday filled; and a box holding a label field reading Work">
 </p>
 
 <p align="center">
   <img src="docs/screenshots/tokyo-night.png" width="30%" alt="The alarm screen under the tokyo-night theme: a near-black window, the dial and the switches in the theme's pale blue, and a dark plus on the pale blue button">
-  <img src="docs/screenshots/catppuccin-latte.png" width="30%" alt="The same alarm screen under catppuccin-latte: a near-white window, a pale teal band behind a dark-handed dial, dark digits on light grey cards">
+  <img src="docs/screenshots/catppuccin-latte.png" width="30%" alt="The same alarm screen under catppuccin-latte: a near-white window, a dark-handed dial, dark digits on light grey cards">
   <img src="docs/screenshots/catppuccin-latte-stopwatch.png" width="30%" alt="The stopwatch under catppuccin-latte: a near-white window, a blue ring, dark digits, a pale grey Lap key and a solid crimson Stop key with white on it">
 </p>
 
@@ -157,12 +157,12 @@ of minutes, because a QML `Timer` fires on the first frame after its interval
 and that error accumulates. Only the hour and minute hands move on the beat,
 and at that scale a beat is invisible.
 
-The **band behind the dial is the hour's colour**, mixed from the theme's own
-hues: orange before nine, cyan through the day, magenta at dusk, blue at night,
-and weaker after dark, because the same wash that reads as daylight at a fifth
-reads as a fault at midnight. Weather does this with the temperature and for
-the same argument — it is the one thing on the screen somebody reads without
-looking at it.
+The dial sits on the **window's own background**, the colour of the status bar
+above it. It used to sit on a band washed in a hue that followed the hour, and
+the shell does not draw an app under the status bar — so the wash ended in a
+hard line across the top of the screen, under a bar that was a different
+colour. The ringing screen lost its wash for the same reason; its colour is in
+the ring and the glyph.
 
 Each row says three things: the time, what it is for, and **when it will next
 go off**, as *today, in 2 h 50 min* or *Thu, in 1 d 21 h*. That last line is
@@ -328,19 +328,21 @@ since the day the harnesses were written.
 
 The shell keeps it: the gesture bar across the middle and moarchy-keyboard's
 toggle at the right. Both are layer surfaces, so they draw over any app and
-take the taps that land on them. Calculator measured the strip at 60px and
-reserved it, because a switcher nobody can press is worse than a key nobody can
-press.
+take the taps that land on them. Calculator measured the strip at 60px.
 
-Reserving it as an empty `Item` below the tab bar was the first attempt, and on
-the phone it read as exactly what it was: a 60px band of window colour along
-the bottom with nothing in it. So the tab bar is **one item that reaches the
-bottom edge** — its background fills all 116px, its three tabs sit in the top
-56 — which satisfies both constraints at once instead of trading one off.
+The tab bar is **flush with the bottom anyway**, as it is in every other app
+here with one. It first sat on a reserved 60px strip, and later reached the
+bottom edge as one 116px item with its tabs in the top 56 — and on the phone
+both read as what they were: a band of nothing under the tabs, in two apps out
+of seven. The cost is that the toggle sits over part of the Timer tab, as it
+already does over the right-hand tab in Files, Coins, Launches and Vitals.
+That is the shell's to fix with an exclusive zone, once, rather than every
+app's to work round with a strip of its own.
 
-Only inside the shell. `shell` is null when this runs as its own Quickshell
-process from `shell.qml`, where there is no furniture down there, the bar is 56
-tall, and it is still flush with the bottom.
+The screens with no tab bar under them still clear the strip: the alarm editor
+and the ringing screen, whose last controls would otherwise be the ones the
+shell's furniture takes. Only inside the shell — `shell` is null when this runs
+as its own Quickshell process, and there is no furniture to clear.
 
 ## `close()` has to close
 

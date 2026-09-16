@@ -16,6 +16,9 @@ import "ui/Theme.js" as Theme
 Item {
   id: root
 
+  // Only for the shape: a switch is a capsule at large corners and a box at
+  // the other two, like every other control on the phone.
+  property var colours: null
   property bool checked: false
   property color accent: "#3584e4"
   property color knobInk: "#ffffff"
@@ -42,10 +45,11 @@ Item {
     anchors.centerIn: parent
     width: 46
     height: 26
-    radius: height / 2
-    color: root.checked ? root.accent : Theme.alpha(root.dim, 0.3)
-    border.width: root.checked ? 0 : 1
-    border.color: Theme.alpha(root.dim, 0.5)
+    radius: Metrics.round(root.colours, height)
+    // Off is a filled track one shade darker, not an outlined one. The
+    // outline was a 1px border that a phone screen loses outdoors, and a
+    // switch whose off state is invisible is a switch with one state.
+    color: root.checked ? root.accent : Theme.alpha(root.dim, 0.34)
 
     Behavior on color { ColorAnimation { duration: Metrics.PRESS_MS } }
 
@@ -53,7 +57,7 @@ Item {
       id: knob
       width: 20
       height: 20
-      radius: height / 2
+      radius: Metrics.round(root.colours, height)
       y: (parent.height - height) / 2
       x: root.checked ? parent.width - width - 3 : 3
       color: root.checked ? root.knobInk : root.dim

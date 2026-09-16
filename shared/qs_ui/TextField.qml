@@ -5,6 +5,7 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import QtQuick.Layouts
+import "Theme.js" as Theme
 import "Metrics.js" as Metrics
 
 // A pill field with optional icons on either side.
@@ -19,6 +20,10 @@ import "Metrics.js" as Metrics
 // would drop the keyboard the way a Gtk.Button on an Entry does.
 Rectangle {
   id: root
+  property var colours: null
+  // Where the field sits on the elevation ramp. "raised" is right inside a
+  // Card; a field that is the only thing on the background takes "card".
+  property string level: "raised"
   property alias text: field.text
   property alias placeholderText: placeholder.text
   property alias font: field.font
@@ -45,8 +50,10 @@ Rectangle {
 
   implicitHeight: Metrics.PILL
   implicitWidth: 240
-  radius: height / 2
-  color: Qt.rgba(1, 1, 1, 0.06)
+  radius: Metrics.round(root.colours, height)
+  // The theme's own ink into the theme's own background, not white at an
+  // alpha: on a light desktop the latter is an invisible field.
+  color: Theme.surface(root.colours, root.level)
 
   RowLayout {
     anchors.fill: parent

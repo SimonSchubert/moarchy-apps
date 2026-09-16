@@ -3,6 +3,8 @@ import "Metrics.js" as Metrics
 
 Item {
   id: root
+  // Only for the shape of the press: the glyph is `color`, as it always was.
+  property var colours: null
   property var names: []
   property color color: "#ffffff"
   property int size: Metrics.ICON_INK
@@ -50,7 +52,7 @@ Item {
 
   PressVeil {
     anchors.fill: parent
-    radius: width / 2
+    radius: Metrics.round(root.colours, width)
     ink: root.color
     on: tap.pressed
   }

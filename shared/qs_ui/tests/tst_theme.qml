@@ -94,4 +94,54 @@ red = \"#ff757f\"
     compare(c.a, 0.5)
     compare(c.r, 1)
   }
+
+  // --- the elevation ramp ----------------------------------------------
+
+  function test_a_box_is_the_theme_ink_mixed_into_the_theme_background() {
+    var p = Theme.parse(full)
+    compare(Theme.surface(p, "card"), Theme.mix(p.foreground, p.background, 0.07))
+    compare(Theme.surface(p, "raised"), Theme.mix(p.foreground, p.background, 0.12))
+  }
+
+  function test_the_ramp_only_ever_goes_up() {
+    var p = Theme.parse(full)
+    var names = ["well", "card", "raised", "pressed", "edge"]
+    var last = Theme.shade(p.background)
+    for (var i = 0; i < names.length; i++) {
+      var here = Theme.shade(Theme.surface(p, names[i]))
+      verify(here > last, names[i] + " is not a step up from " + names[i - 1])
+      last = here
+    }
+  }
+
+  function test_an_unknown_level_is_an_ordinary_box_rather_than_nothing() {
+    var p = Theme.parse(full)
+    compare(Theme.surface(p, "nonsense"), Theme.surface(p, "card"))
+  }
+
+  // A light theme has to get a *darker* box, or the ramp reads as fog rather
+  // than as depth. It falls out of mixing the foreground in, and this is the
+  // assertion that stops anyone replacing that with white at an alpha.
+  function test_a_light_theme_boxes_downwards() {
+    var light = Theme.fallback(false)
+    verify(Theme.shade(Theme.surface(light, "card")) < Theme.shade(light.background))
+    verify(Theme.shade(Theme.surface(light, "raised"))
+           < Theme.shade(Theme.surface(light, "card")))
+  }
+
+  function test_ink_on_a_fill_is_whichever_of_the_two_is_further_from_it() {
+    var dark = Theme.fallback(true)
+    // Near-black accent on a dark theme: the foreground is the readable one.
+    compare(Theme.inkOn(dark, "#101010"), dark.foreground)
+    compare(Theme.inkOn(dark, "#f3f3f3"), dark.background)
+    var light = Theme.fallback(false)
+    compare(Theme.inkOn(light, "#f5c211"), light.foreground)
+  }
+
+  function test_a_tint_keeps_the_hue_and_the_ramp() {
+    var p = Theme.parse(full)
+    compare(Theme.tint(p, p.hues.red, "card"), Theme.mix(p.hues.red, p.background, 0.20))
+    verify(Theme.shade(Theme.tint(p, p.hues.red, "pressed"))
+           > Theme.shade(Theme.tint(p, p.hues.red, "card")))
+  }
 }

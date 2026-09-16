@@ -26,7 +26,7 @@ the aarch64 repos, the AUR or Flathub. This is where they get written.
 | [food](apps/food) | Point the camera at a barcode: nutrition facts from Open Food Facts | v0.1.0 |
 | [launches](apps/launches) | Upcoming rockets: a countdown, a pad, and the ones you star | v0.1.0 |
 | [calculator](plugins/org.moarchy.calculator) | *Shell plugin only:* the four operations, and arithmetic that counts in tens | v0.1.0 |
-| [weather](plugins/org.moarchy.weather) | *Shell plugin only:* now, the next day and the week, for the places you named | v0.1.0 |
+| [weather](plugins/org.moarchy.weather) | *Shell plugin only:* now, the next day and the week, where you are and in the places you named | v0.1.0 |
 | [calendar](plugins/org.moarchy.calendar) | *Shell plugin only:* the month, the day under it, and what is next | v0.1.0 |
 | [clock](plugins/org.moarchy.clock) | *Shell plugin only:* an alarm that rings late and says so, a stopwatch and a timer | v0.1.0 |
 
@@ -123,10 +123,12 @@ things here are that it is already running when it is summoned, and that now,
 today and the week are one column you scroll rather than three places to
 navigate between — the towns live behind the title, because choosing one is
 something you do twice a year and reading the sky is something you do at a bus
-stop. It also asks nothing about where the phone is: there is no geolocation
-and no IP lookup, a place is on the list because somebody typed it, and that
-is what makes the whole of its network behaviour a sentence — one request per
-town being looked at, four times an hour, while the window is on the screen.
+stop. It opens on the town the connection's address is in, looked up from
+GeoJS — a town rather than a street, asked only while that town is on the
+screen, and switched off by a box on the places page that says all of this
+beside it. That keeps the whole of its network behaviour a sentence: one
+request per town being looked at, and one for where the phone is while that is
+the town, each at most four times an hour, while the window is on the screen.
 
 `scripts/qml-shot.sh` arrived with it, and closes something
 `plugins/org.moarchy.launches/README.md` had been carrying as a known gap:
@@ -185,6 +187,27 @@ lines of near-identical widget would be a third place for the palette to live,
 and the thing this repo exists to stop is the palette living in four places. The
 shared half is `shared/moarchy_ui`, and it stays the half that is genuinely the
 same.
+
+## One look, and where it lives
+
+Every plugin here draws the same three shapes, and none of them decides what
+they are. Content is in a box; the only loose text on a screen is the label
+above one. A box is a *fill* one step up a five-step ramp, not a border. A box
+inside a box takes the outer radius less the gap between them, so the corners
+stay concentric. There are no dividers anywhere: a hairline between two rows is
+a gap somebody drew instead of leaving, it is the first thing a phone screen
+loses in sunlight, and it is what made eleven apps read as spreadsheets.
+
+Those rules are three functions and a dozen constants in `shared/qs_ui`
+(`Theme.surface`, `Theme.tint`, `Metrics.inner`, and the radius and spacing
+scales), the nine components built on them, and
+`plugins/org.moarchy.ui.catalog`, which draws the system itself on its Boxes
+tab so a change to it is looked at rather than argued about. The kit's README
+is the reference; this paragraph is the claim it keeps.
+
+It is one look and not a house style for its own sake: a phone where the file
+manager, the calendar and the notes app agree about what a row is, is a phone
+with one thing to learn instead of eleven.
 
 ## Why one repo
 

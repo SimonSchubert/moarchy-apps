@@ -5,6 +5,8 @@ import "Metrics.js" as Metrics
 // tap is a desktop habit, and on 360px the box alone is easy to miss.
 Item {
   id: root
+  // Only for the shape of the box: the inks are the four below.
+  property var colours: null
   property bool checked: false
   property string text: ""
   property color foreground: "#ffffff"
@@ -49,7 +51,7 @@ Item {
         width: Metrics.CHECK
         height: Metrics.CHECK
         anchors.centerIn: parent
-        radius: 4
+        radius: Metrics.radius(root.colours, Metrics.RADIUS_XXS)
         color: root.checked ? root.accent : "transparent"
         border.color: root.checked ? root.accent : root.dim
         border.width: 1.5

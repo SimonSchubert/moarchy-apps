@@ -293,12 +293,14 @@ Item {
 
           trailing: Row {
             Chrome.IconButton {
+              colours: root.colours
               color: root.textOnSurface
               names: ["edit-undo-symbolic", "go-previous-symbolic"]
               tooltip: "Undo"
               onClicked: root.undo()
             }
             Chrome.IconButton {
+              colours: root.colours
               color: root.textOnSurface
               names: ["view-refresh-symbolic"]
               tooltip: "New game"
@@ -346,7 +348,7 @@ Item {
                   Rectangle {
                     anchors.fill: parent
                     anchors.margins: 4
-                    radius: Metrics.CARD_RADIUS
+                    radius: Metrics.radius(root.colours, Metrics.CARD_RADIUS)
                     color: square.inLine
                            ? Theme.mix(root.accent, root.colours.background, 0.22)
                            : Theme.mix(root.colours.foreground, root.colours.background, 0.07)
@@ -433,7 +435,7 @@ Item {
 
                 Rectangle {
                   anchors.fill: parent
-                  radius: Metrics.CARD_RADIUS
+                  radius: Metrics.radius(root.colours, Metrics.CARD_RADIUS)
                   color: modelData.key === root.level
                          ? Theme.mix(root.accent, root.colours.background, 0.25)
                          : "transparent"

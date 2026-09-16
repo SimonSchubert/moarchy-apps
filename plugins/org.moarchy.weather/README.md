@@ -1,17 +1,17 @@
 # Weather, in the shell
 
-Now, the next day, and the week — for the places you named.
+Now, the next day, and the week — where you are, and in the places you named.
 
 <p align="center">
-  <img src="docs/screenshots/today.png" width="30%" alt="A dark screen under a warm olive band: a sun behind a cloud beside 21 degrees, Partly cloudy under it, then a strip of hours falling from 21 to 16 degrees, a card of wind, humidity, sunrise and sunset, and five days each with a coloured bar between its low and its high">
-  <img src="docs/screenshots/places.png" width="30%" alt="The places page: a search field, then Berlin, Reykjavík, Cairo and Kyoto, each with its symbol, its temperature and its own local clock, a bin beside each, and a Celsius and Fahrenheit pair of pills at the bottom">
-  <img src="docs/screenshots/catppuccin-latte.png" width="30%" alt="The same first screen under catppuccin-latte: a near-white window with a sand-coloured band across the top, slate ink, and the same orange and blue bars">
+  <img src="docs/screenshots/today.png" width="30%" alt="A dark screen titled Berlin, with a location pin before the name: a sun behind a cloud beside 21 degrees, Partly cloudy under it, then a boxed strip of hours falling from 21 to 16 degrees, four tiles two across for wind, humidity, sunrise and sunset, and a box labelled The week holding five days, each with a coloured bar between its low and its high">
+  <img src="docs/screenshots/places.png" width="30%" alt="The places page: a search field, then a box labelled Where you are holding Berlin with a refresh button beside it, a box labelled Saved holding Reykjavík, Cairo and Kyoto with a bin beside each — every row with its symbol, its temperature and its own local clock — then a Units card with a Celsius and Fahrenheit pair of chips, and a ticked Show where I am box over a sentence saying the town is looked up from the connection's address by GeoJS">
+  <img src="docs/screenshots/catppuccin-latte.png" width="30%" alt="The same first screen under catppuccin-latte: a near-white window, slate ink, and the same orange and blue bars">
 </p>
 
 <p align="center"><em>360×720, the size of a PinePhone's screen under
-mobileomarchy. Every colour is the active Omarchy theme's — the band across
-the top is the temperature's own hue, mixed from the palette rather than
-picked — and <code>omarchy-theme-set</code> repaints it without restarting the
+mobileomarchy. Every colour is the active Omarchy theme's — the temperatures
+are its own hues, mixed from the palette rather than picked — and
+<code>omarchy-theme-set</code> repaints it without restarting the
 shell.</em></p>
 
 This one is not a port. There is no GTK weather app in `apps/`, and there is
@@ -42,10 +42,11 @@ argument**, and two things here are a phone's rather than a desktop's.
 
 ## The screen
 
-- **The band** is the temperature's hue mixed into the window's own colour —
-  blue when it is cold, red when it is hot, weaker after dark — so the screen
-  has answered before the number is read. It moves rather than jumps: a
-  quarter-second fade when the town changes or the sun goes down.
+- **The hero** is on the window's own background, the colour of the status bar
+  above it. It used to sit on a band washed in the temperature's hue, and the
+  shell does not draw an app under the status bar, so the wash ended in a hard
+  line across the top of the screen. The temperature's colour is in the hour
+  strip and the week's bars instead, where it is read against something.
 - **The strip** is the next twenty-four hours, the one you are in marked both
   by a pill and by the ink of its label. A chance of rain appears above ten per
   cent and not below, because a column of "0%" is twenty-four numbers nobody
@@ -79,19 +80,50 @@ The places page is where that stops being a claim: each town carries its own
 time under its temperature, which is also the most useful thing a list of four
 towns can say.
 
-## Nothing here asks where the phone is
+## Where you are
 
-There is no geolocation, no IP lookup and no "use my location" button. A place
-is on the list because somebody typed it. That is a smaller app than the one
-with a location button, and it is the version whose network behaviour can be
-written down completely:
+The first row on the places page is the town this connection's address is in,
+and on a first run it is the screen the app opens on, rather than a search
+field over "Nowhere yet". It comes from [GeoJS](https://www.geojs.io), which
+answers over HTTPS with no key and no account, and names the country in words —
+ipinfo, asked the same question, answers `"DE"`.
+
+**It is a town, not a street.** An address says where the network is rather
+than where the phone is: on a home connection that is usually the right town,
+and on mobile data it can be wherever the carrier's gateway happens to be.
+There is no GPS here. The name carries a pin in the title bar, so a town that
+was looked up never reads as one that was chosen.
+
+- It is asked **only while the answer would be on screen** — the phone's own
+  place is the one showing, or the places page is open — and then at most once
+  a quarter of an hour, which is how long a change of network takes to reach
+  the screen.
+- **A refresh** on the phone's own place asks the two questions in order, where
+  and then the weather there, and the forecast waits for the first answer
+  rather than fetching the last town's.
+- **A country with no town** is refused rather than forecast. The middle of
+  Germany is not anywhere anybody is.
+- **The answer is kept in `forecast.json`**, beside its week, and not in
+  `places.json` — nobody chose it.
+- **Show where I am**, at the bottom of the places page, switches it off. Off
+  is forgotten, not hidden: the town leaves the screen at once and the disk at
+  the next write, an answer already on its way is dropped unread, and nothing
+  is asked until the box is ticked again. The setting is read off the disk
+  before the first lookup, not after it, so a phone that said no never sends
+  one at startup.
+
+That makes the whole of the network behaviour:
 
 - one `GET` of Open-Meteo's forecast endpoint per place being looked at, at
   most four times an hour, and only while the window is on the screen;
-- one `GET` of its geocoder while somebody is typing a town, three hundred and
-  fifty milliseconds after they stop;
+- one `GET` of GeoJS while the phone's own place is on the screen, at most four
+  times an hour, and none at all with **Show where I am** off;
+- one `GET` of Open-Meteo's geocoder while somebody is typing a town, three
+  hundred and fifty milliseconds after they stop;
 - nothing else, ever. No key, no account, no identifier — Open-Meteo's free
-  tier answers unauthenticated requests and asks for non-commercial use.
+  tier answers unauthenticated requests and asks for non-commercial use. The
+  lookup does send GeoJS the one thing it is being asked about, the
+  connection's address, which every request to anybody sends.
 
 A refresh that fails leaves the forecast on screen, says `Not updating · 4 min
 ago` in the header, and backs off — a minute, then two and a half, then five,
@@ -102,15 +134,21 @@ then ten, and ten minutes flat when the answer was a rate limit.
 `~/.local/share/moarchy-weather/`, or `$MOARCHY_WEATHER_DIR`.
 
 `places.json` is the only thing here a person made — the towns, which one is on
-screen, and which scale of degrees. `forecast.json` is the last answer about
-each of them and is disposable by definition; it exists so that opening the app
-in a tunnel shows this morning's forecast rather than a spinner.
+screen, which scale of degrees, and whether to look up where the phone is.
+`forecast.json` is the last answer about each of them, and the town the last
+lookup found, and is disposable by definition; it exists so that opening the
+app in a tunnel shows this morning's forecast rather than a spinner.
+
+`current` is a place's id, or `"here"` for the phone's own place — not that
+place's coordinates, because they change when the phone does. A file with no
+`locate` in it is read as `true`.
 
 ```json
 {
  "schema": 1,
  "units": "metric",
- "current": "52.524,13.411",
+ "locate": true,
+ "current": "here",
  "places": [
   {"id": "52.524,13.411", "name": "Berlin", "admin": "Berlin",
    "country": "Germany", "lat": 52.524, "lon": 13.411}
@@ -182,7 +220,9 @@ container, under the compositor the phone runs: a place with no forecast
 fetches one and draws it, typing five letters of a town lists it, and closing
 the window writes the week to the disk. Two of those three had never run
 outside a fixture, and the first of them is where the fifteen-minute bug
-above came from.
+above came from. The address lookup was checked the same way: a first run with
+nothing on the disk asked GeoJS, got a town back, and drew that town's
+forecast.
 
 The tests are worth more here than the drawing is, because every answer in them
 predates the app: a WMO code means what WMO 4677 says it means, 06:41 in Berlin
@@ -190,7 +230,8 @@ is 04:41Z whatever the phone is set to, and a week's coldest and warmest are
 arithmetic. `tst_forecast.qml` is that half — including the case the live API
 found and the fixture had not, that `current` is a *fifteen-minute* observation
 and so is never on the hour. `tst_store.qml` is the two files after somebody
-has edited them by hand.
+has edited them by hand, and where the screen goes when the lookup is switched
+on and off.
 
 | variable | what it does |
 |---|---|

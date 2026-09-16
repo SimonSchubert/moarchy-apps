@@ -21,8 +21,10 @@ TestCase {
              country: "Egypt", lat: 30.044, lon: 31.236 }
   }
 
-  function state(places, current, units) {
-    return { places: places, current: current, units: units || "metric" }
+  // Off unless a test says otherwise, so the rules about a list of typed towns
+  // are tested as they were before there was anything else on the list.
+  function state(places, current, units, locate) {
+    return { places: places, current: current, units: units || "metric", locate: !!locate }
   }
 
   function roundTrip(s) {
@@ -42,7 +44,6 @@ TestCase {
 
   function test_nothing_at_all_is_an_empty_list_rather_than_a_failure() {
     compare(Store.parsePlaces(null).places.length, 0)
-    compare(Store.parsePlaces(null).current, "")
     compare(Store.parsePlaces({}).units, "metric")
     compare(Store.parsePlaces({ places: "Berlin" }).places.length, 0)
   }
@@ -72,9 +73,81 @@ TestCase {
 
   function test_a_current_naming_nowhere_falls_back_to_the_first_place() {
     // What removing a place in an editor leaves behind.
-    var back = Store.parsePlaces({ places: [berlin(), cairo()], current: "0,0" })
+    var back = Store.parsePlaces({ places: [berlin(), cairo()], current: "0,0", locate: false })
     compare(back.current, berlin().id)
-    compare(Store.parsePlaces({ current: "0,0" }).current, "")
+    compare(Store.parsePlaces({ current: "0,0", locate: false }).current, "")
+  }
+
+  // --- where the phone is ------------------------------------------------
+
+  function test_a_first_run_shows_where_the_phone_is() {
+    var fresh = Store.parsePlaces(null)
+    compare(fresh.locate, true)
+    compare(fresh.current, Store.HERE)
+  }
+
+  function test_a_file_from_before_the_lookup_keeps_its_town_and_gains_the_lookup() {
+    var back = Store.parsePlaces({ places: [berlin(), cairo()], current: cairo().id })
+    compare(back.locate, true)
+    compare(back.current, cairo().id)
+  }
+
+  function test_a_current_naming_nowhere_falls_back_to_the_top_which_is_here() {
+    compare(Store.parsePlaces({ places: [berlin()], current: "0,0" }).current, Store.HERE)
+  }
+
+  function test_only_false_switches_the_lookup_off() {
+    compare(Store.parsePlaces({ locate: false }).locate, false)
+    compare(Store.parsePlaces({ locate: 0 }).locate, true)
+    compare(Store.parsePlaces({ locate: "no" }).locate, true)
+  }
+
+  function test_here_is_not_somewhere_the_file_can_point_once_the_lookup_is_off() {
+    var back = Store.parsePlaces({ places: [berlin()], current: Store.HERE, locate: false })
+    compare(back.current, berlin().id)
+  }
+
+  function test_the_switch_goes_out_and_comes_back() {
+    var back = roundTrip(state([berlin()], Store.HERE, "metric", true))
+    compare(back.locate, true)
+    compare(back.current, Store.HERE)
+    compare(roundTrip(state([berlin()], berlin().id)).locate, false)
+  }
+
+  function test_switching_the_lookup_on_shows_it() {
+    var next = Store.withLocate(state([berlin()], berlin().id), true)
+    compare(next.locate, true)
+    compare(next.current, Store.HERE)
+  }
+
+  function test_switching_it_off_while_it_is_on_screen_moves_to_the_first_town() {
+    var next = Store.withLocate(state([berlin(), cairo()], Store.HERE, "metric", true), false)
+    compare(next.locate, false)
+    compare(next.current, berlin().id)
+    compare(Store.withLocate(state([], Store.HERE, "metric", true), false).current, "")
+  }
+
+  function test_switching_it_off_while_a_town_is_on_screen_leaves_the_town() {
+    var next = Store.withLocate(state([berlin(), cairo()], cairo().id, "metric", true), false)
+    compare(next.current, cairo().id)
+  }
+
+  function test_here_can_be_chosen_only_while_it_is_being_looked_up() {
+    compare(Store.select(state([berlin()], berlin().id, "metric", true), Store.HERE).current, Store.HERE)
+    compare(Store.select(state([berlin()], berlin().id), Store.HERE).current, berlin().id)
+  }
+
+  function test_removing_the_last_town_falls_back_to_here() {
+    var next = Store.remove(state([berlin()], berlin().id, "metric", true), berlin().id)
+    compare(next.current, Store.HERE)
+    compare(next.locate, true)
+  }
+
+  function test_every_change_to_the_list_keeps_the_switch_where_it_was() {
+    var on = state([berlin()], Store.HERE, "metric", true)
+    compare(Store.add(on, cairo()).state.locate, true)
+    compare(Store.select(on, berlin().id).locate, true)
+    compare(Store.withUnits(on, "imperial").locate, true)
   }
 
   function test_adding_a_place_shows_it() {
@@ -160,6 +233,38 @@ TestCase {
     var written = JSON.parse(Store.serializeCache(entries, [cairo()]))
     compare(written.forecasts[berlin().id], undefined)
     verify(!!written.forecasts[cairo().id])
+  }
+
+  function located() {
+    return { id: "52.493,13.404", name: "Berlin", admin: "State of Berlin",
+             country: "Germany", lat: 52.4928, lon: 13.4039, found: 1789567000 }
+  }
+
+  function test_the_town_the_lookup_found_goes_out_and_comes_back_with_its_week() {
+    var here = located()
+    var entries = Store.put({}, here.id, forecast(), 1789567300)
+    var written = JSON.parse(Store.serializeCache(entries, [cairo()], here))
+    var back = Store.parseHere(written)
+    compare(back.name, "Berlin")
+    compare(back.lat, 52.4928)
+    compare(back.found, 1789567000)
+    verify(!!Store.parseCache(written)[here.id])
+  }
+
+  function test_no_lookup_leaves_no_town_and_no_week_in_the_file() {
+    // What switching the lookup off writes: the same entries, and no `here`.
+    var here = located()
+    var entries = Store.put({}, here.id, forecast(), 1)
+    var written = JSON.parse(Store.serializeCache(entries, [cairo()], null))
+    compare(written.here, undefined)
+    compare(written.forecasts[here.id], undefined)
+    compare(Store.parseHere(written), null)
+  }
+
+  function test_a_found_town_somebody_has_edited_is_read_as_strictly_as_a_typed_one() {
+    compare(Store.parseHere(null), null)
+    compare(Store.parseHere({ here: { id: "1,1", name: "Nowhere", lat: 91, lon: 0 } }), null)
+    compare(Store.parseHere({ here: { id: "1,1", name: "Undated", lat: 1, lon: 1 } }).found, 0)
   }
 
   function test_a_cache_that_is_not_one_is_empty_rather_than_fatal() {

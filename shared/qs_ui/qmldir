@@ -14,4 +14,14 @@ BottomNav 1.0 BottomNav.qml
 BottomNavItem 1.0 BottomNavItem.qml
 JsonFile 1.0 JsonFile.qml
 ThemeFile 1.0 ThemeFile.qml
+UiFile 1.0 UiFile.qml
 Toast 1.0 Toast.qml
+Card 1.0 Card.qml
+Group 1.0 Group.qml
+ListFrame 1.0 ListFrame.qml
+ListRow 1.0 ListRow.qml
+Section 1.0 Section.qml
+Tile 1.0 Tile.qml
+Button 1.0 Button.qml
+Chip 1.0 Chip.qml
+EmptyState 1.0 EmptyState.qml

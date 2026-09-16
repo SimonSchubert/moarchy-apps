@@ -124,6 +124,56 @@ TestCase {
     compare(Forecast.parseForecast(body, now).error, "Latitude must be in range")
   }
 
+  // --- where the phone is ------------------------------------------------
+
+  // GeoJS's answer as it came back, trimmed of the address and the network it
+  // belongs to. The coordinates are strings on the wire.
+  function geojs(extra) {
+    var body = {
+      accuracy: 20, city: "Berlin", continent_code: "EU", country: "Germany",
+      country_code: "DE", latitude: "52.4928", longitude: "13.4039",
+      region: "State of Berlin", timezone: "Europe/Berlin"
+    }
+    for (var key in (extra || {})) body[key] = extra[key]
+    return JSON.stringify(body)
+  }
+
+  function test_an_address_becomes_a_place_like_one_somebody_typed() {
+    var parsed = Forecast.parseLocation(geojs())
+    compare(parsed.error, "")
+    compare(parsed.place.name, "Berlin")
+    compare(parsed.place.admin, "State of Berlin")
+    compare(parsed.place.country, "Germany")
+    compare(parsed.place.lat, 52.4928)
+    compare(parsed.place.lon, 13.4039)
+    compare(parsed.place.id, "52.493,13.404")
+  }
+
+  function test_coordinates_are_read_whether_they_come_as_strings_or_numbers() {
+    compare(Forecast.parseLocation(geojs({ latitude: -33.8688, longitude: 151.2093 })).place.id,
+            "-33.869,151.209")
+  }
+
+  function test_an_empty_coordinate_is_not_the_equator() {
+    // Number("") is 0, which is the failure that would put a phone in the sea.
+    verify(Forecast.parseLocation(geojs({ latitude: "" })).error.length > 0)
+    verify(Forecast.parseLocation(geojs({ longitude: "nil" })).error.length > 0)
+    verify(Forecast.parseLocation(geojs({ latitude: "0", longitude: "0" })).error.length > 0)
+    verify(Forecast.parseLocation(geojs({ latitude: "123" })).error.length > 0)
+  }
+
+  function test_a_country_without_a_town_is_not_a_place_to_forecast() {
+    var parsed = Forecast.parseLocation(geojs({ city: "" }))
+    compare(parsed.place, null)
+    verify(parsed.error.length > 0)
+  }
+
+  function test_rubbish_from_the_lookup_is_a_sentence_and_not_a_crash() {
+    verify(Forecast.parseLocation("<html>502</html>").error.length > 0)
+    verify(Forecast.parseLocation("null").error.length > 0)
+    verify(Forecast.parseLocation("{}").error.length > 0)
+  }
+
   // --- the sky -----------------------------------------------------------
 
   function test_a_code_is_a_sentence_and_a_symbol() {

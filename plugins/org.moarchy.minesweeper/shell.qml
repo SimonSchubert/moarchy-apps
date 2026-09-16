@@ -27,10 +27,10 @@ ShellRoot {
     }
   }
 
-  // MOARCHY_COINS_QUIT_AFTER=6 -- the check harness's clock, for the reason the
+  // MOARCHY_MINESWEEPER_QUIT_AFTER=6 -- the check harness's clock, for the reason the
   // GTK app has one: a run that does not end is a run that hangs CI.
   Timer {
-    interval: 1000 * parseInt(Quickshell.env("MOARCHY_COINS_QUIT_AFTER") || "0", 10)
+    interval: 1000 * parseInt(Quickshell.env("MOARCHY_MINESWEEPER_QUIT_AFTER") || "0", 10)
     running: interval > 0
     onTriggered: Qt.quit()
   }

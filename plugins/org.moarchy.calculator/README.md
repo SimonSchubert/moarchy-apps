@@ -3,7 +3,7 @@
 The four operations, and arithmetic that counts in tens.
 
 <p align="center">
-  <img src="docs/screenshots/keypad.png" width="30%" alt="1234.5+20% typed across the display with 1481.4 under it in blue, above a keypad of twenty rounded keys: AC in red, brackets and per cent in grey, the operators in blue down the right, and a solid blue equals in the corner">
+  <img src="docs/screenshots/keypad.png" width="30%" alt="1234.5+20% typed across a rounded display box with 1481.4 under it in blue, above a keypad of twenty rounded keys: AC in red, brackets and per cent in grey, the operators in blue down the right, and a solid blue equals in the corner">
   <img src="docs/screenshots/tokyo-night.png" width="30%" alt="The same screen under the tokyo-night theme: a near-black window, the operator keys and the running answer in the theme's light blue, AC in its red">
   <img src="docs/screenshots/catppuccin-latte.png" width="30%" alt="The same screen under catppuccin-latte: a near-white window, grey keys, a solid blue equals key with white on it, and AC on a pink wash">
 </p>

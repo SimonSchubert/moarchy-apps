@@ -21,6 +21,13 @@
 # Every name after the first is an environment variable for that run. THEME is
 # the one the harness reads itself: it stages a colors.toml where
 # omarchy-theme-set puts the live one, which is the only place an app looks.
+# CORNERS is the other: large, modest or square, written to the ui.toml
+# `moarchy-ui corners` writes. It can also be set for the whole run --
+#
+#   CORNERS=square scripts/qml-shot.sh org.moarchy.calendar .shots/square
+#
+# -- which is how every screen of an app is looked at with square corners
+# without a shots.sh that names them twice.
 #
 # plugins/<id>/demo.py, if there is one, runs before each shot with
 # MOARCHY_<APP>_DIR pointed at a scratch directory -- so the pictures are of a
@@ -88,9 +95,10 @@ status=0
 
 shot() {
   local name="${1:?shot needs a name}"; shift
-  local theme="" env=()
+  local theme="" corners="${CORNERS:-}" env=()
   for pair in "$@"; do
     [[ $pair == THEME=* ]] && { theme="${pair#THEME=}"; continue; }
+    [[ $pair == CORNERS=* ]] && { corners="${pair#CORNERS=}"; continue; }
     env+=("$pair")
   done
 
@@ -100,6 +108,12 @@ shot() {
   mkdir -p "$stage"
   rm -f "$stage/colors.toml"
   [[ -n $theme ]] && cp "$theme" "$stage/colors.toml"
+
+  # The same for the shape, and for the same reason. No file is large.
+  local chrome="$HOME/.config/omarchy"
+  mkdir -p "$chrome"
+  rm -f "$chrome/ui.toml"
+  [[ -n $corners ]] && printf 'corners = "%s"\n' "$corners" >"$chrome/ui.toml"
 
   local data="$WORK/data"
   rm -rf "$data"; mkdir -p "$data/moarchy-$APP"

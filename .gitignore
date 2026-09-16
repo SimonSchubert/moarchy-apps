@@ -9,3 +9,7 @@ apps/*/docs/screenshots/device/
 dist/
 # shared/qs_ui vendored into a plugin by run-local.sh or install-on-device.sh.
 plugins/*/ui/
+# Screenshot scratch: scripts/qml-shot.sh output that is not the committed set,
+# and the palettes scripts/fetch-themes.sh downloads to check against.
+.shots/
+.themes/

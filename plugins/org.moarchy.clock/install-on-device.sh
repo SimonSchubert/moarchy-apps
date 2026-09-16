@@ -17,7 +17,7 @@ DEST=".config/omarchy/plugins/$ID"
 echo "==> copy $ID to $PHONE:$DEST"
 ssh "$PHONE" "mkdir -p $DEST/ui ~/.local/share/applications ~/.local/share/icons/hicolor/scalable/apps"
 scp "$ROOT/manifest.json" "$ROOT/Clock.qml" "$ROOT/Face.qml" "$ROOT/Ring.qml" \
-    "$ROOT/Digits.qml" "$ROOT/Pill.qml" "$ROOT/Wheel.qml" "$ROOT/Toggle.qml" \
+    "$ROOT/Digits.qml" "$ROOT/Wheel.qml" "$ROOT/Toggle.qml" \
     "$ROOT/Alarms.js" "$ROOT/Watch.js" "$ROOT/Store.js" \
     "$ROOT/glyph-alarm.svg" "$ROOT/glyph-stopwatch.svg" "$ROOT/glyph-hourglass.svg" \
     "$ROOT/icon.svg" "$PHONE:$DEST/"

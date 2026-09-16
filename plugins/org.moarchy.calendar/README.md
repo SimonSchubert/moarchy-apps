@@ -5,7 +5,7 @@ The month, the day under it, and what is next.
 <p align="center">
   <img src="docs/screenshots/month.png" width="30%" alt="September 2026 as a six-row grid with Tuesday the 15th filled in blue, coloured dots under the days that have something on them, and three cards below it: Dentist at 11:00 on an orange wash, Lunch with Ada at 13:00 on a pink one, Pick up the parcel at 17:30 on a yellow one">
   <img src="docs/screenshots/agenda.png" width="30%" alt="The agenda: a column of weekday and date down the left with today's in blue, and beside each a stack of coloured cards — the dentist and lunch today, Bin day on Thursday, the train to Hamburg on Friday, the standup on Monday">
-  <img src="docs/screenshots/editor.png" width="30%" alt="The editor: a name field reading Dentist, a Where field reading Charlottenstraße 4, the full date in a row with a calendar glyph, an All day checkbox, two time pills reading 11:00 and 11:45 with 45 min under them, five repeat chips with Once selected, and eight colour discs with orange ringed">
+  <img src="docs/screenshots/editor.png" width="30%" alt="The editor as four labelled boxes: What, holding a name field reading Dentist and a Where field reading Charlottenstraße 4; When, holding the full date in a row with a calendar glyph, an All day checkbox and two time fields reading 11:00 and 11:45 with 45 min under them; Repeats, holding five chips with Once selected; and Colour, holding eight discs with a tick on the orange one">
 </p>
 
 <p align="center">

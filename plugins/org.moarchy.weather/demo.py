@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Four places and a week of weather, written where the app reads them.
+"""Where the phone is, three more places, and a week of weather for each.
 
 The plugins in this repository that talk to a network have the same problem
 when somebody wants to look at them: the screen is only interesting once an
@@ -32,9 +32,14 @@ DAYS = 7
 
 # name, admin, country, lat, lon, utc offset, night low, day high, the codes
 # the week runs through.
+#
+# HERE is what the address lookup answered, as GeoJS words it -- "State of
+# Berlin", and the coordinates it sends rather than the geocoder's -- and it
+# goes in forecast.json, which is where the app keeps an answer nobody chose.
+HERE = ("Berlin", "State of Berlin", "Germany", 52.4928, 13.4039, 7200, 11.0, 21.0,
+        [2, 3, 61, 80, 1, 0, 2])
+
 PLACES = [
-    ("Berlin", "Berlin", "Germany", 52.524, 13.411, 7200, 11.0, 21.0,
-     [2, 3, 61, 80, 1, 0, 2]),
     ("Reykjavík", "Capital Region", "Iceland", 64.146, -21.942, 0, 2.0, 8.0,
      [61, 80, 71, 3, 45, 2, 63]),
     ("Cairo", "Cairo", "Egypt", 30.044, 31.236, 10800, 23.0, 36.0,
@@ -117,23 +122,26 @@ def main() -> None:
     directory.mkdir(parents=True, exist_ok=True)
     now = int(os.environ.get("MOARCHY_WEATHER_NOW") or time.time())
 
-    places = [{
-        "id": place_id(p[3], p[4]),
-        "name": p[0], "admin": p[1], "country": p[2], "lat": p[3], "lon": p[4],
-    } for p in PLACES]
+    def record(p) -> dict:
+        return {"id": place_id(p[3], p[4]), "name": p[0], "admin": p[1],
+                "country": p[2], "lat": p[3], "lon": p[4]}
 
     (directory / "places.json").write_text(json.dumps({
         "schema": 1,
         "units": os.environ.get("MOARCHY_WEATHER_UNITS") or "metric",
-        "current": places[0]["id"],
-        "places": places,
+        "locate": True,
+        "current": "here",
+        "places": [record(p) for p in PLACES],
     }, indent=1) + "\n", encoding="utf-8")
 
+    # Found now, so an offline run does not think the answer is stale -- not
+    # that it would ask again, but the pictures should not depend on that.
     (directory / "forecast.json").write_text(json.dumps({
         "schema": 1,
+        "here": {**record(HERE), "found": now},
         "forecasts": {
             place_id(p[3], p[4]): {"fetched": now, "forecast": forecast_for(p, now)}
-            for p in PLACES
+            for p in [HERE, *PLACES]
         },
     }, indent=1) + "\n", encoding="utf-8")
 
