@@ -9,10 +9,11 @@ Item {
 
   readonly property bool signedIn: app.trakt.signedIn
   readonly property string type: app.store.prefs.watchlistType === "show" ? "show" : "movie"
-  readonly property string url: Api.watchlistUrl(type)
+  readonly property var urlOf: app.library.watchlistUrlOf(type)
+  readonly property string url: Api.watchlistUrl(type, 1)
   property string sort: "added"
 
-  readonly property var raw: { app.trakt.revision; return app.trakt.peek(url) || [] }
+  readonly property var raw: { app.trakt.revision; return app.library.watchlist(type) }
   // What was just taken off shows as gone at once, not after the refetch.
   readonly property var items: {
     app.library.rev
@@ -25,7 +26,7 @@ Item {
   readonly property bool loading: { app.trakt.revision; return app.trakt.busy(url) }
   readonly property string error: { app.trakt.revision; return app.trakt.error(url) }
 
-  function refresh(force) { if (signedIn) app.trakt.want(url, "watchlist", force ? 0 : 600000, force) }
+  function refresh(force) { if (signedIn) app.library.wantAll(urlOf, "watchlist", force ? 0 : 600000, force) }
   onUrlChanged: if (visible) refresh(false)
 
   property alias list: grid

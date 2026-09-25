@@ -165,13 +165,48 @@ Item {
     return h
   }
 
+  // How much of an answer is ever held. The largest real ones -- a big
+  // watchlist, years of ratings -- are a few megabytes of JSON; a 250-title
+  // page with everything is 430 KB. Pictures are 20 to 150 KB; a sign-in or a
+  // write answers in a few hundred bytes.
+  readonly property int maxJson: 8 * 1024 * 1024
+  readonly property int maxBinary: 2 * 1024 * 1024
+  readonly property int maxSmall: 256 * 1024
+
   // The app's only HTTP request. `binary` answers with an ArrayBuffer.
-  // done(status, body, req).
+  // done(status, body, req); status -1 when the answer outgrew its limit.
+  //
+  // The limit holds while the answer arrives, not after: Qt reports every
+  // chunk as a LOADING state change, so a body that passes the limit is
+  // aborted there and its buffer dropped. A Content-Length over the limit
+  // stops it before the first byte of the body.
   function request(method, url, hdrs, body, binary, done) {
+    var limit = binary ? maxBinary : method === "GET" ? maxJson : maxSmall
     var req = new XMLHttpRequest()
+    var settled = false
+    var give = function (status, data) {
+      if (settled) return
+      settled = true
+      done(status, data, req)
+    }
+    var tooBig = function () {
+      give(-1, null)
+      req.abort()
+    }
     if (binary) req.responseType = "arraybuffer"
     req.onreadystatechange = function () {
-      if (req.readyState === 4) done(req.status, binary ? req.response : req.responseText, req)
+      if (settled) return
+      if (req.readyState === 2) {
+        var declared = parseInt(req.getResponseHeader("content-length"), 10)
+        if (isFinite(declared) && declared > limit) tooBig()
+      } else if (req.readyState === 3) {
+        var size = binary ? (req.response ? req.response.byteLength : 0) : req.responseText.length
+        if (size > limit) tooBig()
+      } else if (req.readyState === 4) {
+        var data = binary ? req.response : req.responseText
+        if (data && (binary ? data.byteLength : data.length) > limit) tooBig()
+        else give(req.status, data)
+      }
     }
     req.open(method, url)
     for (var h in hdrs) req.setRequestHeader(h, hdrs[h])
@@ -215,6 +250,8 @@ Item {
       job.renewed = true
       requeue(job)
       renew()
+    } else if (status === -1) {
+      fail(job.url, "Trakt's answer was too large to use", status)
     } else if (status === 0) {
       offline = true
       fail(job.url, "Can't reach Trakt", status)
@@ -414,8 +451,9 @@ Item {
       var j = null
       try { j = JSON.parse(text) } catch (e) { j = null }
       if (status === 200 && j && root.accept(j)) { root.settle(true); return }
-      // Offline or Trakt down: keep the tokens, try again later.
-      if (status === 0 || status >= 500) { root.settle(false); return }
+      // Offline, Trakt down, or an answer too large to read: keep the
+      // tokens, try again later.
+      if (status <= 0 || status >= 500) { root.settle(false); return }
       root.forgetUser("Trakt signed you out. Sign in again to see your lists.")
       root.settle(false)
     })

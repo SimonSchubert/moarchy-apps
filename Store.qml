@@ -60,9 +60,16 @@ Item {
     saveTimer.triggered()
   }
 
+  // The saved lists are at most a few of the cached answers, each of which
+  // is capped; past 16 MB something is wrong and nothing is written.
+  readonly property int maxSnapshot: 16 * 1024 * 1024
+
   function saveSnapshot(entries) {
     if (!secured) return
-    try { snapshotFile.setText(JSON.stringify({ version: 1, entries: entries })) } catch (e) {}
+    try {
+      var text = JSON.stringify({ version: 1, entries: entries })
+      if (text.length <= maxSnapshot) snapshotFile.setText(text)
+    } catch (e) {}
   }
 
   function clearSnapshot() { saveSnapshot({}) }
@@ -209,7 +216,8 @@ Item {
     onLoaded: {
       root.snapshotExists = true
       root.snapshotChecked = true
-      root.snapshotLoaded(text())
+      var t = text()
+      if (t.length <= root.maxSnapshot) root.snapshotLoaded(t)
       root.lockExisting()
     }
     onLoadFailed: {

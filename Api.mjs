@@ -73,10 +73,17 @@ export function upNextUrl(page) { return BASE + "/sync/progress/up_next?extended
 export function calendarUrl(target, what, start, days) {
   return BASE + "/calendars/" + (target === "my" ? "my" : "all") + "/" + what + "/" + start + "/" + days + "?extended=full,images"
 }
-export function watchlistUrl(type) { return BASE + "/sync/watchlist/" + plural(type) + "/added/desc?extended=full,images,colors" }
+// Whole collections, 250 to a page (Trakt's most; it pages them at 100
+// when asked for no size at all).
+export var COLLECTION_PAGE = 250
+export var COLLECTION_PAGES = 40
+function paged(page) { return "page=" + Math.max(1, Math.floor(Number(page) || 1)) + "&limit=" + COLLECTION_PAGE }
+export function watchlistUrl(type, page) {
+  return BASE + "/sync/watchlist/" + plural(type) + "/added/desc?extended=full,images,colors&" + paged(page)
+}
 export function historyUrl(page) { return BASE + "/sync/history?extended=full,images&page=" + page + "&limit=40" }
-export function watchedMoviesUrl() { return BASE + "/sync/watched/movies" }
-export function ratingsUrl() { return BASE + "/sync/ratings" }
+export function watchedMoviesUrl(page) { return BASE + "/sync/watched/movies?" + paged(page) }
+export function ratingsUrl(page) { return BASE + "/sync/ratings?" + paged(page) }
 export function settingsUrl() { return BASE + "/users/settings" }
 export function statsUrl(user) { return BASE + "/users/" + slug(user) + "/stats" }
 

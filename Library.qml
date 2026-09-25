@@ -23,29 +23,50 @@ Item {
   property var episodeOver: ({})
   property int rev: 0
 
-  readonly property string watchlistMovies: Api.watchlistUrl("movie")
-  readonly property string watchlistShows: Api.watchlistUrl("show")
-
   function key(m) { return m.type + ":" + m.id }
+
+  // A whole collection comes in pages of 250. `urlOf(page)` names a page;
+  // the first says how many there are, and every page is asked for.
+  function pageCount(urlOf) { return Math.min(Api.COLLECTION_PAGES, trakt.pages(urlOf(1))) }
+
+  function wantAll(urlOf, kind, ttl, urgent) {
+    trakt.want(urlOf(1), kind, ttl, urgent)
+    for (var p = 2; p <= pageCount(urlOf); p++) trakt.want(urlOf(p), kind, ttl, false)
+  }
+
+  // Every page on hand, as one list (or one map, for keyed answers).
+  function collect(urlOf) {
+    var out = []
+    for (var p = 1; p <= pageCount(urlOf); p++) out = out.concat(trakt.peek(urlOf(p)) || [])
+    return out
+  }
+  function collectMap(urlOf) {
+    var out = {}
+    for (var p = 1; p <= pageCount(urlOf); p++) Object.assign(out, trakt.peek(urlOf(p)) || {})
+    return out
+  }
+
+  function watchlistUrlOf(type) { return function (p) { return Api.watchlistUrl(type, p) } }
+  function watchlist(type) { return collect(watchlistUrlOf(type)) }
 
   // Sets rebuilt when an answer lands, not per card.
   readonly property var watchlistSet: {
     trakt.revision
     var s = {}
-    var lists = [trakt.peek(watchlistMovies) || [], trakt.peek(watchlistShows) || []]
+    var lists = [watchlist("movie"), watchlist("show")]
     for (var l = 0; l < 2; l++) for (var i = 0; i < lists[l].length; i++) s[lists[l][i].type + ":" + lists[l][i].id] = true
     return s
   }
-  readonly property var playsMap: { trakt.revision; return trakt.peek(Api.watchedMoviesUrl()) || {} }
-  readonly property var ratingMap: { trakt.revision; return trakt.peek(Api.ratingsUrl()) || {} }
+  readonly property var playsMap: { trakt.revision; return collectMap(Api.watchedMoviesUrl) }
+  readonly property var ratingMap: { trakt.revision; return collectMap(Api.ratingsUrl) }
 
   function ensure(force) {
     if (!signedIn) return
     var t = force ? 0 : 600000
-    trakt.want(watchlistMovies, "watchlist", t, false)
-    trakt.want(watchlistShows, "watchlist", t, false)
-    trakt.want(Api.watchedMoviesUrl(), "watched", force ? 0 : 1800000, false)
-    trakt.want(Api.ratingsUrl(), "ratings", force ? 0 : 1800000, false)
+    wantAll(watchlistUrlOf("movie"), "watchlist", t, false)
+    wantAll(watchlistUrlOf("show"), "watchlist", t, false)
+    wantAll(Api.watchedMoviesUrl, "watched", force ? 0 : 1800000, false)
+    wantAll(Api.ratingsUrl, "ratings", force ? 0 : 1800000, false)
   }
 
   function over(map, k) { return Object.prototype.hasOwnProperty.call(map, k) ? map[k].v : undefined }
@@ -199,14 +220,16 @@ Item {
   Connections {
     target: root.trakt
     function onLanded(url, sentAt) {
+      // The first page of a collection says how many follow: ask for them now.
+      if (/[?&]page=1&limit=250$/.test(url)) root.ensure(false)
       var drop = function (name, test) {
         var m = root[name], n = {}, changed = false
         for (var k in m) { if (test(k) && m[k].t < sentAt) changed = true; else n[k] = m[k] }
         if (changed) { root[name] = n; root.rev++ }
       }
       if (url.indexOf("/sync/watchlist/") > 0) drop("watchlistOver", function () { return true })
-      else if (url === Api.watchedMoviesUrl()) drop("playsOver", function () { return true })
-      else if (url === Api.ratingsUrl()) drop("ratingOver", function () { return true })
+      else if (url.indexOf(Api.BASE + "/sync/watched/movies") === 0) drop("playsOver", function () { return true })
+      else if (url.indexOf(Api.BASE + "/sync/ratings") === 0) drop("ratingOver", function () { return true })
       var m = /\/shows\/(\d+)\/progress\/watched/.exec(url)
       if (m && root.episodeOver[m[1]]) {
         var eo = root.episodeOver[m[1]], keep = {}, any = false

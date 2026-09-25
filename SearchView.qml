@@ -149,7 +149,8 @@ Item {
     emptyGlyph: G.search
     emptyTitle: root.url ? "Nothing matches “" + root.asked + "”" : "Type a title"
     emptyDetail: root.url ? "Try fewer words, or the original title." : ""
-    subtitleFor: function (m) { return (m.type === "show" ? "Show" : "Movie") + (m.year ? " · " + m.year : "") }
+    // The year first: on a phone card only the start of the line fits.
+    subtitleFor: function (m) { return (m.year ? m.year + " · " : "") + (m.type === "show" ? "Show" : "Movie") }
     onActivated: function (m) { root.app.openMedia(m) }
   }
 

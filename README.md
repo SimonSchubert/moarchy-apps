@@ -129,6 +129,9 @@ into **Settings → Trakt app**.
   `api.trakt.tv`, and pictures from Trakt's own image hosts (`*.trakt.tv`).
   The one exception is your avatar, which may be on Gravatar
   (`gravatar.com`). Anything else in a response is not loaded.
+- **Size limits.** Every answer is capped while it downloads: 8 MB for an API
+  answer, 2 MB for a picture, 256 KB for a sign-in or a change. Anything
+  larger is dropped mid-download and never parsed.
 - **Processes.** It runs no shell commands. At startup it runs
   `install -d -m 700` on its own state and cache folders, and `chmod 600` on
   its two data files, so your sign-in is readable only by you. It runs no
