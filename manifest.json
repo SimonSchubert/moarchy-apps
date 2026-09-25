@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "id": "io.github.simonschubert.couch",
+  "name": "Couch for Trakt",
+  "version": "1.0.0",
+  "author": "Simon Schubert",
+  "license": "MIT",
+  "description": "A movie and TV tracker for Trakt: trending, popular, anticipated and streaming titles, the box office, pages with cast, seasons and episodes, and search. Sign in with a code for your up next, calendar, watchlist, history and ratings, and mark episodes and movies watched. Uses the Trakt API over HTTPS; not affiliated with Trakt. Desktop and phone layouts.",
+  "homepage": "https://github.com/SimonSchubert/omarchy-couch",
+  "repository": "https://github.com/SimonSchubert/omarchy-couch",
+  "keywords": [
+    "couch",
+    "trakt",
+    "movies",
+    "tv",
+    "shows",
+    "series",
+    "watchlist",
+    "episodes",
+    "calendar",
+    "tracker"
+  ],
+  "icon": "icon.svg",
+  "preview": "preview.png",
+  "kinds": [
+    "panel"
+  ],
+  "keepLoaded": true,
+  "entryPoints": {
+    "panel": "Panel.qml"
+  }
+}

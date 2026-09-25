@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=Couch for Trakt
+GenericName=TV and movie tracker
+Comment=Movies and shows, your watchlist, up next and calendar, synced with Trakt
+Exec=omarchy-shell shell summon io.github.simonschubert.couch
+Terminal=false
+StartupNotify=false
+Categories=AudioVideo;Video;
+Keywords=couch;trakt;movies;shows;tv;series;watchlist;episodes;calendar;
