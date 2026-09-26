@@ -86,9 +86,7 @@ Item {
   property bool confirmUnwatch: false
   Timer { id: confirmTimer; interval: 3000; onTriggered: root.confirmUnwatch = false }
 
-  Rectangle { anchors.fill: parent; color: root.app.ui.bg; radius: root.app.compact ? 0 : root.app.ui.radius + 6
-    // Square on the left, where it meets the rail.
-    Rectangle { visible: !root.app.compact; width: parent.width / 2; height: parent.height; color: parent.color }
+  Rectangle { anchors.fill: parent; color: root.app.ui.bg; radius: 0
   }
 
   // ---------------------------------------------------------------- body
@@ -112,15 +110,6 @@ Item {
         width: parent.width
         height: Math.round(root.app.compact ? width * 0.62 : Math.min(460, Math.max(300, width * 0.38)))
         clip: true
-        // On a desktop the card's top right corner is round, and a clip is
-        // square: the picture is masked to the corner instead.
-        layer.enabled: !root.app.compact
-        layer.effect: MultiEffect {
-          maskEnabled: true
-          maskSource: backdropMask
-          maskThresholdMin: 0.5
-          maskSpreadAtMin: 1.0
-        }
         Poster {
           anchors.fill: parent
           app: root.app
@@ -145,17 +134,6 @@ Item {
             GradientStop { position: 1.0; color: root.app.ui.bg }
           }
         }
-      }
-
-      Item {
-        id: backdropMask
-        width: backdrop.width
-        height: backdrop.height
-        layer.enabled: true
-        visible: false
-        Rectangle { anchors.fill: parent; radius: root.app.ui.radius + 6; color: "black" }
-        Rectangle { width: parent.width / 2; height: parent.height; color: "black" }
-        Rectangle { y: parent.height / 2; width: parent.width; height: parent.height / 2; color: "black" }
       }
 
       // Poster, overlapping the backdrop's foot.
@@ -704,9 +682,7 @@ Item {
       anchors.fill: parent
       color: root.app.ui.bg
       opacity: topBar.solid
-      radius: root.app.compact ? 0 : root.app.ui.radius + 6
       Rectangle { anchors.bottom: parent.bottom; width: parent.width; height: 1; color: root.app.ui.divider }
-      Rectangle { anchors.bottom: parent.bottom; width: parent.width; height: parent.height / 2; color: parent.color }
     }
 
     // Round, dark discs behind the buttons while they sit on a picture.
@@ -752,8 +728,7 @@ Item {
     Item {
       id: bookmark
       anchors.right: parent.right
-      // On a desktop the card's own close button sits in this corner.
-      anchors.rightMargin: root.app.compact ? 6 : 60
+      anchors.rightMargin: root.app.compact ? 6 : 14
       anchors.verticalCenter: parent.verticalCenter
       width: 44
       height: 44

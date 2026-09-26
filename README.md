@@ -2,7 +2,7 @@
 
 A movie and TV tracker for Omarchy, built on [Trakt](https://trakt.tv): what
 everyone is watching, what airs next, and your own watchlist and progress, in
-one panel that lays itself out for the desktop and for the phone.
+an app window that lays itself out for the desktop and for the phone.
 
 Couch is an independent app. It is not affiliated with or endorsed by Trakt.
 
@@ -105,6 +105,9 @@ listed below.
 
 ## Keys (desktop)
 
+Couch opens as a normal window, so Hyprland tiles, focuses and closes it like
+any other app. The keybinding above toggles it.
+
 | Key | Action |
 | --- | --- |
 | `1`–`4` | Discover, Up Next, Calendar, Watchlist |
@@ -113,7 +116,7 @@ listed below.
 | `↑` `↓` `PgUp` `PgDn` | Scroll a movie or show page |
 | `w` | Add the selected title to your watchlist, or take it off |
 | `r` | Refresh |
-| `Esc` | Back, then close |
+| `Esc` | Back one step (close the window with your usual close key) |
 
 ## Your own Trakt app
 
