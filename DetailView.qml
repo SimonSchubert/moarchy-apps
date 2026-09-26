@@ -68,8 +68,7 @@ Rectangle {
     Row {
       id: actions
       anchors.right: parent.right
-      // Clear of the panel's own close button in the card's corner.
-      anchors.rightMargin: root.pane ? 52 : 4
+      anchors.rightMargin: root.pane ? 12 : 4
       anchors.verticalCenter: parent.verticalCenter
       IconButton {
         app: root.app

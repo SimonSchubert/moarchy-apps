@@ -291,8 +291,11 @@ function shapePlace(p) {
 
 // "RE4 (3155)" is how DELFI names a regional train: the line, then the
 // train's own number. The badge wants the line; the number goes beside it.
+// A name with no letter or digit in it ("?", "-") is no name: some feeds send
+// one as a placeholder.
+function named(x) { return /[0-9A-Za-z\u00c0-\uffff]/.test(x) ? x : "" }
 export function lineName(x) {
-  var n = str(x.displayName) || str(x.routeShortName) || str(x.tripShortName)
+  var n = named(str(x.displayName)) || named(str(x.routeShortName)) || named(str(x.tripShortName))
   return n.replace(/\s*\(\d+\)\s*$/, "").slice(0, 24)
 }
 function tripNumber(x) {

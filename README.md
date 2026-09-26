@@ -1,8 +1,8 @@
 # Transit
 
 Public transport as an Omarchy app: journeys and live departures for trains,
-metros, trams, buses and ferries, anywhere with an open timetable. One panel
-lays itself out for the desktop and for the phone.
+metros, trams, buses and ferries, anywhere with an open timetable. One app
+window lays itself out for the desktop and for the phone.
 
 ![Transit on the desktop](preview.png)
 
@@ -106,6 +106,9 @@ writes only its own files, listed below.
 
 ## Keys (desktop)
 
+Transit opens as a normal window, so Hyprland tiles, focuses and closes it
+like any other app. The keybinding above toggles it.
+
 | Key | Action |
 | --- | --- |
 | `1`–`3` | Journey, Departures, Saved |
@@ -113,7 +116,7 @@ writes only its own files, listed below.
 | `s` | Swap start and destination |
 | `↑` `↓` | Scroll |
 | `r` | Refresh |
-| `Esc` | Back, then close |
+| `Esc` | Back one step (close the window with your usual close key) |
 
 ## Being a good guest
 

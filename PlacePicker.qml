@@ -92,7 +92,7 @@ Rectangle {
       anchors.left: backBtn.right
       anchors.leftMargin: 4
       anchors.right: parent.right
-      anchors.rightMargin: root.app.compact ? 12 : 56
+      anchors.rightMargin: 12
       anchors.verticalCenter: parent.verticalCenter
       height: 46
       radius: 23
