@@ -353,6 +353,7 @@ Item {
             }
 
             Column {
+              id: railColumn
               anchors.fill: parent
               anchors.topMargin: 18
               anchors.leftMargin: 12
@@ -438,9 +439,11 @@ Item {
               }
             }
 
-            // Who is signed in, at the foot of the rail.
+            // Who is signed in, at the foot of the rail -- when the window is
+            // tall enough for it below the sections, not over them.
             Rectangle {
               id: who
+              visible: rail.height >= 18 + railColumn.childrenRect.height + height + 24
               anchors.bottom: parent.bottom
               anchors.bottomMargin: 12
               x: 12
