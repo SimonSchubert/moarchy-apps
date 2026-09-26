@@ -59,6 +59,8 @@ Item {
 
   onItemsChanged: if (cursor >= items.length) cursor = -1
 
+  Keyed { id: keyed; items: root.items }
+
   GridView {
     id: grid
     x: root.pad
@@ -66,7 +68,7 @@ Item {
     height: parent.height
     cellWidth: width / root.columns
     cellHeight: Math.round(root.cardWidth * 1.5) + 52 + root.vgap
-    model: root.items
+    model: keyed
     reuseItems: true
     cacheBuffer: Math.max(400, cellHeight * 2)
     boundsBehavior: Flickable.DragOverBounds
@@ -81,7 +83,7 @@ Item {
     onOriginYChanged: if (!touched) positionViewAtBeginning()
     onContentHeightChanged: if (!touched) positionViewAtBeginning()
     onContentYChanged: if (root.more && count > 0 && contentY + height > contentHeight + originY - cellHeight * 2) root.endReached()
-    onModelChanged: if (count === 0) touched = false
+    onCountChanged: if (count === 0) touched = false
 
     onVerticalOvershootChanged: if (dragging && verticalOvershoot < -72) root.armed = true
     onDraggingChanged: if (!dragging && root.armed) { root.armed = false; root.app.refresh(true) }
@@ -113,7 +115,7 @@ Item {
         }
         Placeholder {
           width: parent.width
-          visible: grid.count === 0
+          visible: keyed.count === 0
           app: root.app
           busy: root.loading && !root.error
           glyph: root.error ? G.alert : root.emptyGlyph
@@ -122,14 +124,15 @@ Item {
           action: root.error ? "Try again" : root.loading ? "" : root.emptyAction
           onTriggered: root.error ? root.app.refresh(true) : root.emptyTriggered()
         }
-        Item { width: 1; height: grid.count > 0 ? 4 : 0 }
+        Item { width: 1; height: keyed.count > 0 ? 4 : 0 }
       }
     }
 
     delegate: Item {
       id: cell
-      required property var modelData
+      required property string key
       required property int index
+      readonly property var modelData: keyed.at(key)
       width: grid.cellWidth
       height: grid.cellHeight
       PosterCard {
@@ -148,11 +151,11 @@ Item {
 
     footer: Item {
       width: grid.width
-      height: root.more && grid.count > 0 ? 64 : 16
+      height: root.more && keyed.count > 0 ? 64 : 16
       Spinner {
         anchors.centerIn: parent
         app: root.app
-        running: root.more && root.loading && grid.count > 0
+        running: root.more && root.loading && keyed.count > 0
       }
     }
   }

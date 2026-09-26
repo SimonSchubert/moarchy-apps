@@ -48,6 +48,8 @@ Item {
 
   onItemsChanged: if (cursor >= items.length) cursor = -1
 
+  Keyed { id: keyed; items: root.items }
+
   GridView {
     id: grid
     x: root.pad
@@ -55,7 +57,7 @@ Item {
     height: parent.height
     cellWidth: width / root.columns
     cellHeight: root.cardHeight + (root.app.compact ? 8 : 12)
-    model: root.items
+    model: keyed
     reuseItems: true
     cacheBuffer: 600
     boundsBehavior: Flickable.DragOverBounds
@@ -95,7 +97,7 @@ Item {
         }
         Placeholder {
           width: parent.width
-          visible: grid.count === 0
+          visible: keyed.count === 0
           app: root.app
           busy: root.loading && !root.error
           glyph: root.error ? G.alert : root.emptyGlyph
@@ -109,8 +111,9 @@ Item {
 
     delegate: Item {
       id: cell
-      required property var modelData
+      required property string key
       required property int index
+      readonly property var modelData: keyed.at(key)
       width: grid.cellWidth
       height: grid.cellHeight
       Loader {
@@ -128,8 +131,8 @@ Item {
 
     footer: Item {
       width: grid.width
-      height: root.more && grid.count > 0 ? 64 : 16
-      Spinner { anchors.centerIn: parent; app: root.app; running: root.more && root.loading && grid.count > 0 }
+      height: root.more && keyed.count > 0 ? 64 : 16
+      Spinner { anchors.centerIn: parent; app: root.app; running: root.more && root.loading && keyed.count > 0 }
     }
   }
 }

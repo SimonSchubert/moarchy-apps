@@ -28,15 +28,16 @@ Item {
     highlightMoveDuration: 450
     boundsBehavior: Flickable.StopAtBounds
     clip: true
-    model: root.items
+    model: keyed
     cacheBuffer: Math.max(0, width)
     spacing: 0
     reuseItems: false
 
     delegate: Item {
       id: slide
-      required property var modelData
+      required property string key
       required property int index
+      readonly property var modelData: keyed.at(key)
       width: strip.width
       height: strip.height
 
@@ -173,6 +174,8 @@ Item {
     running: root.running && root.visible && root.items.length > 1 && !strip.moving && !strip.dragging
     onTriggered: strip.currentIndex = (strip.currentIndex + 1) % root.items.length
   }
+
+  Keyed { id: keyed; items: root.items }
 
   onItemsChanged: if (strip.currentIndex >= items.length) strip.currentIndex = 0
 }
