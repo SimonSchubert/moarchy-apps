@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "id": "io.github.simonschubert.transit",
+  "name": "Transit",
+  "version": "1.0.0",
+  "author": "Simon Schubert",
+  "license": "MIT",
+  "description": "Public transport for anywhere with an open timetable: plan journeys by train, metro, tram, bus and ferry with live delays, platform changes and cancellations, see the next departures from any stop, and keep your trips with their next connection a glance away. Routing by Transitous over HTTPS. Laid out for the desktop and the phone.",
+  "homepage": "https://github.com/SimonSchubert/omarchy-transit",
+  "repository": "https://github.com/SimonSchubert/omarchy-transit",
+  "keywords": [
+    "transit",
+    "public transport",
+    "train",
+    "bus",
+    "tram",
+    "metro",
+    "departures",
+    "journey planner",
+    "timetable",
+    "transitous"
+  ],
+  "icon": "icon.svg",
+  "preview": "preview.png",
+  "kinds": [
+    "panel"
+  ],
+  "keepLoaded": true,
+  "entryPoints": {
+    "panel": "Panel.qml"
+  }
+}
