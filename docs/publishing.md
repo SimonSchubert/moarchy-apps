@@ -46,7 +46,7 @@ As of 2026-09-14, and this table is the thing to re-check rather than trust:
 | reversi | `moarchy-reversi` | 0.1.0 released; 0.2.0, the Quickshell rewrite, in the tree and not tagged | yes | yes | **yes** — 0.1.0, the GTK app |
 | tictactoe | `moarchy-tictactoe` | 0.1.0 released; 0.2.0, the Quickshell rewrite, in the tree and not tagged | yes | yes | **yes** — 0.1.0, the GTK app |
 | solitaire | `moarchy-solitaire` | 0.1.0 | yes | yes | **yes** |
-| pegsolitaire | `moarchy-pegsolitaire` | 0.1.0 | yes | yes | **yes** |
+| pegsolitaire | `moarchy-pegsolitaire` | 0.1.0 released; 0.2.0, the Quickshell rewrite, in the tree and not tagged | yes | yes | **yes** — 0.1.0, the GTK app |
 | minesweeper | `moarchy-minesweeper` | 0.1.0 released; 0.2.0, the Quickshell rewrite, in the tree and not tagged | yes | yes | **yes** — 0.1.0, the GTK app |
 | weather | `moarchy-weather` | 0.2.0, the first package — until then a shell plugin copied by hand; in the tree and not tagged | no | no | no |
 | clock | `moarchy-clock` | 0.2.0, the first package (a shell plugin until now), in the tree and not tagged | no | no | no |

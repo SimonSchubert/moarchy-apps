@@ -8,5 +8,4 @@ Icon=org.moarchy.PegSolitaire
 Terminal=false
 Categories=Game;LogicGame;
 Keywords=peg;solitaire;solo;noble;marbles;puzzle;brainvita;
-StartupNotify=true
-StartupWMClass=org.moarchy.PegSolitaire
+StartupNotify=false

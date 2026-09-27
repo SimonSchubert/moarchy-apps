@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "id": "org.moarchy.pegsolitaire",
+  "name": "Peg Solitaire",
+  "version": "0.2.0",
+  "author": "Simon Schubert",
+  "license": "MIT",
+  "description": "Peg solitaire on nine figures that can all be finished, and a hint that runs the solver -- so it can tell you when there is no way left. Desktop and phone layouts.",
+  "homepage": "https://github.com/SimonSchubert/moarchy-apps/tree/main/apps/pegsolitaire",
+  "repository": "https://github.com/SimonSchubert/moarchy-apps",
+  "keywords": ["peg solitaire", "solitaire", "puzzle", "brainvita", "game"],
+  "icon": "icon.svg",
+  "kinds": ["panel"],
+  "keepLoaded": true,
+  "entryPoints": {
+    "panel": "Panel.qml"
+  }
+}

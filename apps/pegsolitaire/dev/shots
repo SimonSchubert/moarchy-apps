@@ -1,0 +1,12 @@
+# What to photograph, for scripts/app-shot.sh.
+shot phone
+shot phone-light LOOK=light
+shot phone-hint MOARCHY_PEGSOLITAIRE_HINT=1
+shot phone-figures MOARCHY_PEGSOLITAIRE_FIGURES=1
+shot phone-record MOARCHY_PEGSOLITAIRE_PAGE=record
+shot phone-stuck DEMO=stuck
+shot phone-tokyo THEME=.themes/tokyo-night/colors.toml
+shot desktop SIZE=1280x820
+shot desktop-light SIZE=1280x820 LOOK=light
+shot desktop-hint SIZE=1280x820 MOARCHY_PEGSOLITAIRE_HINT=1 THEME=.themes/catppuccin-latte/colors.toml
+shot desktop-stuck SIZE=1280x820 DEMO=stuck
