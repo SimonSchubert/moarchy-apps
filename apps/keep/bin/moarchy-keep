@@ -1,0 +1,19 @@
+#!/bin/sh
+# Open Keep: in the running Omarchy shell when it has the plugin, as its own
+# Quickshell process when it does not.
+#
+# `omarchy-shell shell summon` answers "ok" only when the shell is running and
+# has the plugin installed and enabled. Anything else -- no Omarchy, the shell
+# down, the plugin not added -- starts the copy this package installed.
+set -eu
+
+ID=org.moarchy.keep
+APPDIR=${MOARCHY_KEEP_APPDIR:-/usr/share/moarchy-keep}
+
+if command -v omarchy-shell >/dev/null 2>&1; then
+  if [ "$(omarchy-shell shell summon "$ID" '{}' 2>/dev/null)" = ok ]; then
+    exit 0
+  fi
+fi
+
+exec quickshell -n -p "$APPDIR/shell.qml"

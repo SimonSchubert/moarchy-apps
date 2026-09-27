@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "id": "org.moarchy.keep",
+  "name": "Notes",
+  "version": "0.2.0",
+  "author": "Simon Schubert",
+  "license": "MIT",
+  "description": "Notes and checklists in the shape of Google Keep: a grid of cards in their own colours, pinned ones first, search, and an editor with nothing to save. Desktop and phone layouts.",
+  "homepage": "https://github.com/SimonSchubert/moarchy-apps/tree/main/apps/keep",
+  "repository": "https://github.com/SimonSchubert/moarchy-apps",
+  "keywords": ["notes", "keep", "checklist", "todo", "list", "memo"],
+  "icon": "icon.svg",
+  "kinds": ["panel"],
+  "keepLoaded": true,
+  "entryPoints": {
+    "panel": "Panel.qml"
+  }
+}

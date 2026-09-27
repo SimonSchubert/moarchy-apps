@@ -8,7 +8,7 @@ the aarch64 repos, the AUR or Flathub. This is where they get written.
 
 | app | what it is | state |
 |---|---|---|
-| [keep](apps/keep) | Notes and checklists, in the shape of Google Keep | v0.1.1 |
+| [keep](apps/keep) | Notes and checklists, in the shape of Google Keep — in Quickshell, for the desktop and the phone | v0.2.0, unreleased |
 | [habits](apps/habits) | Habit tracking: a tap a day, a streak, sixteen weeks of history — in Quickshell, for the desktop and the phone | v0.2.0, unreleased |
 | [reversi](apps/reversi) | Reversi: a board drawn for 360px, an opponent on a clock | v0.1.0 |
 | [chess](apps/chess) | Chess: two taps a move, an opponent in the app, no second package | v0.1.0 |

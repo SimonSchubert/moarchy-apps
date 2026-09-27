@@ -39,7 +39,7 @@ As of 2026-09-14, and this table is the thing to re-check rather than trust:
 
 | app | package | version | AUR | `[moarchy-apps]` | catalogue |
 |---|---|---|---|---|---|
-| keep | `moarchy-keep` | 0.1.1 | yes | yes | no — still `deferred` in `verdicts.toml` |
+| keep | `moarchy-keep` | 0.1.1 released; 0.2.0, the Quickshell rewrite, in the tree and not tagged | yes | yes | no — still `deferred` in `verdicts.toml` |
 | habits | `moarchy-habits` | 0.1.2 released; 0.2.0, the Quickshell rewrite, in the tree and not tagged | yes | yes | no |
 | vitals | `moarchy-vitals` | 0.2.0, the Quickshell rewrite; 0.2.1, on the kit, not tagged | yes | 0.1.0 still — the GTK app | **yes**, tested on `pinephone-a64` — 0.1.0, the GTK app |
 | chess | `moarchy-chess` | 0.1.0 | yes | yes | **yes** |

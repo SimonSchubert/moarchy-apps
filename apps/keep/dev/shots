@@ -1,0 +1,11 @@
+# What to photograph, for scripts/app-shot.sh.
+shot phone
+shot phone-light LOOK=light
+shot phone-list MOARCHY_KEEP_OPEN=Shopping
+shot phone-text MOARCHY_KEEP_OPEN=Sourdough LOOK=light
+shot phone-menu MOARCHY_KEEP_MENU=Trip
+shot phone-tokyo THEME=.themes/tokyo-night/colors.toml
+shot desktop SIZE=1280x820
+shot desktop-light SIZE=1280x820 LOOK=light
+shot desktop-open SIZE=1280x820 MOARCHY_KEEP_OPEN=Shopping
+shot desktop-latte SIZE=1280x820 THEME=.themes/catppuccin-latte/colors.toml MOARCHY_KEEP_OPEN=Trip
