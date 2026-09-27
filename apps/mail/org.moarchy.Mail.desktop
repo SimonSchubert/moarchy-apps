@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=Mail
+GenericName=Email
+Comment=Read and write email
+Exec=moarchy-mail
+Icon=org.moarchy.Mail
+Terminal=false
+Categories=Network;Email;
+Keywords=email;mail;imap;smtp;inbox;
+StartupNotify=false

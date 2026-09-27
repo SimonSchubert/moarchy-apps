@@ -1,0 +1,14 @@
+# What xdg-open runs for a mailto: link. Hidden from the app menu: the menu's
+# entry is org.moarchy.Mail.desktop, and this one exists to be the mailto:
+# handler. The launcher hands the link to the app as {"mailto": ...}, which
+# opens a message to write.
+[Desktop Entry]
+Type=Application
+Name=Mail
+Comment=Write an email
+Exec=moarchy-mail %u
+Icon=org.moarchy.Mail
+Terminal=false
+NoDisplay=true
+StartupNotify=false
+MimeType=x-scheme-handler/mailto;

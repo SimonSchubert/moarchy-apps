@@ -1,0 +1,31 @@
+# What to photograph, for scripts/app-shot.sh.
+#
+# dev/demo.py writes a week of mail, the folder list and two parsed bodies --
+# a plain message with a quote, a link and a PDF, and a newsletter that is
+# mostly links and pictures -- so every screen here has the thing on it that
+# is hard to get right.
+shot phone
+shot phone-light LOOK=light
+shot phone-message MOARCHY_MAIL_OPEN=231
+shot phone-newsletter MOARCHY_MAIL_OPEN=229
+shot phone-reply MOARCHY_MAIL_OPEN=231 MOARCHY_MAIL_REPLY=all
+shot phone-compose MOARCHY_MAIL_PAGE=compose "MOARCHY_MAIL_TO=Jonas Weber <jonas@example.com>, ha" \
+  MOARCHY_MAIL_SUBJECT=Copenhagen MOARCHY_MAIL_FOCUS=to
+shot phone-folders MOARCHY_MAIL_PAGE=folders
+shot phone-unsent MOARCHY_MAIL_EXTRAS=1
+shot phone-menu MOARCHY_MAIL_MENU=230
+shot phone-setup MOARCHY_MAIL_NOACCOUNT=1 MOARCHY_MAIL_PAGE=setup "MOARCHY_MAIL_TYPED=Ada Okonkwo|ada@example.org|correct horse"
+shot phone-setup-refused MOARCHY_MAIL_NOACCOUNT=1 MOARCHY_MAIL_PAGE=setup \
+  "MOARCHY_MAIL_TYPED=Ada Okonkwo|ada@gmail.com|correct horse" \
+  "MOARCHY_MAIL_NOTE=Gmail needs an app password, made at myaccount.google.com/apppasswords." \
+  "MOARCHY_MAIL_ERROR=This account wants an app password, which is made in the provider's security settings, rather than the account's own password."
+shot desktop SIZE=1280x820 MOARCHY_MAIL_OPEN=231
+shot desktop-light SIZE=1280x820 LOOK=light MOARCHY_MAIL_OPEN=229
+shot desktop-compose SIZE=1280x820 MOARCHY_MAIL_OPEN=231 MOARCHY_MAIL_REPLY=all
+shot desktop-unsent SIZE=1280x820 MOARCHY_MAIL_EXTRAS=1
+shot desktop-settings SIZE=1280x820 MOARCHY_MAIL_PAGE=settings
+[[ -f .themes/catppuccin-latte/colors.toml ]] && \
+  shot desktop-latte SIZE=1280x820 MOARCHY_MAIL_OPEN=229 THEME=.themes/catppuccin-latte/colors.toml
+[[ -f .themes/tokyo-night/colors.toml ]] && \
+  shot phone-tokyo MOARCHY_MAIL_OPEN=231 THEME=.themes/tokyo-night/colors.toml
+true

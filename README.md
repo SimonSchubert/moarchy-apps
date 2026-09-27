@@ -35,7 +35,7 @@ the aarch64 repos, the AUR or Flathub. This is where they get written.
 | [clock](apps/clock) | An alarm that rings late and says so, a stopwatch and a timer — in Quickshell, for the desktop and the phone | v0.2.0, unreleased |
 | [files](apps/files) | One folder at a time: copy, move, rename, and a delete that goes to the trash every other app reads — in Quickshell, for the desktop and the phone | v0.2.0, unreleased |
 | [editor](apps/editor) | One text file at a time, and an `$EDITOR` that waits — in Quickshell, for the desktop and the phone | v0.2.0, unreleased |
-| [mail](plugins/org.moarchy.mail) | *Shell plugin only:* one account over IMAP and SMTP, no HTML drawn, and new mail noticed with the window closed | v0.1.0 |
+| [mail](apps/mail) | One account over IMAP and SMTP, no HTML drawn, and new mail noticed with the window closed — in Quickshell, for the desktop and the phone | v0.2.0, unreleased |
 
 Food is the Open Food Facts row on that list: barcode to nutrition, and Linux
 has `qrca` and `decoder`, which read a code and do not say what the packet is.
@@ -227,9 +227,9 @@ Mail is the sixth, and it replaces Geary, which moarchy-store's sweep had
 already rejected for this screen and which, like Fractal, waits for a keyring
 prompt that maps behind its own window. It is the first plugin that cannot do
 its job in QML at all — there is no TLS socket to open — so
-`bin/moarchy-mail` does every conversation with a server, one short run per
-request, in Python's standard library, and the plugin keeps what it was told in
-files it alone writes. Two things in its README are worth the reading: nothing
+`libexec/moarchy-mail` does every conversation with a server, one short run
+per request, in Python's standard library, and the app keeps what it was told
+in files it alone writes. Two things in its README are worth the reading: nothing
 it draws is HTML, so no message can make the phone fetch a picture, and its
 checks run the helper against a real Dovecot, installed into the container for
 the run, rather than against a fake of one.

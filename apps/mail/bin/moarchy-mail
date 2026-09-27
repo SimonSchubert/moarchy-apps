@@ -1,0 +1,33 @@
+#!/bin/sh
+# Open Mail: in the running Omarchy shell when it has the plugin, as its own
+# Quickshell process when it does not.
+#
+#   moarchy-mail                       the Inbox
+#   moarchy-mail mailto:ada@example.org?subject=Hello
+#
+# A mailto: link -- what xdg-open hands the compose entry -- goes to the app
+# as {"mailto": ...}, and opens a message to write.
+#
+# `omarchy-shell shell summon` answers "ok" only when the shell is running and
+# has the plugin installed and enabled. Anything else -- no Omarchy, the shell
+# down, the plugin not added -- starts the copy this package installed.
+#
+# This is the launcher, not the helper that talks to the servers: that is
+# /usr/lib/moarchy-mail/moarchy-mail, and the app finds it there itself.
+set -eu
+
+ID=org.moarchy.mail
+APPDIR=${MOARCHY_MAIL_APPDIR:-/usr/share/moarchy-mail}
+
+payload='{}'
+if [ $# -gt 0 ] && [ -n "$1" ]; then
+  payload=$(python3 -c 'import json, sys; print(json.dumps({"mailto": sys.argv[1]}))' "$1")
+fi
+
+if command -v omarchy-shell >/dev/null 2>&1; then
+  if [ "$(omarchy-shell shell summon "$ID" "$payload" 2>/dev/null)" = ok ]; then
+    exit 0
+  fi
+fi
+
+MOARCHY_PAYLOAD=$payload exec quickshell -n -p "$APPDIR/shell.qml"
