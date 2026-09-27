@@ -18,7 +18,7 @@ depends=('quickshell' 'ttf-jetbrains-mono-nerd' 'hicolor-icon-theme')
 # A release asset that packaging/release.sh builds from apps/crypto-market at
 # the tag, not GitHub's generated archive of the whole repository.
 source=("$url/releases/download/crypto-market-v$pkgver/$pkgname-$pkgver.tar.gz")
-sha256sums=('SKIP')
+sha256sums=('879e5a93196bc3c3bf3cb6346a306f98c6561de3ce3859ca558c3b3557e97909')
 
 package() {
   cd "$pkgname-$pkgver"
