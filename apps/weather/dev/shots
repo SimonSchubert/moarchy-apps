@@ -1,0 +1,15 @@
+# What to photograph, for scripts/app-shot.sh.
+#
+# Twenty past three on a Tuesday afternoon in Berlin, pinned in both halves:
+# demo.py dates the fixture from it and the app reads its clock from it. A
+# weather app photographed at whatever time the run happens is sometimes a
+# dark screen with a moon on it.
+NOW=MOARCHY_WEATHER_NOW=1789478400
+
+shot phone "$NOW"
+shot phone-light "$NOW" LOOK=light
+shot phone-places "$NOW" MOARCHY_WEATHER_PAGE=places
+shot phone-tokyo "$NOW" THEME=.themes/tokyo-night/colors.toml
+shot desktop SIZE=1280x820 "$NOW"
+shot desktop-light SIZE=1280x820 "$NOW" LOOK=light
+shot desktop-latte SIZE=1280x820 "$NOW" THEME=.themes/catppuccin-latte/colors.toml

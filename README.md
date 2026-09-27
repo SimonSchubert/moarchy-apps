@@ -29,7 +29,7 @@ the aarch64 repos, the AUR or Flathub. This is where they get written.
 | [food](apps/food) | Point the camera at a barcode: nutrition facts from Open Food Facts | v0.1.0 |
 | [launches](apps/launches) | Upcoming rockets: a countdown, a pad, and the ones you star — in Quickshell, for the desktop and the phone | v0.2.0, unreleased |
 | [calculator](plugins/org.moarchy.calculator) | *Shell plugin only:* the four operations, and arithmetic that counts in tens | v0.1.0 |
-| [weather](plugins/org.moarchy.weather) | *Shell plugin only:* now, the next day and the week, where you are and in the places you named | v0.1.0 |
+| [weather](apps/weather) | Now, the next day and the week, where you are and in the places you named — in Quickshell, for the desktop and the phone | v0.2.0, unreleased |
 | [calendar](plugins/org.moarchy.calendar) | *Shell plugin only:* the month, the day under it, and what is next | v0.1.0 |
 | [clock](plugins/org.moarchy.clock) | *Shell plugin only:* an alarm that rings late and says so, a stopwatch and a timer | v0.1.0 |
 | [editor](plugins/org.moarchy.editor) | *Shell plugin only:* one text file at a time, and an `$EDITOR` that waits | v0.1.0 |
@@ -147,7 +147,7 @@ correctly; follows the theme. 1 packages, 0.15 MB"*, with `kweather` beside it.
 So the honest version is the calculator's argument again, and the two phone
 things here are that it is already running when it is summoned, and that now,
 today and the week are one column you scroll rather than three places to
-navigate between — the towns live behind the title, because choosing one is
+navigate between — the towns live behind the pin, because choosing one is
 something you do twice a year and reading the sky is something you do at a bus
 stop. It opens on the town the connection's address is in, looked up from
 GeoJS — a town rather than a street, asked only while that town is on the

@@ -1,24 +1,28 @@
-# Weather, in the shell
+# moarchy-weather
 
 Now, the next day, and the week — where you are, and in the places you named.
 
 <p align="center">
-  <img src="docs/screenshots/today.png" width="30%" alt="A dark screen titled Berlin, with a location pin before the name: a sun behind a cloud beside 21 degrees, Partly cloudy under it, then a boxed strip of hours falling from 21 to 16 degrees, four tiles two across for wind, humidity, sunrise and sunset, and a box labelled The week holding five days, each with a coloured bar between its low and its high">
-  <img src="docs/screenshots/places.png" width="30%" alt="The places page: a search field, then a box labelled Where you are holding Berlin with a refresh button beside it, a box labelled Saved holding Reykjavík, Cairo and Kyoto with a bin beside each — every row with its symbol, its temperature and its own local clock — then a Units card with a Celsius and Fahrenheit pair of chips, and a ticked Show where I am box over a sentence saying the town is looked up from the connection's address by GeoJS">
-  <img src="docs/screenshots/catppuccin-latte.png" width="30%" alt="The same first screen under catppuccin-latte: a near-white window, slate ink, and the same orange and blue bars">
+  <img src="docs/screenshots/phone.png" width="30%" alt="A dark screen titled Berlin: a sun behind a cloud beside 21 degrees, Partly cloudy under it, a boxed strip of hours, four tiles two across for wind, humidity, sunrise and sunset, and the start of the week">
+  <img src="docs/screenshots/phone-places.png" width="30%" alt="The places page: a search field, Berlin under Where you are with a refresh button beside it, and Reykjavík, Cairo and Kyoto under Saved with a bin beside each -- every row with its symbol, its temperature and its own local clock">
+  <img src="docs/screenshots/phone-light.png" width="30%" alt="The same first screen in the light palette">
+</p>
+<p align="center">
+  <img src="docs/screenshots/desktop-latte.png" width="92%" alt="The desktop window under catppuccin-latte: the places in a list on the left, the hero, hours and tiles in the middle, and the week beside them">
 </p>
 
-<p align="center"><em>360×720, the size of a PinePhone's screen under
-mobileomarchy. Every colour is the active Omarchy theme's — the temperatures
-are its own hues, mixed from the palette rather than picked — and
-<code>omarchy-theme-set</code> repaints it without restarting the
-shell.</em></p>
+<p align="center"><em>360×720, and a desktop window. One app: below 720 px
+the places are a page behind the pin in the header, above it they are a list
+beside the forecast, and the week sits beside the rest rather than under it.
+Every colour is the active Omarchy theme's, and a theme switch repaints it
+while it is open.</em></p>
 
-This one is not a port. There is no GTK weather app in `apps/`, and there is
-not going to be one: it was written for the shell first, which is what an app
-opened for nine seconds several times a day should be. Summoning it is
-`visible = true` on a window the shell already holds, and the last forecast is
-already in memory, so the answer is on the screen before the radio is asked.
+A Quickshell app. Inside the Omarchy shell it is a panel the shell keeps
+loaded, so opening it is showing a window rather than starting a process, and
+the last forecast is already in memory -- the answer is on the screen before
+the network is asked. On any other Quickshell desktop `moarchy-weather` runs
+it as its own process. Until 0.2.0 it was a shell plugin copied onto the phone
+by hand; it is the same app, over the same two files.
 
 ## What this is, and what it is not
 
@@ -34,19 +38,19 @@ follows the theme. 1 packages, 0.15 MB"* — and `kweather` beside it. So the
 honest version is the calculator's: **this is not a gap, it is the shell
 argument**, and two things here are a phone's rather than a desktop's.
 
-- **It is one screen.** Now, today and the week are one column you scroll, not
-  three places to navigate between. The places live behind the title, because
-  choosing a town is something you do twice a year and reading the sky is
-  something you do at a bus stop.
+- **It is one screen.** Now, today and the week are one column you scroll on a
+  phone, not three places to navigate between. The places live behind the pin,
+  because choosing a town is something you do twice a year and reading the sky
+  is something you do at a bus stop. On a desktop there is room for both, so
+  the places are a list beside the forecast.
 - **It starts instantly**, because it is already running.
 
 ## The screen
 
-- **The hero** is on the window's own background, the colour of the status bar
-  above it. It used to sit on a band washed in the temperature's hue, and the
-  shell does not draw an app under the status bar, so the wash ended in a hard
-  line across the top of the screen. The temperature's colour is in the hour
-  strip and the week's bars instead, where it is read against something.
+- **The hero** is on the window's own background, in the theme's ink. The
+  temperature's colour is in the hour strip and the week's bars instead, where
+  it is read against something -- sixty pixels of pale yellow on a light theme
+  is the one place the hue would cost a reading.
 - **The strip** is the next twenty-four hours, the one you are in marked both
   by a pill and by the ink of its label. A chance of rain appears above ten per
   cent and not below, because a column of "0%" is twenty-four numbers nobody
@@ -91,8 +95,8 @@ ipinfo, asked the same question, answers `"DE"`.
 **It is a town, not a street.** An address says where the network is rather
 than where the phone is: on a home connection that is usually the right town,
 and on mobile data it can be wherever the carrier's gateway happens to be.
-There is no GPS here. The name carries a pin in the title bar, so a town that
-was looked up never reads as one that was chosen.
+There is no GPS here. The place carries a pin in the list, so a town that was
+looked up never reads as one that was chosen.
 
 - It is asked **only while the answer would be on screen** — the phone's own
   place is the one showing, or the places page is open — and then at most once
@@ -105,7 +109,7 @@ was looked up never reads as one that was chosen.
   Germany is not anywhere anybody is.
 - **The answer is kept in `forecast.json`**, beside its week, and not in
   `places.json` — nobody chose it.
-- **Show where I am**, at the bottom of the places page, switches it off. Off
+- **Show where I am**, in Settings, switches it off. Off
   is forgotten, not hidden: the town leaves the screen at once and the disk at
   the next write, an answer already on its way is dropped unread, and nothing
   is asked until the box is ticked again. The setting is read off the disk
@@ -160,60 +164,46 @@ The id is coordinates to three places — about a hundred metres, closer than an
 model resolves — rather than the geocoder's own number, because it is also the
 key the cache is stored under and a place typed in off a map has no number.
 
-The cache is written **when the window stops being mapped**, which on this
-phone is the event immediately before the app is reclaimed. Not on every
+The cache is written **when the window closes**, which on a phone is the
+event immediately before the app is reclaimed. Not on every
 fetch: that is a write onto flash every quarter of an hour, for a file whose
 entire purpose is the next cold start.
 
-Both files are read through the kit's `JsonFile`, so one that has been
+Both files are read through the kit's `DataFile`, so one that has been
 truncated is moved aside as `*.broken-<epoch>.json` rather than overwritten,
 and a forecast off the disk is read exactly as strictly as one off the wire.
 
-## Install on the phone
+## Running it
 
 ```sh
-plugins/org.moarchy.weather/install-on-device.sh
+quickshell -p apps/weather/shell.qml
+
+# ...or with four towns and a week of made-up weather, and no network at all:
+export MOARCHY_WEATHER_DIR=$(mktemp -d)
+python3 apps/weather/dev/demo.py
+MOARCHY_WEATHER_OFFLINE=1 quickshell -p apps/weather/shell.qml
 ```
 
-That copies the plugin into `~/.config/omarchy/plugins/org.moarchy.weather`,
-asks the shell to validate and enable it, writes a `.desktop` entry so the
-drawer can summon it, and restarts the shell. Then tap **Weather** in the
-drawer.
+In the shell:
 
 ```sh
 omarchy-shell shell toggle org.moarchy.weather
-omarchy-shell weather refresh        # also: place, temperature, toggle
+omarchy-shell weather refresh        # also: place, temperature
 ```
 
-## Run it without the shell
-
-`shell.qml` is the same app as its own Quickshell process, for a machine that
-has Quickshell and none of omarchy:
-
-```sh
-plugins/org.moarchy.weather/run-local.sh          # vendors ui/, then quickshell -p
-
-# ...or with four towns and a week of made-up weather, and no network at all:
-MOARCHY_WEATHER_DIR=/tmp/w plugins/org.moarchy.weather/demo.py
-MOARCHY_WEATHER_DIR=/tmp/w MOARCHY_WEATHER_OFFLINE=1 \
-  plugins/org.moarchy.weather/run-local.sh
-```
-
-The plugin host is the only thing that goes missing, and everything that needed
-it was already optional: `shell` stays null so the summon-and-return calls are
-skipped, `colors.toml` is not staged so the built-in palette stands, and
-closing the window ends the process instead of hiding a surface the shell would
-otherwise keep alive.
+On a desktop: `r` refreshes, `/` finds a town, ↑ and ↓ move to the place above
+or below, `,` is Settings, where the units and the address lookup are.
 
 ## Checks
 
 ```sh
-scripts/qml-check.sh org.moarchy.weather
-scripts/qml-shot.sh org.moarchy.weather     # the pictures above
+docker run --rm -v "$PWD:/src" -w /src moarchy-qml scripts/app-check.sh weather
+docker run --rm -v "$PWD:/src" -w /src moarchy-qml scripts/app-shot.sh weather
 ```
 
-qmllint with every warning fatal, then the two test files, then a real run at
-360×720 that fails on any QML diagnostic.
+qmllint with every warning fatal, then the two test files, then a real run
+that fails on any QML diagnostic. The second photographs `dev/shots` at a
+phone's size and a desktop's.
 
 What the tests cannot reach was checked by hand against the live API, in the
 container, under the compositor the phone runs: a place with no forecast
@@ -238,10 +228,10 @@ on and off.
 | `MOARCHY_WEATHER_DIR` | where the places and the cache are kept |
 | `MOARCHY_WEATHER_OFFLINE` | draw the cache and never open a socket |
 | `MOARCHY_WEATHER_UNITS` | `metric` or `imperial`, for one run |
-| `MOARCHY_WEATHER_PAGE` | `places` to open on the places page |
-| `MOARCHY_WEATHER_SEARCH` | open the places page with this typed, and look it up — the one screen a harness cannot reach on its own, because a headless compositor has no pointer to tap the field with. It needs the network, so it is not in `shots.sh` |
+| `MOARCHY_WEATHER_PAGE` | `places` to open on the places page, `settings` on Settings |
+| `MOARCHY_WEATHER_SEARCH` | open the places page with this typed, and look it up — the one screen a harness cannot reach on its own, because a headless compositor has no pointer to tap the field with. It needs the network, so it is not in `dev/shots` |
 | `MOARCHY_WEATHER_NOW` | pin the clock, so two pictures agree |
-| `MOARCHY_WEATHER_QUIT_AFTER` | quit after N seconds, for headless runs |
+| `MOARCHY_QUIT_AFTER` | quit after N seconds, for headless runs |
 
 ## What is not here
 

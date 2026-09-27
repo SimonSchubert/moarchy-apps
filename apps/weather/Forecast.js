@@ -14,7 +14,7 @@ var GEOCODE = "https://geocoding-api.open-meteo.com/v1/search"
 // same question, answers "DE", and the places list would need a table of
 // countries to say Germany.
 var LOCATE = "https://get.geojs.io/v1/ip/geo.json"
-var AGENT = "moarchy-weather/0.1.0 (+https://github.com/SimonSchubert/moarchy-apps)"
+var AGENT = "moarchy-weather/0.2.0 (+https://github.com/SimonSchubert/moarchy-apps)"
 var TIMEOUT = 12
 
 // Seven days is what the daily list shows; 48 hours is what is kept of the

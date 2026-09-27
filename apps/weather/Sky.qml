@@ -36,20 +36,20 @@ Item {
   property int size: 24
 
   // The cloud and the sun.
-  property color ink: "#ffffff"
+  property color ink: "white"
   // The rain, the snow and the bolt. Never the only thing that distinguishes
   // two symbols: drizzle has two drops and rain three, whatever colour they
   // are drawn in.
-  property color accent: "#3584e4"
+  property color accent: "steelblue"
   // The bolt, which is the one thing in the sky that is not the colour of the
   // rain. Drawn in the theme's yellow because a blue zigzag under a blue cloud
   // is a shape nobody reads as lightning -- which is exactly how it looked
   // before somebody looked at it.
-  property color spark: "#f5c211"
+  property color spark: "gold"
   // What is behind the moon, which is how the crescent is cut. The one number
   // here a caller has to get right: on a band of colour it is that band's
   // colour, not the window's.
-  property color behind: "#1d1d20"
+  property color behind: "black"
 
   width: root.size
   height: root.size
