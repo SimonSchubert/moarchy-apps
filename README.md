@@ -30,6 +30,7 @@ the aarch64 repos, the AUR or Flathub. This is where they get written.
 | [launches](apps/launches) | Upcoming rockets: a countdown, a pad, and the ones you star — in Quickshell, for the desktop and the phone | v0.2.0, unreleased |
 | [calculator](apps/calculator) | The four operations, a tape you can tap, and arithmetic that counts in tens — in Quickshell, for the desktop and the phone | v0.2.0, unreleased |
 | [weather](apps/weather) | Now, the next day and the week, where you are and in the places you named — in Quickshell, for the desktop and the phone | v0.2.0, unreleased |
+| [contacts](apps/contacts) | A name, a number, an email and a note, in one file, with no accounts behind it — in Quickshell, for the desktop and the phone | v0.2.0, unreleased |
 | [calendar](plugins/org.moarchy.calendar) | *Shell plugin only:* the month, the day under it, and what is next | v0.1.0 |
 | [clock](apps/clock) | An alarm that rings late and says so, a stopwatch and a timer — in Quickshell, for the desktop and the phone | v0.2.0, unreleased |
 | [editor](plugins/org.moarchy.editor) | *Shell plugin only:* one text file at a time, and an `$EDITOR` that waits | v0.1.0 |

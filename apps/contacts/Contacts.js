@@ -161,3 +161,26 @@ function sections(list) {
   }
   return out
 }
+
+// The letters in a contact's disc: the first of the first and last words of
+// the name, or the first character of whatever it is filed under.
+function monogram(c) {
+  var name = str(c && c.name)
+  if (name) {
+    var words = name.split(/\s+/)
+    var first = words[0].charAt(0)
+    var last = words.length > 1 ? words[words.length - 1].charAt(0) : ""
+    return (first + last).toUpperCase()
+  }
+  var key = sortKey(c || {})
+  return key ? key.charAt(0).toUpperCase() : "?"
+}
+
+// A stable small number for a key, so a person keeps one colour. Not a hash
+// anybody should rely on for anything else.
+function hueIndex(key, count) {
+  var s = String(key || "")
+  var h = 0
+  for (var i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0
+  return count > 0 ? Math.abs(h) % count : 0
+}

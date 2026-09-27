@@ -55,6 +55,7 @@ As of 2026-09-14, and this table is the thing to re-check rather than trust:
 | breakout | `moarchy-breakout` | 0.1.0 | yes | yes | **yes** |
 | launches | `moarchy-launches` | 0.2.0, the Quickshell rewrite, in the tree and not tagged; 0.1.0 was never released | no | no | no |
 | calculator | `moarchy-calculator` | 0.2.0, its first package — 0.1.0 was a shell plugin only — in the tree and not tagged | no | no | no |
+| contacts | `moarchy-contacts` | 0.2.0, its first package — 0.1.0 was a shell plugin only — in the tree and not tagged | no | no | no |
 | queens | `queens` | 1.0.8 | no — upstream's name to claim | no — it was in moarchy's `[moarchy]` | **yes** |
 | puzzle-games | `puzzle-games` | 1.1.4 | no — upstream's name to claim | no — it was in moarchy's `[moarchy]` | **yes** |
 | coins | `moarchy-coins` | 0.1.1 | to be deleted | to be dropped | to be dropped — replaced by `crypto-market`, see below |

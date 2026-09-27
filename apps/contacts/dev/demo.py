@@ -7,7 +7,7 @@ the detail sheet -- is only itself once somebody is in the list. Contacts has
 no GTK half to borrow a fixture from, which is why this one writes the JSON by
 hand rather than running an app's own writer.
 
-    MOARCHY_CONTACTS_DIR=/tmp/c plugins/org.moarchy.contacts/demo.py
+    MOARCHY_CONTACTS_DIR=/tmp/c apps/contacts/dev/demo.py
 
 The names are invented, and so is every number: the exchange prefixes are the
 ones reserved for drama (555 in North America, 7700 900xxx in the UK, and

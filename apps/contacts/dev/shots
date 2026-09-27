@@ -1,0 +1,10 @@
+# What to photograph, for scripts/app-shot.sh. dev/demo.py writes the book.
+shot phone
+shot phone-light LOOK=light
+shot phone-search MOARCHY_CONTACTS_SEARCH=doctor
+shot phone-editor MOARCHY_CONTACTS_EDIT="Ada Okonkwo"
+shot phone-new MOARCHY_CONTACTS_PAGE=editor
+shot desktop SIZE=1280x820 MOARCHY_CONTACTS_EDIT="Ada Okonkwo"
+shot desktop-light SIZE=1280x820 LOOK=light
+shot desktop-latte SIZE=1280x820 THEME=.themes/catppuccin-latte/colors.toml MOARCHY_CONTACTS_EDIT="Hannah Lindqvist"
+shot phone-tokyo THEME=.themes/tokyo-night/colors.toml
