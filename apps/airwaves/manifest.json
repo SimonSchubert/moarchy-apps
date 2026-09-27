@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "id": "io.github.simonschubert.airwaves",
+  "name": "Airwaves",
+  "version": "1.0.0",
+  "author": "Simon Schubert",
+  "license": "MIT",
+  "description": "Internet radio from the community directory at radio-browser.info: over 50,000 stations from every country, by genre, country and language, with search, favourites and history. Shows the song a station is playing, and has a sleep timer. Plays through mpv. Not affiliated with radio-browser.info. Desktop and phone layouts.",
+  "homepage": "https://github.com/SimonSchubert/moarchy-apps/tree/main/apps/airwaves",
+  "repository": "https://github.com/SimonSchubert/moarchy-apps",
+  "keywords": [
+    "radio",
+    "internet radio",
+    "stations",
+    "streaming",
+    "music",
+    "news",
+    "podcast",
+    "fm",
+    "live",
+    "radio-browser"
+  ],
+  "icon": "icon.svg",
+  "kinds": [
+    "panel"
+  ],
+  "keepLoaded": true,
+  "entryPoints": {
+    "panel": "Panel.qml"
+  }
+}

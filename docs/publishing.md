@@ -57,6 +57,7 @@ As of 2026-09-14, and this table is the thing to re-check rather than trust:
 | crypto-market | `crypto-market` | 1.1.1 | yes | no — AUR only | no |
 | couch-for-trakt | `couch-for-trakt` | 1.1.0 | yes | no — AUR only | no |
 | transit | `transit` | 1.1.0 | yes | no — AUR only | no |
+| airwaves | `airwaves` | 1.0.0 | not yet — no release | no — AUR only | no |
 
 Thirteen of fifteen are in all three. What is left is `keep` and `habits`,
 which have no catalogue row, and the two Flutter ones, which are listed and in
@@ -71,7 +72,7 @@ and the catalogue.
 
 `couch-for-trakt` followed the same day, from the `omarchy-couch` plugin
 repository, on the same terms: AUR only, named in `aur.yml`. So did `transit`, from
-`omarchy-transit`.
+`omarchy-transit`, and `airwaves`, written here in Couch's shape.
 
 What follows is the history of the version of Coins that left.
 

@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=Airwaves
+GenericName=Internet radio
+Comment=Listen to radio stations from all over the world
+Exec=airwaves
+Icon=airwaves
+Terminal=false
+StartupNotify=false
+Categories=AudioVideo;Audio;Player;
+Keywords=radio;internet radio;stream;music;fm;station;live;news;
