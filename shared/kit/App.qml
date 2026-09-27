@@ -99,7 +99,9 @@ Item {
 
   property Tokens ui: Tokens { theme: root.hostTheme; compact: root.compact }
 
-  function alpha(c, a) { return Qt.rgba(c.r, c.g, c.b, a) }
+  // A colour at an opacity. `c` may be a color or a "#rrggbb" string: a
+  // string has no .r, and Qt.rgba(undefined, ...) is black.
+  function alpha(c, a) { var x = Qt.color(c); return Qt.rgba(x.r, x.g, x.b, a) }
 
   // Omarchy Mobile draws its gesture bar over the bottom of every app, on
   // purpose: an app's background reaches the glass, and its controls stay

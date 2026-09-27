@@ -18,7 +18,9 @@ QtObject {
   required property HostTheme theme
   property bool compact: false
 
-  function alpha(c, a) { return Qt.rgba(c.r, c.g, c.b, a) }
+  // A colour at an opacity. `c` may be a color or a "#rrggbb" string: a
+  // string has no .r, and Qt.rgba(undefined, ...) is black.
+  function alpha(c, a) { var x = Qt.color(c); return Qt.rgba(x.r, x.g, x.b, a) }
   // A theme's hue by name, or the fallback given for this palette.
   function hue(name, darkFallback, lightFallback) {
     return theme.hue(name) || (dark ? darkFallback : lightFallback)
