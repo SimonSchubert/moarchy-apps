@@ -203,7 +203,7 @@ also the first app here to need something back from the shared kit:
 Adwaita has an alarm clock and has neither a stopwatch nor an hourglass.
 
 Text Editor is the fifth, and the phone's editor rather than an app beside
-one: it replaces `gnome-text-editor` in moarchy's package set, both as what
+one: it replaces `gnome-text-editor` on the phone, both as what
 opens when a text file is tapped and as `$EDITOR`. The second is the part a
 plugin is bad at, because opening a file in something the shell already holds
 returns at once, and `git commit` reads its message back the moment the editor
@@ -328,7 +328,7 @@ done literally: a signed binary repo **is** a pacman sync database, so
   keyring, which is better provenance than the AUR offers — the AUR ships no
   package signatures at all, because it ships no packages.
 
-What changes is one stanza in the image's `/etc/pacman.conf`, with the key
+What changes is one stanza in a phone's `/etc/pacman.conf`, with the key
 pinned — a decision made once, deliberately, rather than a hole.
 
 ```
@@ -346,15 +346,11 @@ sudo pacman-key --add moarchy-apps.gpg
 sudo pacman-key --lsign-key 3CA83612E7F3108F442006B418305B893569BAD3
 ```
 
-The section is `[moarchy-apps]` and not `[moarchy]` because the distro already
-owns that name: a phone's `/etc/pacman.conf` carries `[moarchy]` pointing at
-`github.com/SimonSchubert/moarchy/releases/download/repo`, and pacman section
-names are unique — the stanza these instructions used to give could not be added
-to an image at all. Nor is the name cosmetic. pacman fetches
-`<Server>/<section>.db`, so the section name *is* the filename on the far end,
-and a repo published under one name cannot be mounted under another. `REPO=`
-overrides it in both packaging scripts and now defaults to `moarchy-apps`, so
-the database and the stanza cannot drift apart by way of a forgotten variable.
+The section name is not cosmetic. pacman fetches `<Server>/<section>.db`, so
+the section name *is* the filename on the far end, and a repo published under
+one name cannot be mounted under another. `REPO=` overrides it in both
+packaging scripts and defaults to `moarchy-apps`, so the database and the
+stanza cannot drift apart by way of a forgotten variable.
 
 That single change is what makes every app in this repo listable, and it
 retires the "AUR only" verdict for `moarchy-keep` too.
@@ -432,7 +428,7 @@ everyone not running our image, `[moarchy-apps]` is the only one the store's
 helper can install from, and the catalogue is how anybody finds it. `git grep`
 will not tell you which of them an app has actually reached, so
 [`docs/publishing.md`](docs/publishing.md) holds that table, the order the
-scripts run in, and the four gaps that are structural rather than unfinished.
+scripts run in, and the gaps that are structural rather than unfinished.
 
 ## Licence
 

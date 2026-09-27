@@ -3,7 +3,7 @@
 #
 #   plugins/org.moarchy.editor/install-on-device.sh
 #
-# PHONE defaults to the same target scripts/device.sh uses.
+# PHONE is the same target scripts/device.sh takes.
 #
 # Two desktop entries and a command, where other plugins have one entry: the
 # drawer's, the hidden one xdg-open runs for a text file, and moarchy-editor in
@@ -13,10 +13,10 @@
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")" && pwd)"
 KIT="$(cd "$ROOT/../../shared/qs_ui" && pwd)"
-# moarchy.local and not an address: the phone's systemd-resolved answers mDNS
-# (+mDNS is on by default and avahi is not installed), so this follows it from
-# one lease to the next.
-PHONE="${PHONE:-moarchy@moarchy.local}"
+# omarchy@<address>, or the name `./mobile phone list` prints in the mobile
+# repo: an Omarchy Mobile phone announces nothing over mDNS, so there is no
+# name that finds it by itself.
+PHONE="${PHONE:?set PHONE=omarchy@<phone address>}"
 ID="org.moarchy.editor"
 DEST=".config/omarchy/plugins/$ID"
 
@@ -70,14 +70,12 @@ PY
 update-desktop-database ~/.local/share/applications >/dev/null 2>&1 || true
 export XDG_RUNTIME_DIR="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}"
 export WAYLAND_DISPLAY="${WAYLAND_DISPLAY:-wayland-1}"
-export SWAYSOCK="${SWAYSOCK:-$(ls "$XDG_RUNTIME_DIR"/sway-ipc.* 2>/dev/null | head -1)}"
 export OMARCHY_PATH="${OMARCHY_PATH:-/usr/share/omarchy}"
-pkill -x quickshell 2>/dev/null || true
-for _ in $(seq 20); do pgrep -x quickshell >/dev/null || break; sleep 0.2; done
-mkdir -p ~/.local/state/moarchy
-QS_DISABLE_FILE_WATCHER=1 QS_NO_RELOAD_POPUP=1 \
-  setsid quickshell -n -p "$OMARCHY_PATH/shell" >~/.local/state/moarchy/shell.log 2>&1 &
-sleep 2
-pgrep -x quickshell >/dev/null && echo "    restarted omarchy-shell" || echo "    shell failed to start, see ~/.local/state/moarchy/shell.log"
+# omarchy-restart-shell starts the new shell through Hyprland, so it is the
+# compositor's child and in the seat. One started from here would live in this
+# ssh session, and polkit gives a remote session nothing.
+omarchy-restart-shell >/dev/null 2>&1 || true
+sleep 4
+pgrep -x quickshell >/dev/null && echo "    restarted omarchy-shell" || echo "    shell failed to start, see journalctl --user"
 ENDSSH
 echo "==> done. tap Text Editor in the drawer, or: ~/.local/bin/moarchy-editor FILE"

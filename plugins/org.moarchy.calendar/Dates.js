@@ -302,7 +302,7 @@ function parseTime(text) {
 
 // Twenty-four hours, always, and not a setting.
 //
-// The phone's clock, the shell's bar and moarchy's own theme files are all on
+// The phone's clock, the shell's bar and Omarchy's own theme files are all on
 // the 24-hour clock; a calendar that disagreed with the bar above it would be
 // the only thing on the screen needing to be read twice.
 function formatTime(minutes) {

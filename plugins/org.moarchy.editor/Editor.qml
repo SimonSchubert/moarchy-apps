@@ -643,8 +643,8 @@ Item {
       root.leaveOnClose = false
       root.menuOpen = false
       root.cancelDialog()
-      // The keyboard is left where it is. moarchy's gestures.md G14: nothing
-      // puts it down but the back swipe, and switching apps leaves it alone.
+      // The keyboard is left where it is: nothing puts it down but the back
+      // swipe, and switching apps leaves it alone.
     }
 
     Rectangle {

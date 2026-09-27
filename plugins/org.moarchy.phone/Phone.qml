@@ -110,7 +110,6 @@ Item {
   property var ended: null
   property string ringPath: ""
   property bool raisedForCall: false
-  property bool wasLocked: false
 
   property var menuEntry: null
   property real now: Date.now()
@@ -334,10 +333,6 @@ Item {
   function afterCall(): void {
     root.ended = null
     if (root.live.length > 0) return
-    if (root.wasLocked) {
-      root.wasLocked = false
-      if (!root.offline) Quickshell.execDetached(Modem.lockCommand())
-    }
     if (root.raisedForCall) {
       root.raisedForCall = false
       root.dismiss()
@@ -656,12 +651,6 @@ Item {
     id: wake
     running: false
     command: Modem.wakeCommand()
-    stdout: StdioCollector { id: wakeOut; waitForEnd: true }
-    // qmllint disable signal-handler-parameters
-    onExited: function (code, status) {
-      if (wakeOut.text.indexOf("locked") >= 0) root.wasLocked = true
-    }
-    // qmllint enable signal-handler-parameters
   }
 
   // The app is this file's only writer, so it does not watch it: a reload

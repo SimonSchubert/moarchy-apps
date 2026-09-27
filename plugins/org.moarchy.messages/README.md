@@ -2,7 +2,7 @@
 
 Text messages, by the person they are with.
 
-This replaces Chatty on moarchy, and like Phone it replaces Chatty's daemon
+This replaces Chatty, and like Phone it replaces Chatty's daemon
 too. The shell keeps the plugin loaded, and a sleeping `gdbus monitor` hears
 ModemManager say a text arrived. The text is written to `messages.json` first
 and deleted from the modem after, which is Chatty's rule and the one that

@@ -60,7 +60,7 @@ function inner(outer, pad) {
 //
 // The scale above is drawn at `corners = "large"`, the look this phone shipped
 // with. `~/.config/omarchy/ui.toml` can say `modest` or `square` instead, and
-// the shell's sheets, tiles and cards follow it (moarchy's docs/style.md D1).
+// the shell's sheets, tiles and cards follow it.
 // An app that read the scale straight off this file was the one rounded thing
 // left on a square phone, so every corner an app draws goes through one of
 // these two:

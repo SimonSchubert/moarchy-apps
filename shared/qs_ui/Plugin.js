@@ -26,6 +26,10 @@ function dataDir(app, home, xdg, override) {
 // matters: they cover the screen. Leaving one of them open behind a window is
 // how a back swipe ends up dismissing the wrong thing.
 //
+// These are the ids of moarchy's shell, which is no longer developed. Omarchy
+// Mobile's surfaces are `omarchy.mobile.*`, so on Mobile nothing here is ever
+// open and this does nothing until the list follows them.
+//
 // A no-op off the shell, where `shell` is null and there is nothing to hide.
 var OVERLAYS = ["moarchy.shade", "moarchy.drawer", "moarchy.themes"]
 

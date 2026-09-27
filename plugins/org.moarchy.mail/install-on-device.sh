@@ -3,13 +3,16 @@
 #
 #   plugins/org.moarchy.mail/install-on-device.sh
 #
-# PHONE defaults to the same target scripts/device.sh uses. moarchy-mail goes
+# PHONE is the same target scripts/device.sh takes. moarchy-mail goes
 # to ~/.local/bin, which the shell's PATH has before /usr/bin, so a phone with
 # the package installed runs this checkout's copy until the file is removed.
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")" && pwd)"
 KIT="$(cd "$ROOT/../../shared/qs_ui" && pwd)"
-PHONE="${PHONE:-moarchy@moarchy.local}"
+# omarchy@<address>, or the name `./mobile phone list` prints in the mobile
+# repo: an Omarchy Mobile phone announces nothing over mDNS, so there is no
+# name that finds it by itself.
+PHONE="${PHONE:?set PHONE=omarchy@<phone address>}"
 ID="org.moarchy.mail"
 DEST=".config/omarchy/plugins/$ID"
 
@@ -66,20 +69,12 @@ update-desktop-database ~/.local/share/applications >/dev/null 2>&1 || true
 xdg-mime default org.moarchy.Mail.compose.desktop x-scheme-handler/mailto 2>/dev/null || true
 export XDG_RUNTIME_DIR="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}"
 export WAYLAND_DISPLAY="${WAYLAND_DISPLAY:-wayland-1}"
-export SWAYSOCK="${SWAYSOCK:-$(ls "$XDG_RUNTIME_DIR"/sway-ipc.* 2>/dev/null | head -1)}"
 export OMARCHY_PATH="${OMARCHY_PATH:-/usr/share/omarchy}"
-# Restarted through sway, for the reason Messages' installer gives: a shell
-# started from this ssh session lives in it, and dies with it.
-pkill -x quickshell 2>/dev/null || true
-for _ in $(seq 20); do pgrep -x quickshell >/dev/null || break; sleep 0.2; done
-mkdir -p ~/.local/state/moarchy
-if [ -x /usr/lib/moarchy/bin/moarchy-restart-shell ] && [ -n "$SWAYSOCK" ]; then
-  swaymsg exec /usr/lib/moarchy/bin/moarchy-restart-shell >/dev/null
-else
-  QS_DISABLE_FILE_WATCHER=1 QS_NO_RELOAD_POPUP=1 \
-    setsid quickshell -n -p "$OMARCHY_PATH/shell" >~/.local/state/moarchy/shell.log 2>&1 &
-fi
+# omarchy-restart-shell starts the new shell through Hyprland, so it is the
+# compositor's child and in the seat. One started from here would live in this
+# ssh session, and polkit gives a remote session nothing.
+omarchy-restart-shell >/dev/null 2>&1 || true
 sleep 4
-pgrep -x quickshell >/dev/null && echo "    restarted omarchy-shell" || echo "    shell failed to start, see ~/.local/state/moarchy/shell.log"
+pgrep -x quickshell >/dev/null && echo "    restarted omarchy-shell" || echo "    shell failed to start, see journalctl --user"
 ENDSSH
 echo "==> done. tap Mail in the drawer, or: omarchy-shell shell toggle $ID"

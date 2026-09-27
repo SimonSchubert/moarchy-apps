@@ -14,7 +14,7 @@ import "Metrics.js" as Metrics
 // because the keyboard is not the shell's to give: moarchy-keyboard binds
 // zwp_input_method_v2 and Qt speaks text-input-v3 for whatever holds focus.
 // That is how text reaches the field, not how the keyboard comes up: focus
-// arriving on its own raises nothing (moarchy's gestures.md G14), so a press on
+// arriving on its own raises nothing, so a press on
 // this field asks sm.puri.OSK0, the same way the restore handle does.
 //
 // Icons sit outside the input: putting them in a suffix that can take focus

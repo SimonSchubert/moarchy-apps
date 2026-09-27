@@ -6,7 +6,7 @@
 #   scripts/device.sh all mill
 #   scripts/device.sh remove breakout
 #
-# Lifted out of apps/keep/scripts/device.sh, which said in its own header to do
+# Lifted out of Keep's own device script, which said in its header to do
 # exactly that when a second app needed a device run. Seven did at once. The
 # app-specific parts it named -- the package name, the data file, the shots --
 # turned out to be derivable: the package is moarchy-<app>, the app id is read
@@ -18,11 +18,11 @@
 # filesystem by hand: packages are installed with pacman, which owns every file
 # it places, and `remove` takes all of them away again.
 #
-#   PHONE   ssh target (default moarchy@moarchy.local)
+#   PHONE   ssh target, omarchy@<address> (required)
 #
-# The account is `moarchy`, not DanctNIX's `alarm`, and its password is locked:
-# publickey is the only way in, and sudo is passwordless. Anything that goes
-# through polkit instead of sudo asks for a password that does not exist.
+# The phone runs Omarchy Mobile, and the account is `omarchy`. Its debug image
+# lets publickey in and gives the account passwordless sudo; anything that goes
+# through polkit instead of sudo asks for a password that is not there.
 #
 # Three things in here are scar tissue from other sessions on this device and
 # are not optional:
@@ -49,12 +49,10 @@
 set -uo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-# moarchy.local and not an address: the phone's systemd-resolved answers mDNS
-# (+mDNS is on by default and avahi is not installed), so this follows it from
-# one lease to the next. The literal that used to be here, 192.168.0.18, had
-# stopped being the phone at all -- and the router is no help, because its DNS
-# returns every lease the name has ever held, four of them dead, one per query.
-PHONE="${PHONE:-moarchy@moarchy.local}"
+# An address and not a name: an Omarchy Mobile phone announces nothing over
+# mDNS. `./mobile phone list` in the mobile repo sweeps the LAN and prints what
+# answered.
+PHONE="${PHONE:?set PHONE=omarchy@<phone address>}"
 # One multiplexed connection for the whole run. Several sessions each opening a
 # fresh connection per scp is what trips sshd's MaxStartups on this phone, and
 # it presents as "Connection reset by peer" rather than as anything about
@@ -65,9 +63,10 @@ SSH_OPTS=(-o BatchMode=yes -o StrictHostKeyChecking=accept-new -o ConnectTimeout
 OUT="${OUT:-}"
 
 # The environment a Wayland client needs when it is started from an ssh session
-# rather than from the session itself, plus the socket swaymsg looks for.
+# rather than from the session itself, plus the Hyprland instance hyprctl talks
+# to -- the newest one, the way omarchy-restart-shell finds it.
 PHONE_ENV='export XDG_RUNTIME_DIR=/run/user/$(id -u) WAYLAND_DISPLAY=wayland-1
-           export SWAYSOCK=$(ls $XDG_RUNTIME_DIR/sway-ipc.* 2>/dev/null | head -1)'
+           export HYPRLAND_INSTANCE_SIGNATURE=$(ls -t $XDG_RUNTIME_DIR/hypr 2>/dev/null | head -1)'
 
 say()  { printf '\n\033[1m==> %s\033[0m\n' "$*"; }
 info() { printf '    %s\n' "$*"; }
@@ -90,10 +89,10 @@ newest_pkg() { ls -t "$ROOT/packages/$(pkg_of "$1")"-*.pkg.tar.* 2>/dev/null | h
 
 step_check() {
   say "the phone"
-  phone true 2>/dev/null || die "cannot reach $PHONE (PHONE=moarchy@<ip>; the account is moarchy, not alarm)"
+  phone true 2>/dev/null || die "cannot reach $PHONE (PHONE=omarchy@<address>)"
   phone "$PHONE_ENV"'
     echo "  host:      $(uname -m) $(uname -r)"
-    echo "  session:   $(pgrep -x sway >/dev/null && echo "sway running" || echo "NO SWAY -- a screenshot would be a still wallpaper")"
+    echo "  session:   $(pgrep -x Hyprland >/dev/null && echo "Hyprland running" || echo "NO HYPRLAND -- a screenshot would be a still wallpaper")"
     echo "  theme:     $(basename "$(readlink -f ~/.local/state/omarchy/current/theme 2>/dev/null)" 2>/dev/null || echo none)"
     echo "  free:      $(df -h / | awk "NR==2 {print \$4}")"
     echo "  pacman:    $([ -e /var/lib/pacman/db.lck ] && echo "LOCKED -- another transaction is running" || echo free)"
@@ -172,25 +171,32 @@ step_install() {
     || warn "desktop entry does not validate"
 }
 
-# grim blocks forever on a blanked output and says nothing about it: swayidle
-# turns DSI-1 off after a few minutes, a blanked output commits no frames, and
-# wlr-screencopy never delivers one. Found by moarchy-apps-f6 after losing half
-# an hour to it. One line, before every capture.
+# grim blocks forever on a blanked output and says nothing about it: the idle
+# timer turns the panel off after a few minutes, a blanked output commits no
+# frames, and wlr-screencopy never delivers one. Found by moarchy-apps-f6 after
+# losing half an hour to it. One line, before every capture.
+#
+# Every dispatch here is spelled in Lua: Hyprland started from a Lua config,
+# which the phone's is, reads the classic `dispatch dpms on` as a syntax error
+# and does nothing.
 wake_screen() {
   phone "$PHONE_ENV"'
-    swaymsg "output * dpms on" >/dev/null 2>&1; true'
+    hyprctl dispatch '\''hl.dsp.dpms({ action = "enable" })'\'' >/dev/null 2>&1; true'
 }
+
+# The window selector for an app id: Hyprland calls it the class.
+sel_of() { echo "class:^($1)\$"; }
 
 # Is there a window with this app id on the seat right now?
 on_screen() {
   phone "$PHONE_ENV"'
-    swaymsg -t get_tree 2>/dev/null' | grep -q "\"app_id\": \"$1\""
+    hyprctl clients -j 2>/dev/null' | grep -q "\"class\": \"$1\""
 }
 
 close_app() {
-  local appid="$1"
+  local sel; sel=$(sel_of "$1")
   phone "$PHONE_ENV"'
-    swaymsg "[app_id=\"'"$appid"'\"] kill" >/dev/null 2>&1; true'
+    hyprctl dispatch '\''hl.dsp.window.close({ window = "'"$sel"'" })'\'' >/dev/null 2>&1; true'
 }
 
 # The app id of the window left on screen by the last shot, so the next one can
@@ -213,7 +219,7 @@ step_shot() {
   # session lands outside the seat, and anything that then wants a polkit
   # agent, a portal or an input method finds none.
   phone "$PHONE_ENV"'
-    swaymsg exec '"'$bin'"' >/dev/null' || die "could not launch $bin"
+    hyprctl dispatch '\''hl.dsp.exec_cmd("'"$bin"'")'\'' >/dev/null' || die "could not launch $bin"
 
   # Waited for rather than slept through, which is the lesson screenshot.sh
   # already learnt on the virtual screen: a fixed sleep is a guess, and the
@@ -230,15 +236,20 @@ step_shot() {
   LAST_APPID="$appid"
 
   # And this is the line that actually beats the drawer, which re-sequencing the
-  # launches did not: the app drawer is a layer-shell surface on sway's Top
+  # launches did not: the app drawer is a layer-shell surface on the Top
   # layer, and an ordinary toplevel is drawn *under* that whatever order things
   # started in. A fullscreen toplevel is drawn above it. So the drawer can be
   # open, focused, with the on-screen keyboard up, and the capture is still of
   # the app. Found by moarchy-apps-f6, who lost a session's worth of captures to
   # the same thing before working it out.
+  #
+  # Hyprland's fullscreen is a toggle on the focused window, so it is sent only
+  # to a window that is not fullscreen already.
+  local sel; sel=$(sel_of "$appid")
   phone "$PHONE_ENV"'
-    swaymsg "[app_id=\"'"$appid"'\"] focus" >/dev/null 2>&1
-    swaymsg "[app_id=\"'"$appid"'\"] fullscreen enable" >/dev/null 2>&1; true'
+    hyprctl dispatch '\''hl.dsp.focus({ window = "'"$sel"'" })'\'' >/dev/null 2>&1
+    hyprctl activewindow -j 2>/dev/null | grep -q "\"fullscreen\": 0" &&
+      hyprctl dispatch '\''hl.dsp.window.fullscreen({ mode = "fullscreen" })'\'' >/dev/null 2>&1; true'
 
   sleep "${SETTLE:-3}"
   if ! on_screen "$appid"; then

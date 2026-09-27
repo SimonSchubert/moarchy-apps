@@ -110,7 +110,7 @@ TestCase {
                 Modem.hangupAndAcceptCommand(), Modem.dtmfCommand("/p", "5"),
                 Modem.deleteCallsCommand(["/p"]), Modem.deleteSmsCommand(["/p"]),
                 Modem.sendCommand("+4930123", "hi"), Modem.feedbackCommand("phone-incoming-call", true, false),
-                Modem.callAudioCommand("SelectMode", "u", 1), Modem.wakeCommand(), Modem.lockCommand(),
+                Modem.callAudioCommand("SelectMode", "u", 1), Modem.wakeCommand(),
                 Modem.notifyCommand("Mum", "hi")]
     for (var i = 0; i < cmds.length; i++) {
       compare(cmds[i][0], "sh")

@@ -9,8 +9,8 @@ It is the same app. The stars are
 starred over there.
 
 Chrome comes from [`shared/qs_ui`](../../shared/qs_ui), copied into this
-plugin as `ui/` at install time: a third-party plugin cannot import
-`moarchy.common`, and vendoring is what Python's `moarchy_ui` already does.
+plugin as `ui/` at install time: a third-party plugin cannot import the
+shell's own components, and vendoring is what Python's `moarchy_ui` already does.
 
 ## What it does
 

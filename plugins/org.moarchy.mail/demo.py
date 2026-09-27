@@ -35,7 +35,7 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 # Loading bin/moarchy-mail as a module would leave a __pycache__ in bin/,
-# and everything in bin/ is copied into moarchy's snapshot and the package.
+# and everything in bin/ is copied into the package.
 sys.dont_write_bytecode = True
 _loader = importlib.machinery.SourceFileLoader(
     "moarchy_mail", str(HERE / "bin" / "moarchy-mail")

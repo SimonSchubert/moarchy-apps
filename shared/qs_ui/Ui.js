@@ -1,8 +1,7 @@
 // Phone chrome: corners and shade control sizes, from one user file.
 //
-// Keep in step with default/omarchy/plugins/moarchy.common/Ui.js -- the
-// plugins cannot import qs_ui, and the apps cannot import moarchy.common,
-// so the parser exists twice. The file they both read is one:
+// A third-party plugin cannot import the shell's own components, so this
+// parser is the kit's own. The file it reads is the shell's:
 // ~/.config/omarchy/ui.toml.
 .pragma library
 

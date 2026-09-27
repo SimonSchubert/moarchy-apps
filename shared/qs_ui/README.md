@@ -1,11 +1,11 @@
 # Shared Quickshell chrome
 
-Phone chrome for moarchy plugins: the box system every screen is built from,
+Phone chrome for the plugins in this repo: the box system every screen is built from,
 plus app bar, pill field, button, chip, icon button, back chevron, checkbox,
 type roles, FAB, context menu, bottom nav and the empty state. Palette comes
 from the same `colors.toml` the rest of the device reads.
 
-A third-party plugin cannot import `moarchy.common`, so this directory is
+A third-party plugin cannot import the shell's own components, so this directory is
 **copied into the plugin** as `ui/` at install time. There is no runtime
 package and no import from the shell.
 
@@ -77,8 +77,8 @@ The components that follow from this:
 ### Corners
 
 `~/.config/omarchy/ui.toml` says how round the phone is -- `corners = "large"`,
-`"modest"` or `"square"` -- and the shell's sheets, tiles and cards follow it
-(moarchy's `docs/style.md` D1). An app that drew `radius: Metrics.RADIUS_LG`
+`"modest"` or `"square"` -- and the shell's sheets, tiles and cards follow it.
+An app that drew `radius: Metrics.RADIUS_LG`
 was the one rounded thing left on a square phone, so no app does:
 
 - **`Metrics.radius(colours, px)`** is a box: a card, a group, a key, a

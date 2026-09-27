@@ -5,7 +5,7 @@ reached only one of them is not finished:
 
 | where | who it is for | what carries it |
 |---|---|---|
-| **the AUR** | anyone on Arch or Arch Linux ARM who is not running our image | `apps/<app>/PKGBUILD` + `.SRCINFO`, pushed to `ssh://aur@aur.archlinux.org/<pkgname>.git` |
+| **the AUR** | anyone on Arch or Arch Linux ARM who is not running the phone image | `apps/<app>/PKGBUILD` + `.SRCINFO`, pushed to `ssh://aur@aur.archlinux.org/<pkgname>.git` |
 | **`[moarchy-apps]`** | the phone: a signed pacman repo, so the store's privileged helper can install it | `packaging/repo-add.sh` → `packaging/publish-pages.sh` → the `gh-pages` branch |
 | **moarchy-store's catalogue** | the phone's user, who does not know a package name to type | a row in `catalogue.toml`, an entry in `metadata.toml`, screenshots, and a verdict in `sweep/verdicts.toml` |
 
@@ -51,8 +51,8 @@ As of 2026-09-14, and this table is the thing to re-check rather than trust:
 | mill | `moarchy-mill` | 0.1.0 | yes | yes | **yes** |
 | fiveletters | `moarchy-fiveletters` | 0.1.0 | yes | yes | **yes** |
 | breakout | `moarchy-breakout` | 0.1.0 | yes | yes | **yes** |
-| queens | `queens` | 1.0.8 | no — upstream's name to claim | no — it is in `[moarchy]` | **yes** |
-| puzzle-games | `puzzle-games` | 1.1.4 | no — upstream's name to claim | no — it is in `[moarchy]` | **yes** |
+| queens | `queens` | 1.0.8 | no — upstream's name to claim | no — it was in moarchy's `[moarchy]` | **yes** |
+| puzzle-games | `puzzle-games` | 1.1.4 | no — upstream's name to claim | no — it was in moarchy's `[moarchy]` | **yes** |
 | coins | `moarchy-coins` | 0.1.1 | to be deleted | to be dropped | to be dropped — replaced by `crypto-market`, see below |
 | crypto-market | `crypto-market` | 1.1.1 | yes | no — AUR only | no |
 | couch-for-trakt | `couch-for-trakt` | 1.1.0 | yes | no — AUR only | no |
@@ -60,8 +60,8 @@ As of 2026-09-14, and this table is the thing to re-check rather than trust:
 | airwaves | `airwaves` | 1.0.0 | yes | no — AUR only | no |
 
 Thirteen of fifteen are in all three. What is left is `keep` and `habits`,
-which have no catalogue row, and the two Flutter ones, which are listed and in
-`[moarchy]` but not on the AUR.
+which have no catalogue row, and the two Flutter ones, which are listed but
+were only ever built into moarchy's own `[moarchy]` and are not on the AUR.
 
 `coins` was retired on 2026-09-27 for Crypto Market, `apps/crypto-market`: a
 Quickshell app published as `crypto-market`, on the AUR only. It is the one
@@ -126,25 +126,21 @@ compositor with layer shell, the plugin host's `manifest.json` contract and the
 before anything loads it. The last one is user configuration: a package can
 ship files, it cannot enable itself.
 
-**The scan roots were the check to do first, and they answer yes.** It did not
-need the phone, only the patch that builds its shell:
-`pkgbuilds/omarchy-config/port-4x.patch` in the moarchy repo gives
-`PluginRegistry` a second root, `systemPluginsDir = /usr/share/moarchy/plugins`,
-and scans it *before* `~/.config/omarchy/plugins` so a user copy of the same id
-still wins. moarchy ships its own nine plugins through it rather than copying
-them into every home, for the reason a package exists at all — upgrading the
-package upgrades the shell. An app package writes there beside them and owns
-every file it puts down, which is the property `scripts/device.sh` is built on
-and the one every `install-on-device.sh` here currently breaks.
+**The scan roots are the check to do first, and on Omarchy Mobile they answer
+no.** Upstream's shell has two: `$OMARCHY_PATH/shell/plugins` for first-party
+plugins, which is where Mobile installs its own UI, and
+`~/.config/omarchy/plugins` for everything else (`shell/services/PluginRegistry.qml`).
+There is no system-wide root for a third-party plugin, so a package has nowhere
+to put one that the shell will find and the package will own. Mobile's own
+plugins avoid the question by being first-party; a plugin from this repo is not,
+and `install-on-device.sh` copies it into the home directory instead, which is
+a copy `pacman` knows nothing about.
 
-So there is something to package, and what is left of the objection is the
-enable step alone: the id in `~/.config/omarchy/shell.json`. Writing that file
-from a package is not the answer — it is per-user, and a user copy masks the
-packaged defaults, which is a property moarchy's own `image/verify.sh` asserts.
-The answer is a second hunk in the same patch, making a plugin found under
-`systemPluginsDir` enabled unless `shell.json` names it as disabled. Until that
-lands the standalone entry point below covers it, so this is a question of how
-fast the app opens, not whether it runs.
+The enable step is a second problem behind the first: the id in
+`~/.config/omarchy/shell.json`. Writing that file from a package is not the
+answer — it is per-user, and a user copy masks the packaged defaults. Until
+both are solved the standalone entry point below covers it, so this is a
+question of how fast the app opens, not whether it runs.
 
 The standalone half is publishable, and as of 2026-09-15 it exists.
 `shared/qs_ui` no longer imports anything from the shell, so an app built on it
@@ -204,45 +200,18 @@ quietly becoming a thing only our shell can run.
    because the only app it was wired to was updated by hand. It reads the field
    with `awk` now, and still strips a `name::` prefix if one is ever used.
 
-2. **~~The image does not carry `[moarchy-apps]`.~~** Fixed in the moarchy repo
-   on 2026-09-13 (`docs/structure.md` R8c), and it was the blocker worth
-   fixing first: moarchy-store's catalogue lists ten packages that live only in
-   this repo, its helper installs by execing `pacman -S` against a name in a
-   sync database, and without the stanza there is no sync database — so every
-   one of those rows was a dead Install button on a freshly flashed phone while
-   working on the developer's own handset, which had the stanza added by hand
-   one afternoon and never written down.
+2. **No image carries `[moarchy-apps]`.** The moarchy image did, and moarchy is
+   no longer developed; Omarchy Mobile, which replaced it, has its own
+   `[omarchy-mobile]` repo and no stanza for this one. Until it does, a phone
+   gets the stanza from the README by hand, and a catalogue row for a package
+   that lives only here is an Install button that works on that phone and on no
+   other.
 
-   `image/configure.sh` no longer reads one hardcoded `[repo]`: it loops over
-   every manifest section naming a `server`, so a third repo is a manifest
-   edit. `image/verify.sh` checks the stanza and the cached `.db.sig` for each
-   of them rather than for `moarchy.db` alone — and fails loudly if the list
-   comes back empty, because a `for` over nothing prints nothing and passes,
-   which is the shape of the original bug. Both repos are signed by the same
-   key, so `moarchy-keyring` needed no change.
-
-   Verified before shipping: a clean Arch ARM container carrying exactly the
-   two stanzas the image now writes, trusting nothing but the key fetched from
-   the published URL, syncs both databases and installs `moarchy-chess` with
-   `Validated By : Signature`.
-
-   **What it does not fix is a phone already in the field.** An image change
-   reaches a device only through a reflash; `/etc/pacman.conf` is a `pacman`
-   backup file and no package update rewrites it. Every handset flashed before
-   this still needs the stanza added once, by hand or by something that has not
-   been written yet.
-
-3. **queens and puzzle-games are in the other repo.** Both are `arch=aarch64`
-   Flutter builds and were published into `[moarchy]` with the distro's own
-   pipeline, so they are installable and listed — and they are the reason the
-   catalogue has Install buttons that work. Neither is on the AUR, and both
-   could be: upstream's source plus the runner or patch this repo carries is
-   exactly what an AUR package is.
-
-4. **`[moarchy]` still ships `moarchy-keep-0.1.0`.** `[moarchy-apps]` carries
-   0.1.1. Two repositories offering one package name at two versions, resolved
-   by whichever stanza pacman reads first, is a thing to fix rather than to
-   document a second time.
+3. **queens and puzzle-games were only ever in moarchy's repo.** Both are
+   `arch=aarch64` Flutter builds and were published into `[moarchy]` with that
+   distro's pipeline. Neither is on the AUR, and both could be: upstream's
+   source plus the runner or patch this repo carries is exactly what an AUR
+   package is — and it is now the only way either reaches a phone.
 
 ## Releasing one app, end to end
 

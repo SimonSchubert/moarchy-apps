@@ -1,10 +1,9 @@
 // A shell screen that is an ordinary window.
 //
-// Copied into each plugin rather than imported from moarchy.common: a
-// third-party plugin cannot see first-party siblings. The comments in
-// default/omarchy/plugins/moarchy.common/AppWindow.qml are the source of
-// truth for why this is a FloatingWindow and not a layer surface -- apps
-// have text fields, and a layer Overlay draws over the on-screen keyboard.
+// Copied into each plugin rather than imported from the shell: a third-party
+// plugin cannot see first-party siblings. A FloatingWindow and not a layer
+// surface because apps have text fields, and a layer Overlay draws over the
+// on-screen keyboard.
 import QtQuick
 import Quickshell
 import Quickshell.Wayland

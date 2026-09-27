@@ -1045,7 +1045,7 @@ Item {
           Chrome.Osk { id: osk }
 
           // A tap on the text asks for the keyboard; focus alone does
-          // not (moarchy's gestures.md G14). The press goes on to the
+          // not. The press goes on to the
           // TextEdit, which places the caret.
           MouseArea {
             anchors.fill: parent

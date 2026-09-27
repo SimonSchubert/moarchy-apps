@@ -2,7 +2,7 @@
 
 A keypad, the calls that happened, and the one happening now.
 
-This replaces GNOME Calls on moarchy, and the part of Calls that mattered was
+This replaces GNOME Calls, and the part of Calls that mattered was
 never its window. It was `calls-daemon`, the process that listened for a ring
 while nothing was open. Here the plugin does that itself: the shell keeps it
 loaded, and a `gdbus monitor` it starts a few seconds after the shell sleeps
@@ -28,7 +28,7 @@ detail and the reasons. In short:
 | second call | `mmcli -m any --voice-hangup-and-accept` |
 | earpiece, speaker, mute | callaudiod over `busctl --user` (`SelectMode`, `EnableSpeaker`, `MuteMic`) |
 | ringing | `fbcli -E phone-incoming-call`, so the phone's feedback profile decides between a tone, a buzz and nothing |
-| a locked screen | `moarchy-screen unlock`, and `lock` again when the call is over |
+| a dark screen | `hyprctl dispatch` dpms on; a locked phone shows the call on the shell's own lock screen |
 
 ModemManager keeps a call until somebody deletes it, so a call that has ended
 is written to the log and then deleted, as GNOME Calls does.
@@ -69,6 +69,6 @@ reads and never writes.
 - No USSD (`*100#` dials as a number and the network decides).
 - No proximity sensor: the screen stays on against your ear.
 - No voicemail screen, no blocking, no favourites.
-- No SIM PIN; that is `moarchy.sim`.
+- No SIM PIN; that is the shell's.
 
 Each of those is a screen. This app has four.

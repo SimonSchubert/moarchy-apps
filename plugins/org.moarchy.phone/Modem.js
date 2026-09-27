@@ -1,7 +1,7 @@
 // The modem, as mmcli and gdbus print it.
 //
 // Quickshell has no D-Bus module, so ModemManager is reached the way the bar
-// and moarchy-sim already reach it: through processes. Three kinds of them.
+// already reaches it: through processes. Three kinds of them.
 //
 //   gdbus monitor   one, for as long as the app is loaded. It sleeps on the
 //                   bus socket and prints a line per signal, which is how a
@@ -17,7 +17,7 @@
 // is undone.
 //
 // `-m any` everywhere and never an index: ModemManager renumbers the modem when
-// it re-enumerates (bin/moarchy-sim says so, and measured it). Every command is
+// it re-enumerates (measured on the phone). Every command is
 // `sh -c` rather than the binary itself, because a Process handed a binary
 // that is not installed never emits `exited` (Clock.qml measured that) -- a
 // shell always starts, and a missing mmcli is an ordinary exit code 127.
@@ -267,33 +267,19 @@ function feedbackCommand(event, loop, quiet) {
 
 // The screen, for a call that arrives while the phone is in a pocket.
 //
-// moarchy-screen's `wake` refuses while the lock flag is set -- that is its
-// whole point -- and a locked phone also has its touchscreen switched off, so
-// a ringing call on a locked phone has to `unlock`. It says "locked" first
-// when it did, so the app can put the lock back when the call is over. Off
-// moarchy there is no such tool and nothing to do.
-var SCREEN = "/usr/lib/moarchy/bin/moarchy-screen"
-
+// On Omarchy Mobile the panel is Hyprland's to switch, and the lock is the
+// shell's: a locked phone shows the call on its own lock screen, so all an app
+// can usefully do is light the panel. Off Hyprland there is no hyprctl and
+// nothing to do.
 function wakeCommand() {
-  var script =
-    "t=\"$1\"\n" +
-    "[ -x \"$t\" ] || exit 0\n" +
-    "if [ -e \"${XDG_STATE_HOME:-$HOME/.local/state}/moarchy/screen-locked\" ]; then\n" +
-    "  echo locked\n" +
-    "  exec \"$t\" unlock\n" +
-    "fi\n" +
-    "exec \"$t\" wake\n"
-  return ["sh", "-c", script, "sh", SCREEN]
+  return ["sh", "-c",
+          "command -v hyprctl >/dev/null || exit 0\n" +
+          "exec hyprctl dispatch 'hl.dsp.dpms({ action = \"enable\" })' >/dev/null\n"]
 }
 
-function lockCommand() {
-  return ["sh", "-c", "[ -x \"$1\" ] && exec \"$1\" lock; exit 0", "sh", SCREEN]
-}
-
-// A line in the shade's notification list. Nothing on this phone pops up --
-// moarchy.bar turns popups off -- so this is where a text that arrived while
-// the phone was in a pocket is found. `omarchy-notification-send` because the
-// image has no libnotify; off moarchy, nothing.
+// A line in the shell's notification list, which is where a text that arrived
+// while the phone was in a pocket is found. `omarchy-notification-send` because
+// the image has no libnotify; without it, nothing.
 function notifyCommand(title, body) {
   return ["sh", "-c",
           "command -v omarchy-notification-send >/dev/null 2>&1 || exit 0\n" +

@@ -22,7 +22,7 @@ noticed with the window closed.
 <p align="center"><em>360×720, the size of a PinePhone's screen. Every colour
 is the active Omarchy theme's.</em></p>
 
-This replaces Geary on moarchy. Geary is a good mail client and it was on the
+This replaces Geary. Geary is a good mail client and it was on the
 image for a reason, but moarchy-store's sweep rejected it for this screen —
 *"desktop-shaped three-pane mail client. Also wants an unlocked keyring"* —
 and where no keyring is unlocked, the prompt for one maps behind Geary's own
