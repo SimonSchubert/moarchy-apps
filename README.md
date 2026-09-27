@@ -33,8 +33,6 @@ the aarch64 repos, the AUR or Flathub. This is where they get written.
 | [calendar](plugins/org.moarchy.calendar) | *Shell plugin only:* the month, the day under it, and what is next | v0.1.0 |
 | [clock](plugins/org.moarchy.clock) | *Shell plugin only:* an alarm that rings late and says so, a stopwatch and a timer | v0.1.0 |
 | [editor](plugins/org.moarchy.editor) | *Shell plugin only:* one text file at a time, and an `$EDITOR` that waits | v0.1.0 |
-| [phone](plugins/org.moarchy.phone) | *Shell plugin only:* a keypad, the calls that happened, and the one ringing now | v0.1.0 |
-| [messages](plugins/org.moarchy.messages) | *Shell plugin only:* texts by person, kept in one file and never only on the modem | v0.1.0 |
 | [mail](plugins/org.moarchy.mail) | *Shell plugin only:* one account over IMAP and SMTP, no HTML drawn, and new mail noticed with the window closed | v0.1.0 |
 
 Food is the Open Food Facts row on that list: barcode to nutrition, and Linux
@@ -104,6 +102,12 @@ against itself — it has a portfolio — which is one reason it does not carry
 the name. It came in from its own repository with its history, as Keep did;
 that repository stays up as the Omarchy plugin it was released as, and is not
 developed any more.
+
+Phone and Messages have gone too. Omarchy Mobile ships its own, and both
+want the modem to themselves: two listeners on ModemManager is a text read
+twice or a call that rings in two places. A phone that had ours installed
+keeps `calls-daemon` and Chatty's daemon masked until
+`systemctl --user unmask calls-daemon.service sm.puri.Chatty-daemon.service`.
 
 Couch for Trakt came in the same way, from `omarchy-couch`, and is the same
 kind of row: a Quickshell app for any Arch desktop, packaged as
