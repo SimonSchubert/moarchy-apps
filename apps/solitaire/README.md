@@ -1,21 +1,29 @@
 # moarchy-solitaire
 
-Klondike for a Linux phone: seven columns that fit a 360px screen, one tap a
-move, and an app that tells you when a deal has nothing left in it.
+Klondike for a Linux phone and a desktop: seven columns that fit a 360px
+screen, one tap a move -- or a drag, with a mouse -- and an app that tells you
+when a deal has nothing left in it.
 
 <p align="center">
-  <img src="docs/screenshots/table.png" width="30%" alt="A game in progress: the stock and waste at the top left, three foundations started, seven tableau columns of overlapping cards on a green baize, and Undo and New deal along the bottom">
-  <img src="docs/screenshots/picked.png" width="30%" alt="A run of four cards ringed in blue after a tap, with two black nines ringed in dashes to show where it may go">
-  <img src="docs/screenshots/home.png" width="30%" alt="A table with nothing face down, with a banner across the top reading Nothing left face down and a Send them home button">
+  <img src="docs/screenshots/phone.png" width="30%" alt="A game in progress: the stock and waste at the top left, three foundations started, seven columns of overlapping cards on a green baize, and Undo and New deal along the bottom">
+  <img src="docs/screenshots/phone-picked.png" width="30%" alt="A run of four cards ringed in the accent after a tap, with two red nines ringed to show where it may go">
+  <img src="docs/screenshots/phone-home.png" width="30%" alt="A table with nothing face down, with a banner across the top reading Nothing left face down and a Send them home button">
+</p>
+<p align="center">
+  <img src="docs/screenshots/desktop-latte.png" width="92%" alt="The same app on a desktop under catppuccin-latte: the table on the left, and beside it the banner, the buttons and the record">
 </p>
 
-<p align="center"><em>360×720, the size of a PinePhone's screen under
-mobileomarchy. The baize, the card backs and the rings are the active Omarchy
-theme's; the cards themselves are not, and the reason is below.</em></p>
+<p align="center"><em>360x720, and a desktop window. One app: below 720 px it
+lays out as a phone app, above it the record and the buttons sit beside the
+table. The baize, the card backs and the rings are the active Omarchy theme's;
+the cards themselves are not, and the reason is below.</em></p>
 
-Built for [mobileomarchy](https://github.com/SimonSchubert/mobileomarchy), but
-nothing in it is specific to that: it is a GTK4/libadwaita app and runs on
-Phosh, Plasma Mobile, postmarketOS or an ordinary desktop.
+A Quickshell app. Inside the Omarchy shell it is a panel the shell keeps
+loaded, so opening it is showing a window rather than starting a process; on
+any other Quickshell desktop `moarchy-solitaire` runs it as its own. 0.1.0 was
+a GTK4/libadwaita app, and a deal left in it is the deal found here: the file
+is the same, and `tests/tst_parity.qml` replays two games 0.1.0's engine played
+and compares every card.
 
 ## This one is not a gap
 
@@ -57,6 +65,9 @@ rather than what the rules permit:
   ace into a question with an obviously wrong second answer.
 - **Empty columns count once.** Three empty columns are three legal
   destinations for a king and one decision.
+
+On a desktop a run can also be **dragged**, and dropped anywhere over the
+column or foundation it belongs on -- the same legality, a different hand.
 
 And a **whole column does not move to an empty one**. That is not a convenience,
 it is load-bearing: it uncovers nothing and changes nothing, and allowing it
@@ -100,22 +111,24 @@ a number the game owns.
 
 ## The cards
 
-Everything on this screen is drawn in cairo. There is no card image, no SVG and
-no font behind any of it:
+Every card is drawn. There is no card image and no font behind the suits:
 
-- **The four suits are four cairo paths.** A pip from a font is a bet on the
-  font stack of a device whose font stack is not the desktop's, and a suit that
-  renders as an empty box is a card nobody can play. Thirty lines of curves is
-  the same drawing at 8px and at 30.
+- **The four suits are four vector paths** -- 0.1.0's cairo curves, as
+  QtQuick Shapes. A pip from a font is a bet on the font stack of a device
+  whose font stack is not the desktop's, and a suit that renders as an empty
+  box is a card nobody can play.
 - **The rank is the one piece of text**, and it is A, 2 to 10, J, Q, K — glyphs
   that exist in every font that exists.
-- **The index lives in the top strip of a card and nowhere else.** What is
-  visible of a covered card is 28 pixels at its top. A real card's second index,
-  printed upside down in the far corner, would be under the card in front of it
-  every single time.
+- **The index lives in the top strip of a card and nowhere else.** A real
+  card's second index, printed upside down in the far corner, would be under
+  the card in front of it every single time.
 - **The card nothing covers gets a big pip in the middle.** It is the one card
-  in a pile a tap can pick up, and at this size a 30px symbol says which far
-  faster than a 12px one in the corner.
+  in a pile a tap can pick up, and a big symbol says which far faster than a
+  small one in the corner.
+- **Where a card is drawn and where a tap lands are one function**,
+  `Layout.js`, tested without a display. On a desktop the height decides the
+  size of a card as well as the width, so a long column never squeezes an
+  index under the card in front of it.
 
 **The cards stay cards.** The face is very nearly white on every theme and the
 black suits are very nearly black — the same refusal Reversi makes about its
@@ -186,33 +199,35 @@ alternative to shipping one is saying so.
 ## Running it
 
 ```sh
-python3 -m moarchy_solitaire
+quickshell -p apps/solitaire/shell.qml
 ```
 
-To see it with a game in progress rather than a fresh deal:
+With a game in progress rather than a fresh deal:
 
 ```sh
 export MOARCHY_SOLITAIRE_DIR=$(mktemp -d)
-python3 demo.py          # a game partway through
-python3 demo.py home     # ...or one with nothing left face down
-python3 -m moarchy_solitaire
+python3 apps/solitaire/dev/demo.py          # a game partway through
+python3 apps/solitaire/dev/demo.py home     # ...or one with nothing left face down
+quickshell -p apps/solitaire/shell.qml
 ```
 
 `demo.py` refuses to run without `MOARCHY_SOLITAIRE_DIR` set, so it cannot
-overwrite a real game. It plays a real deal with the rules this app ships, using
-the order of preference a book gives — turn a card over, take the free aces,
-build from the waste, send home only what is safe — because a hand-dealt table
-is the app telling a lie about its own rules, and everybody's grandmother knows
-these rules.
+overwrite a real game. Its two deals are games 0.1.0's demo *played*, with the
+order of preference a book gives, kept as data -- a hand-dealt table would be
+the app telling a lie about its own rules, and loading is playing, so this app
+would refuse one.
 
 ## Checks
 
 ```sh
-scripts/check.sh solitaire
+docker run --rm -v "$PWD:/src" -w /src moarchy-qml scripts/app-check.sh solitaire
+docker run --rm -v "$PWD:/src" -w /src moarchy-qml scripts/app-shot.sh solitaire
 ```
 
-ruff, then the rules and the file, then the widgets on a virtual screen, then a
-real run that fails on any GTK warning.
+The first is qmllint, the rules, the file and the layout (`tests/`, the cases
+0.1.0's Python tests had, and the parity check against its engine), and a real
+run that fails on any QML warning. The second photographs `dev/shots` at a
+phone's size and a desktop's.
 
 Two of the rule tests are properties over a few thousand random moves rather
 than examples, and they are the two that matter: **every card exists exactly
@@ -221,13 +236,18 @@ invariant the tap logic leans on — it is why a run can be picked up without
 being validated — and the first is the thing a card game gets wrong in a way
 nobody notices until there are two aces of spades on the table.
 
+On a desktop: Space or `d` turns the stock over, `u` undoes, `a` sends every
+card home when nothing is face down, `r` deals the same deal again, `n` starts a
+new one, and Escape puts a picked-up run back.
+
 | variable | what it does |
 |---|---|
 | `MOARCHY_SOLITAIRE_DIR` | where the game lives |
-| `MOARCHY_SOLITAIRE_QUIT_AFTER` | quit after N seconds, for headless runs |
+| `MOARCHY_QUIT_AFTER` | quit after N seconds, for headless runs |
 | `MOARCHY_SOLITAIRE_PAGE` | open straight into `record`, for the screenshots |
 | `MOARCHY_SOLITAIRE_NEW` | open with the new-deal sheet up |
 | `MOARCHY_SOLITAIRE_PICK` | open with a run picked up, for the screenshots |
+| `MOARCHY_SOLITAIRE_SETTINGS` | open on Settings |
 
 ## Licence
 

@@ -14,7 +14,7 @@ the aarch64 repos, the AUR or Flathub. This is where they get written.
 | [chess](apps/chess) | Chess: two taps a move, an opponent in the app, no second package | v0.1.0 |
 | [queens](apps/queens) | *Packaging only:* sidhant947's crown-placement puzzle, and the Linux runner it does not ship | 1.0.8 |
 | [tictactoe](apps/tictactoe) | Noughts and crosses: the game solved at startup, then told to err — in Quickshell, for the desktop and the phone | v0.2.0, unreleased |
-| [solitaire](apps/solitaire) | Klondike: one tap a move, and an app that says when a deal is lost | v0.1.0 |
+| [solitaire](apps/solitaire) | Klondike: one tap a move, and an app that says when a deal is lost — in Quickshell, for the desktop and the phone | v0.2.0, unreleased |
 | [pegsolitaire](apps/pegsolitaire) | Peg solitaire: nine figures, all solvable, and a hint that is a proof — in Quickshell, for the desktop and the phone | v0.2.0, unreleased |
 | [minesweeper](apps/minesweeper) | Minesweeper: a portrait board, a latching flag, and a clock that stops — in Quickshell, for the desktop and the phone | v0.2.0, unreleased |
 | [mill](apps/mill) | Nine Men's Morris: three squares, an opponent on a clock, and the rule everybody forgets | v0.1.0 |
