@@ -55,9 +55,13 @@ Item {
 
   // The payload the last open() was given, parsed: {} when there was none.
   signal summoned(var payload)
+  // And as it came: xdg-open hands a desktop entry's %f over bare, which is a
+  // path and not JSON.
+  property string payloadText: ""
 
   function open(payloadJson) {
     theme.reload()
+    payloadText = String(payloadJson || "")
     var payload = ({})
     try { if (payloadJson) payload = JSON.parse(payloadJson) || ({}) } catch (e) {}
     opened = true
@@ -248,7 +252,17 @@ Item {
     if (standalone) Qt.callLater(function () { root.open(Quickshell.env("MOARCHY_PAYLOAD") || "") })
   }
 
+  // Standalone, closing the window ends the process, and with it anything the
+  // app holds only in memory -- text typed and not saved. function () -> true
+  // keeps the window up instead; the app then asks, and dismisses again.
+  property var holdQuit: null
+
   onOpenedChanged: if (!opened) {
+    if (standalone && typeof holdQuit === "function" && holdQuit()) {
+      opened = true
+      window.visible = true
+      return
+    }
     if (dialog) dialog.close()
     stack = []
     // Its own process: closing the window is quitting. The last save is
