@@ -33,6 +33,7 @@ the aarch64 repos, the AUR or Flathub. This is where they get written.
 | [contacts](apps/contacts) | A name, a number, an email and a note, in one file, with no accounts behind it — in Quickshell, for the desktop and the phone | v0.2.0, unreleased |
 | [calendar](apps/calendar) | The month, the day under it, and what is next — in Quickshell, for the desktop and the phone | v0.2.0, unreleased |
 | [clock](apps/clock) | An alarm that rings late and says so, a stopwatch and a timer — in Quickshell, for the desktop and the phone | v0.2.0, unreleased |
+| [files](apps/files) | One folder at a time: copy, move, rename, and a delete that goes to the trash every other app reads — in Quickshell, for the desktop and the phone | v0.2.0, unreleased |
 | [editor](plugins/org.moarchy.editor) | *Shell plugin only:* one text file at a time, and an `$EDITOR` that waits | v0.1.0 |
 | [mail](plugins/org.moarchy.mail) | *Shell plugin only:* one account over IMAP and SMTP, no HTML drawn, and new mail noticed with the window closed | v0.1.0 |
 

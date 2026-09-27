@@ -90,7 +90,7 @@ def main() -> int:
         return 1
 
     root.mkdir(parents=True, exist_ok=True)
-    marker.write_text("A fixture written by plugins/org.moarchy.files/demo.py\n")
+    marker.write_text("A fixture written by apps/files/dev/demo.py\n")
 
     for name in DIRS:
         (root / name).mkdir(parents=True, exist_ok=True)

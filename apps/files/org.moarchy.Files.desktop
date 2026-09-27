@@ -2,11 +2,11 @@
 Type=Application
 Name=Files
 GenericName=File Manager
-Comment=One folder at a time, with a thumb
-Exec=omarchy-shell shell toggle org.moarchy.files
+Comment=One folder at a time
+Exec=moarchy-files %U
 Icon=org.moarchy.Files
 Terminal=false
 Categories=Utility;Core;FileTools;FileManager;
 Keywords=files;file;folder;browse;manager;storage;card;sd;trash;copy;move;rename;
+MimeType=inode/directory;
 StartupNotify=false
-X-Moarchy-Plugin=org.moarchy.files

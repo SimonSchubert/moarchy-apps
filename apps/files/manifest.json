@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "id": "org.moarchy.files",
+  "name": "Files",
+  "version": "0.2.0",
+  "author": "Simon Schubert",
+  "license": "MIT",
+  "description": "One folder at a time: copy, move, rename, and a delete that goes to the trash every other app can read. Places and volumes, and how full each card is. Desktop and phone layouts.",
+  "homepage": "https://github.com/SimonSchubert/moarchy-apps/tree/main/apps/files",
+  "repository": "https://github.com/SimonSchubert/moarchy-apps",
+  "keywords": ["files", "file manager", "folder", "trash", "sd card", "copy", "move"],
+  "icon": "icon.svg",
+  "kinds": ["panel"],
+  "keepLoaded": true,
+  "entryPoints": {
+    "panel": "Panel.qml"
+  }
+}

@@ -1,0 +1,19 @@
+# What to photograph, for scripts/app-shot.sh.
+#
+# The fixture is a home directory dev/demo.py writes at MOARCHY_FILES_HOME, and
+# the clock both it and the app read is MOARCHY_FILES_NOW, so "Yesterday" under
+# a file means the same thing in every picture.
+HOME_=MOARCHY_FILES_HOME=/tmp/moarchy-files-demo
+NOW=MOARCHY_FILES_NOW=1789482720
+FIX=/tmp/moarchy-files-demo
+
+shot phone $HOME_ $NOW
+shot phone-light LOOK=light $HOME_ $NOW
+shot phone-camera $HOME_ $NOW MOARCHY_FILES_PATH=$FIX/Pictures/Camera
+shot phone-places $HOME_ $NOW MOARCHY_FILES_PAGE=places
+shot phone-menu $HOME_ $NOW MOARCHY_FILES_PATH=$FIX/Downloads MOARCHY_FILES_MENU=firmware.tar.gz
+shot phone-paste $HOME_ $NOW MOARCHY_FILES_PATH=$FIX/Documents MOARCHY_FILES_HOLDING=notes.md
+shot desktop SIZE=1280x820 $HOME_ $NOW MOARCHY_FILES_PATH=$FIX/Downloads MOARCHY_FILES_PICK=postmarketOS-v24.06-pinephone.img.xz
+shot desktop-light SIZE=1280x820 LOOK=light $HOME_ $NOW
+shot desktop-latte SIZE=1280x820 THEME=.themes/catppuccin-latte/colors.toml $HOME_ $NOW MOARCHY_FILES_PATH=$FIX/Pictures/Camera MOARCHY_FILES_PICK=IMG_11.jpg
+shot desktop-tokyo SIZE=1280x820 THEME=.themes/tokyo-night/colors.toml $HOME_ $NOW MOARCHY_FILES_PATH=$FIX/Documents MOARCHY_FILES_HOLDING=notes.md

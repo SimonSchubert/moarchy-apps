@@ -1,0 +1,37 @@
+#!/bin/sh
+# Open Files: in the running Omarchy shell when it has the plugin, as its own
+# Quickshell process when it does not.
+#
+#   moarchy-files            the folder it was last in
+#   moarchy-files ~/Music    that folder
+#
+# `omarchy-shell shell summon` answers "ok" only when the shell is running and
+# has the plugin installed and enabled. Anything else -- no Omarchy, the shell
+# down, the plugin not added -- starts the copy this package installed.
+set -eu
+
+ID=org.moarchy.files
+APPDIR=${MOARCHY_FILES_APPDIR:-/usr/share/moarchy-files}
+
+payload='{}'
+if [ $# -gt 0 ] && [ -n "$1" ]; then
+  # A file:// URI from another app's "Open with", or a plain path. A file
+  # opens the folder it is in.
+  target=${1#file://}
+  if [ -d "$target" ]; then
+    target=$(cd -- "$target" && pwd -P)
+  elif [ -e "$target" ]; then
+    target=$(cd -- "$(dirname -- "$target")" && pwd -P)
+  fi
+  # JSON: the two characters a path can hold that a string cannot.
+  escaped=$(printf '%s' "$target" | sed 's/\\/\\\\/g; s/"/\\"/g')
+  payload="{\"path\":\"$escaped\"}"
+fi
+
+if command -v omarchy-shell >/dev/null 2>&1; then
+  if [ "$(omarchy-shell shell summon "$ID" "$payload" 2>/dev/null)" = ok ]; then
+    exit 0
+  fi
+fi
+
+MOARCHY_PAYLOAD=$payload exec quickshell -n -p "$APPDIR/shell.qml"
