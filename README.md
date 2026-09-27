@@ -22,6 +22,7 @@ the aarch64 repos, the AUR or Flathub. This is where they get written.
 | [breakout](apps/breakout) | Breakout: a bat that follows your thumb, and a clock that stops with the window | v0.1.0 |
 | [vitals](apps/vitals) | A task manager: processor, memory, tasks and network, read from /proc | v0.1.0 |
 | [puzzle-games](apps/puzzle-games) | *Packaging only:* sidhant947's suite of 300+ small puzzles, minus the titlebar | 1.1.4 |
+| [crypto-market](apps/crypto-market) | *Not a moarchy app:* CoinGecko prices, coin pages, a watchlist and a portfolio, for any Quickshell desktop | v1.1.1 |
 | [food](apps/food) | Point the camera at a barcode: nutrition facts from Open Food Facts | v0.1.0 |
 | [launches](apps/launches) | Upcoming rockets: a countdown, a pad, and the ones you star | v0.1.0 |
 | [calculator](plugins/org.moarchy.calculator) | *Shell plugin only:* the four operations, and arithmetic that counts in tens | v0.1.0 |
@@ -88,13 +89,15 @@ twenty processes into one row you can end with a tap. It also reads nothing but
 `/proc`, so it costs the stock image no package at all beyond the GUI stack that
 is already on it.
 
-Coins was the fourth, and it has left. Its place is taken by
-[Crypto Market](https://github.com/SimonSchubert/omarchy-crypto-market), a
-Quickshell app in a repository of its own, packaged as `crypto-market`: it
-runs in the Omarchy shell when the shell has it and as its own Quickshell
-window everywhere else. It is also
-the argument Coins made against itself — it has a portfolio — which is one
-reason it is not a moarchy app any more.
+Coins was the fourth, and it has gone. Its place is taken by
+[Crypto Market](apps/crypto-market), which is the one row here that is not a
+moarchy app: it is a Quickshell app for any Arch desktop, packaged as
+`crypto-market` on the AUR, that runs in the Omarchy shell when the shell has
+it and as its own window everywhere else. It is also the argument Coins made
+against itself — it has a portfolio — which is one reason it does not carry
+the name. It came in from its own repository with its history, as Keep did;
+that repository stays up as the Omarchy plugin it was released as, and is not
+developed any more.
 
 Calculator is the one row that is not a directory in `apps/`. It has no GTK
 half and is not going to get one: it was written as a shell plugin, which is

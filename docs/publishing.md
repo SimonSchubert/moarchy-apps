@@ -53,18 +53,19 @@ As of 2026-09-14, and this table is the thing to re-check rather than trust:
 | breakout | `moarchy-breakout` | 0.1.0 | yes | yes | **yes** |
 | queens | `queens` | 1.0.8 | no — upstream's name to claim | no — it is in `[moarchy]` | **yes** |
 | puzzle-games | `puzzle-games` | 1.1.4 | no — upstream's name to claim | no — it is in `[moarchy]` | **yes** |
-| coins | `moarchy-coins` | 0.1.1 | to be deleted | to be dropped | to be dropped — moved out as [`crypto-market`](https://github.com/SimonSchubert/omarchy-crypto-market), see below |
+| coins | `moarchy-coins` | 0.1.1 | to be deleted | to be dropped | to be dropped — replaced by `crypto-market`, see below |
+| crypto-market | `crypto-market` | 1.1.1 | yes | no — AUR only | no |
 
 Thirteen of fifteen are in all three. What is left is `keep` and `habits`,
 which have no catalogue row, and the two Flutter ones, which are listed and in
 `[moarchy]` but not on the AUR.
 
-`coins` left this repository on 2026-09-27. It is now Crypto Market, a
-Quickshell app with its own repository and its own package name,
-`crypto-market`, whose PKGBUILD lives there. Nothing carries an installed
-`moarchy-coins` over: it is dropped from the AUR, `[moarchy-apps]` and the
-catalogue, and `crypto-market` is published as a new package. What follows is
-the history of the version that left.
+`coins` was retired on 2026-09-27 for Crypto Market, `apps/crypto-market`: a
+Quickshell app published as `crypto-market`, on the AUR only. It is the one
+package of ours without the `moarchy-` prefix, so `aur.yml` names it and
+`release.sh` takes the tarball's name from the PKGBUILD. Nothing carries an
+installed `moarchy-coins` over: it is dropped from the AUR, `[moarchy-apps]`
+and the catalogue. What follows is the history of the version that left.
 
 `coins` went through all three on 2026-09-14, in the order this file gives, and
 it is the row that proves the order matters: the catalogue lint fails an entry

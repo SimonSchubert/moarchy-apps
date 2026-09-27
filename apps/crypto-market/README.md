@@ -1,11 +1,11 @@
 # Crypto Market
 
-CoinGecko as an Omarchy app: live prices, coin pages, a watchlist and a
+CoinGecko as a Quickshell app: live prices, coin pages, a watchlist and a
 portfolio, in an app window that lays itself out for the desktop and for the phone.
 
-![Crypto Market on the desktop](preview.png)
+![Crypto Market on the desktop](docs/screenshots/desktop.png)
 
-<img src="preview-phone.png" alt="Crypto Market on a phone" width="300">
+<img src="docs/screenshots/phone.png" alt="Crypto Market on a phone" width="300">
 
 ## What it does
 
@@ -36,70 +36,41 @@ only while it is open.
 
 ## Install
 
-There are two ways in, and they combine.
-
-**As a package**, on any Arch Linux or Arch Linux ARM system with a Wayland
-desktop:
+On Arch Linux or Arch Linux ARM, with a Wayland desktop, from the AUR:
 
 ```sh
-yay -S crypto-market      # or any AUR helper; the package is `crypto-market`
+yay -S crypto-market      # or any AUR helper
 ```
 
-That installs Quickshell if it is not there already, and a `crypto-market`
-command with an app menu entry. The command opens the app inside the running
-Omarchy shell when the shell has the plugin (below), and as its own Quickshell
-window everywhere else -- another desktop, or Omarchy without the plugin.
-Closing that window ends the process. `crypto-market bitcoin` opens straight
-on a coin page.
+That installs Quickshell too if it is not there yet, and gives you a
+`crypto-market` command and an app menu entry. The app opens in a window of
+its own; closing the window ends it. `crypto-market bitcoin` opens straight on
+a coin page. Under Omarchy it takes the Omarchy theme when its shell has the
+plugin installed, and opens inside that shell.
 
-**As an Omarchy plugin**, so it stays loaded in the shell and opens instantly:
+To open it with a key on Hyprland:
 
-```sh
-omarchy plugin add https://github.com/SimonSchubert/omarchy-crypto-market.git --enable
 ```
-
-To open it, bind a key in `~/.config/hypr/bindings.lua`:
-
-```lua
-o.bind("SUPER + SHIFT + C", "Crypto Market", "omarchy-shell shell toggle io.github.simonschubert.crypto-market")
+bind = SUPER SHIFT, C, exec, crypto-market
 ```
-
-Or run `omarchy-shell shell toggle io.github.simonschubert.crypto-market` from
-anywhere.
-
-The first time it loads, Crypto Market also adds itself to Omarchy's app menu,
-so you can search for it by name. It does this once, and only if no entry by
-that name exists yet. **Settings → App launcher** hides or shows the entry.
-
-On Omarchy Mobile it appears in the app drawer as its own app.
 
 ## Update
 
-```sh
-omarchy plugin update io.github.simonschubert.crypto-market
-omarchy-restart-shell
-```
-
-The restart matters: Crypto Market stays loaded between opens, and Omarchy
-keeps a loaded plugin's old code running until the shell restarts.
+With the rest of the system, e.g. `yay -Syu`.
 
 ## Remove
 
 ```sh
-omarchy plugin remove io.github.simonschubert.crypto-market
+sudo pacman -Rns crypto-market
 ```
 
-That removes the plugin itself. Your settings, watchlist and portfolio stay in
-`~/.local/state/crypto-market/`, the saved prices and logos stay in
-`~/.cache/crypto-market/`, and the app menu entry stays in
-`~/.local/share/applications/`. To remove those as well:
+Your settings, watchlist and portfolio stay in `~/.local/state/crypto-market/`,
+and the saved prices and logos in `~/.cache/crypto-market/`. To remove those as
+well:
 
 ```sh
 rm -rf ~/.local/state/crypto-market ~/.cache/crypto-market
-rm -f ~/.local/share/applications/omarchy-plugin-io.github.simonschubert.crypto-market.desktop
 ```
-
-If you added a keybinding, remove it from `~/.config/hypr/bindings.lua`.
 
 ## Requirements
 

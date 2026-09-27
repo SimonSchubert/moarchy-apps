@@ -26,7 +26,10 @@ cd "$(dirname "$0")/.."
 app="${1:?usage: release.sh <app> <version>}"
 version="${2:?usage: release.sh <app> <version>}"
 tag="${3:-$app-v$version}"
-name="moarchy-$app"
+# The package's own name, from the PKGBUILD at the tag: moarchy-<app> for
+# nearly everything, and not for crypto-market, which is not a moarchy app.
+name=$(git show "$tag:apps/$app/PKGBUILD" 2>/dev/null | sed -n 's/^pkgname=//p' | head -1)
+name="${name:-moarchy-$app}"
 out="${OUT:-dist}"
 
 git rev-parse -q --verify "$tag^{tag}" >/dev/null 2>&1 || \
