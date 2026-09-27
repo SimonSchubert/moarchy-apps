@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "id": "org.moarchy.vitals",
+  "name": "Vitals",
+  "version": "0.2.0",
+  "author": "Simon Schubert",
+  "license": "MIT",
+  "description": "A task manager: the processor, memory, storage, battery and network, what is using them, and a tap to stop it. Read straight from /proc and /sys, only while the window is open. Desktop and phone layouts.",
+  "homepage": "https://github.com/SimonSchubert/moarchy-apps/tree/main/apps/vitals",
+  "repository": "https://github.com/SimonSchubert/moarchy-apps",
+  "keywords": [
+    "system monitor",
+    "task manager",
+    "processes",
+    "cpu",
+    "memory",
+    "network",
+    "battery",
+    "storage",
+    "proc"
+  ],
+  "icon": "icon.svg",
+  "kinds": [
+    "panel"
+  ],
+  "keepLoaded": true,
+  "entryPoints": {
+    "panel": "Panel.qml"
+  }
+}

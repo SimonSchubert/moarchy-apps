@@ -1,251 +1,210 @@
-# moarchy-vitals
+# Vitals
 
-A task manager for a Linux phone: what the processor, the memory, the storage,
-the battery and the network are doing, what is doing it, and one tap to stop it.
-Most of what btop puts in four boxes, on a screen that fits one.
+A task manager for Quickshell desktops and Linux phones. It shows what the
+processor, memory, storage, battery and network are doing, what is using them,
+and gives you a tap to stop it. It lays itself out for a desktop window and for
+a 360 px phone screen.
 
-<p align="center">
-  <img src="docs/screenshots/overview.png" width="30%" alt="The System page: a processor panel reading 17% with a graph of the last two minutes and four per-core bars, load and heat and uptime under it, then a memory panel showing 2.1 GB of 3.1 GB used with a swap bar, then battery and storage">
-  <img src="docs/screenshots/tasks.png" width="30%" alt="The Tasks page: Apps and All toggles, a Processor sort, and a list of apps — firefox at 5.9% and 836 MB across 3 processes, quickshell, Vitals, Keyboard, pipewire">
-  <img src="docs/screenshots/network.png" width="30%" alt="The Network page: wlan0, up, signal 84% at -51 dBm, 9.6 kB/s down and 3.1 kB/s up, a mirrored graph with a burst of traffic in the middle, and the totals since boot">
+![Vitals on the desktop](docs/screenshots/desktop.png)
+
+<p>
+  <img src="docs/screenshots/phone.png" width="24%" alt="The overview on a phone: the processor at 18% with two minutes of history and four core bars, then memory at 2.1 GB of 3.1 GB with swap under it">
+  <img src="docs/screenshots/phone-processor.png" width="24%" alt="The processor page: a load-coloured graph with a burst in the middle, then the busiest apps, firefox first at 5.3%">
+  <img src="docs/screenshots/phone-tasks.png" width="24%" alt="The task list: a search field, Apps or All, sort by CPU, memory or name, and one row per app">
+  <img src="docs/screenshots/phone-network.png" width="24%" alt="The network page in the light palette: wlan0 up, download above the line and upload below it, the scale, and the signal in dBm">
 </p>
 
-<p align="center"><em>360×720, the size of a PinePhone's screen under
-mobileomarchy. The colours are not the app's own — they are the active Omarchy
-theme's, and <code>omarchy-theme-set</code> repaints the graphs while they are
-on the screen.</em></p>
+![The task list on the desktop, with firefox open in the pane beside it](docs/screenshots/desktop-tasks.png)
 
-Built for [mobileomarchy](https://github.com/SimonSchubert/mobileomarchy), but
-nothing in it is specific to that: it is a GTK4/libadwaita app that reads
-`/proc`, and it runs on Phosh, Plasma Mobile, postmarketOS or an ordinary
-desktop.
-
-## This one is not a gap
-
-Every app in this repo either answers a row in moarchy-store's
-`docs/android-gaps.md` or says plainly that it does not. This is one that does
-not. Linux has system monitors, and two of them are already in the store's own
-catalogue: `gnome-usage`, listed and measured as fitting, and `bottom`, which is
-there with the summary *"System monitor that fits a tiled terminal at 47
-columns, unlike btop"*. `resources` is in `sweep/verdicts.toml` as deferred —
-richer than Usage, and listing both would be listing one thing twice.
-
-So the gap is not "a system monitor". It is these four things:
-
-- **btop does not fit.** That is not a guess, it is the catalogue's own reason
-  for listing `bottom` instead. And the one that does fit is still a program in
-  a terminal: on a phone that means opening a terminal, on a keyboard that
-  covers half the screen, to answer "what is eating my battery".
-- **Usage is three of the five boxes.** The catalogue's summary of it is *"What
-  is using the processor, the memory and the disk"*. The two it leaves out are
-  the network and the machine's own heat and charge — which on a phone are the
-  two questions asked most, because they are the two that cost you the
-  afternoon.
-- **A phone's processes are not a phone's apps.** A browser is twenty rows in
-  every desktop task manager. Here it is one row that adds up to 836 MB, with
-  the twenty behind it for when the answer really is a particular pid.
-- **It is the phone's colours.** Every meter, graph and bar is drawn from the
-  active theme, and a theme change repaints them in place, which is the property
-  that makes an app belong on this phone rather than merely run on it.
-
-Whether Usage or Resources is pleasant at 360px is a question for moarchy-store's
-sweep, which scores packages on exactly that and has already answered it for
-both. This is not an argument that they are unusable — it is an app written to a
-different brief.
+<sub>The machine in these pictures is `dev/demo.py`'s recording of a PinePhone,
+not the computer that took them.</sub>
 
 ## What it does
 
-Three pages, and the switcher is along the bottom where a thumb already is.
+- **Overview**: every section below as a card, in one column on a phone and
+  two or three across on a desktop. Each card opens its page.
+- **Processor**:
+  - the total as a number and as two minutes of history
+  - one bar per core. On a big.LITTLE phone, one core pegged out of four shows
+    as 25% overall, and the per-core bars are what make that visible.
+  - load average, tasks, temperature and clock speed
+  - the busiest apps
+- **Memory**:
+  - used against total, with the page cache shown separately because the
+    kernel gives it back when an app needs it
+  - swap, the disk's read and write rates, and each local filesystem with a
+    bar
+  - the apps using the most memory
+- **Tasks**:
+  - **Apps** lists one row per app, with the processor and memory of all its
+    processes added up
+  - **All** lists every process
+  - sort by processor, memory or name
+  - search by name, command line or pid
+  - on a desktop, the task you pick opens in a pane beside the list
+- **Network**: one card per interface. Download is drawn above the line and
+  upload below it, on a fixed scale that is printed on the card. The card also
+  shows totals since boot and, for wireless, the signal in dBm.
+- **Detail**: the app or process's processor and memory, and a graph of its
+  processor use since you opened the page. A process also shows its state,
+  threads, processor time, start time, owner, parent, the app it belongs to,
+  and its command line. From here you can **End task** or **Force stop**.
 
-**System** — btop's four boxes, stacked and scrolled:
-
-- the processor as a figure, a graph of the last two minutes, and **one bar per
-  core**, which is the reading that matters on a big.LITTLE phone: one pegged
-  core out of four is 25% on the headline figure and feels like the phone has
-  stopped
-- load average, running tasks, clock speed, **temperature** — coloured, not just
-  printed, because 42 °C and 81 °C should not need reading
-- memory used against total, the page cache counted separately, and **swap**,
-  which on a 2 GB phone is zram and is where the phone goes to die
-- **battery**: charge, whether it is charging, and what it is drawing in watts
-- every mounted filesystem with a bar, and the disk's own read and write rates
-
-**Tasks** — what is running:
-
-- **Apps**, grouped: one row per app, its processor share and memory summed over
-  every process in it
-- **All**, when the answer is a particular process — with its command line,
-  state, threads, parent, owner and processor time on its own page
-- sort by processor, memory or name; search by name
-- **End task** and **Force stop**, which are two different signals and say so
-
-**Network** — one panel per interface:
-
-- download and upload as a **mirrored graph**, down above the line and up below
-- wireless link quality and signal strength in dBm
-- totals since boot, and the scale the graph is drawn at, because a graph that
-  rescales itself to its own peak is always full and never comparable
-
-## The phone's colours
-
-<p align="center">
-  <img src="docs/screenshots/dark/overview.png" width="32%" alt="The same System page under tokyo-night: a near-black window, a blue processor graph, green memory bar, orange swap and a violet storage bar">
-  <img src="docs/screenshots/dark/tasks.png" width="32%" alt="The Tasks page under tokyo-night: the same list of apps on a near-black background">
-  <img src="docs/screenshots/dark/network.png" width="32%" alt="The Network page under tokyo-night: wlan0 and lo, each with a mirrored traffic graph in teal and violet">
-</p>
-
-One measurement, one hue, everywhere it appears: the processor is the theme's
-accent in the figure, in the graph, in the core bars and in the task list's
-processor column; memory is its green in all of them. A phone screen has no room
-for a legend, so the colour is the legend — which only works if nothing else on
-the screen is also that colour. Load is a ramp rather than a hue, because "this
-core is at 97%" and "this one is at 12%" have to be tellable apart at arm's
-length in daylight, and one colour at two lengths does not manage it.
-
-## Where the numbers come from
-
-`/proc` and `/sys`, and nothing else. No daemon, no `psutil`, no `lm_sensors`,
-no shelling out to `ps`. The package's dependencies are the GUI stack the phone
-already has, which is the whole of what it costs onto a stock image.
-
-Everything is read through one object that knows *where* those files are, and
-that is the most load-bearing decision in the app:
-
-- **The tests write a machine.** `tests/fixtures.py` writes a directory shaped
-  like `/proc` — two cores, three processes, a wireless interface — and the app
-  reads it with exactly the code that reads a phone. So "two hundred busy ticks
-  out of a thousand is twenty per cent" is a claim a test makes about a file it
-  wrote, and every one of them runs on a Mac with no `/proc` in it at all.
-- **The screenshots run a phone.** `demo.py` writes *sixty-four* such
-  directories, two seconds apart, with a browser opening a page a third of the
-  way through, and `sysinfo.Reel` reads one per tick. A system monitor
-  photographed on a real machine two seconds after launch is a flat line against
-  the left edge and whatever the container happened to be running; this has a
-  past. The arithmetic is generated once and shared: each process is given a
-  share of the machine, and the `/proc/stat` in the frame is the *sum* of those
-  shares — so the task list and the processor graph agree because they came from
-  one number rather than being dressed to match.
-- **A fixture cannot signal anything.** The demo data has a pid 1 in it, and the
-  container this is developed in is one where `os.kill(1, SIGKILL)` would be
-  believed. A `Reel` records the attempt and sends nothing; the real one refuses
-  pid 1 outright and lets the kernel refuse everything else.
-
-Rates are differences between two readings, and the clock is `/proc/uptime`
-rather than the wall clock — which is what lets a fixture advance its own time
-by writing a different number, and is the same trick the screenshot harness uses
-to pin today's date for Habits.
+Processes with the same name count as one app: a browser's twenty processes
+are one row with one total. Kernel threads are grouped into one row as well.
 
 ## Ending a task
 
-Two buttons, because TERM and KILL are not two strengths of the same one:
+There are two buttons because TERM and KILL are different signals:
 
-- **End task** asks the process to stop, and it can save what it was doing —
-  which on a phone is the note somebody was typing.
-- **Force stop** takes it away mid-write. The dialog says so in those words,
-  because "Force stop" on its own reads as "the one that actually works".
+- **End task** asks the process to stop, so it can save what it was doing
+  first.
+- **Force stop** kills it immediately, even in the middle of writing a file.
 
-Both ask first. Ending an *app* signals every process in it, lowest pid first.
-A process that belongs to another user is refused by the kernel and the app says
-so plainly rather than as an error: a phone task manager runs as you, and you do
-not own the processes that keep the phone up.
+Both ask for confirmation first. Ending an app signals every process in it.
+Vitals refuses to signal pid 1 or kernel threads. If a process belongs to
+another user, the kernel refuses the signal and the app tells you so.
+
+## Install
+
+On Arch Linux or Arch Linux ARM, with a Wayland desktop, from the AUR:
+
+```sh
+yay -S moarchy-vitals      # or any AUR helper
+```
+
+This installs Quickshell too if it is missing, and adds a `moarchy-vitals`
+command and an app menu entry. Vitals opens in its own window, and closing the
+window ends it. Under Omarchy, when the shell has the plugin installed, it
+opens inside the shell.
+
+It uses the Omarchy theme either way. Standalone, it reads the same
+`~/.local/state/omarchy/current/theme/colors.toml` and `shell.toml` the shell
+does, and follows a theme change. The load colours and the memory, storage
+and network colours come from the theme's red, yellow, green, magenta, blue,
+cyan and orange, unless two of them would look alike. Without an Omarchy
+theme it follows the desktop's light or dark preference. **Settings →
+Appearance** can set it to light or dark instead.
+
+On Omarchy Mobile the tabs and sheets stay above the gesture bar, and the
+subtitle names the handset from the image's `device.conf`.
+
+To open it with a key on Hyprland:
+
+```
+bind = SUPER SHIFT, Escape, exec, moarchy-vitals
+```
+
+0.1.0 was a GTK4/libadwaita app written in Python. 0.2.0 replaces it with this
+Quickshell app under the same package name and command, so an upgrade replaces
+the old app. Python and GTK are no longer needed for it.
 
 ## What it costs to leave open
 
-- **Two seconds a tick.** A processor reading is a difference between two
-  samples, so a shorter interval measures a shorter span and reports more noise
-  as load — and costs twice the work per minute on a phone.
-- **The walk of `/proc` is optional.** Reading every process is a few hundred
-  file reads; the System and Network pages need none of them, so they do not do
-  them. The three files per process that never change — owner, command line,
-  cgroup — are read once and cached under a key that includes the process's
-  start time, because a pid is reused within minutes on a busy machine and a
-  cache keyed on the pid alone eventually shows one process wearing a dead one's
-  name.
-- **It stops when it is not on screen.** A monitor still sampling after the
-  phone is in a pocket is a battery bug wearing a feature's clothes — and on a
-  phone an app is not closed, it is hidden, so that is the normal case rather
-  than an edge one.
+- **Nothing while it is closed.** In the shell the plugin stays loaded, but it
+  reads nothing until its window is on screen. When the window closes, it
+  forgets its history.
+- **One reading per tick**, every two seconds by default (1 s and 5 s are in
+  **Settings**). Each reading runs one `sh`, one `awk` and one `df`. The
+  earlier version ran a `cat` for every file, which on a Pixel 3a took 2.4 s of
+  processor per reading. One `awk` over the same files takes 71 ms.
+- **Processes only when a page shows them.** The network page does not read
+  the few hundred per-process files.
+- **Space pauses** the readings, which is also how you stop a sorted list from
+  moving while you read it.
 
-## Running it
+## Keys (desktop)
 
-```sh
-python3 -m moarchy_vitals
-```
+| Key | Action |
+| --- | --- |
+| `1`–`5` | Overview, Processor, Memory, Tasks, Network |
+| `,` | Settings |
+| `Space` | Pause or resume |
+| `/` | Search tasks |
+| `↑` `↓` `PgUp` `PgDn` `Enter` | Move through the task list, open one |
+| `a` | Apps or every process |
+| `s` | Next sort order |
+| `Delete` | End the task (`Shift+Delete`: force stop) |
+| `Esc` | Back one step |
 
-That reads the machine you are on. To see it against the phone in the
-screenshots instead:
+## Where the numbers come from
 
-```sh
-export MOARCHY_VITALS_DIR=$(mktemp -d)
-python3 demo.py
-python3 -m moarchy_vitals
-```
+Everything comes from `/proc` and `/sys`, plus `df` for how full each
+filesystem is (the kernel does not keep that in a file). There is no daemon,
+no helper library and no network access.
 
-`demo.py` refuses to run without `MOARCHY_VITALS_DIR` set, because it writes a
-couple of thousand files. With it set, the app reads that directory instead of
-`/proc` — including for the two buttons that end a task, which is why the demo
-is safe to run anywhere.
+- Processor use is the difference between two readings. The time between
+  readings comes from `/proc/uptime`, not the wall clock.
+- A process's share is of the whole machine. One process using one full core
+  of eight shows as 12.5%.
+- A process that started since the last reading shows no rate yet. With only
+  one reading, a process a millisecond old would look like a whole core.
+- A pid that has been reused is recognised by its start time, so a new
+  process is not credited with the old one's processor time.
+- Memory used is total minus `MemAvailable`, which is the kernel's own
+  estimate of what a new app could get.
+- A wireless signal level is read as dBm when it is negative and as the
+  driver's own 0–100 figure when it is not. That sign is the only place the
+  file says which unit it uses.
+- The kernel cuts process names to 15 characters. When a name is exactly that
+  long and the command line extends it, the full name comes from the command
+  line.
 
-## On the phone
+## Privacy and security
 
-Run on a PinePhone under mobileomarchy — 4 cores, 2 GB, a Mali-400 with no GL —
-reading its own `/proc`: 185 processes, 118 of them kernel threads in one row,
-the battery at 0.5 W, the SoC at 42 °C, wlan0's throughput, and the whole thing
-in the device's own theme. Two bugs came out of that in the first ten seconds,
-and neither could have been found anywhere else:
+- **Network.** Vitals makes no network connections.
+- **Processes.** Each reading runs one `sh -c` script. The script is fixed
+  except for two things: the directory to read, which is quoted, and the pid of
+  the process on screen, which is parsed as a number first. The script runs
+  `awk` over a fixed list of paths, then `timeout 2 df -lPkT`, which covers
+  local filesystems only so a network mount that stops answering cannot hang
+  the reading. Ending a task runs `kill` with an argument list, not through a
+  shell.
+- **Files.** It writes only `~/.local/state/moarchy-vitals/prefs.json`, which
+  holds the page you were on, the task list's mode and sort, the interval and
+  the appearance. It stores nothing about the machine. Inside the Omarchy
+  shell without the package, it also writes one app menu entry to
+  `~/.local/share/applications`.
 
-- **The Wi-Fi signal was read as dBm.** This phone's Realtek reports the level
-  column as its own 0-100 figure with a positive sign, so "47" was rendered
-  through a dBm ramp and the panel read *signal 104%, clamped to 100*. The sign
-  turns out to be the only thing in the file that says which unit is meant, and
-  that is now what decides. The `link` column, which the first cut divided by
-  70, is not used at all any more: its denominator is not in the file.
-- **Five of the eleven rows on the first screen of the task list were cut
-  short** — "moarchy-keyboar", "xdg-desktop-por", "evolution-sourc". The kernel
-  stores fifteen characters of a process name, and a phone's programs are named
-  by people who expected a desktop. The full name is in the command line, so it
-  is taken from there — but only when the name that arrived is exactly fifteen
-  characters and the executable's basename extends it, because a process that
-  renamed itself to "Isolated Web Co" means that and should not be turned back
-  into "firefox".
-
-The graphs also start empty there and fill over the first two minutes, which is
-what a real machine looks like and is the whole reason `demo.py` exists.
-
-One thing that is not this app's to fix: every GTK4 app on that image logs
-*"Unable to create a GL context"* at `window.present()` — `moarchy-keep` does it
-identically — because the image sets no `GSK_RENDERER` and a Mali-400 has none
-to give. GTK falls back to cairo, which is what the dev container is pinned to
-anyway, so what is drawn is what was tested.
-
-## Checks
+## Remove
 
 ```sh
-scripts/check.sh vitals
+sudo pacman -Rns moarchy-vitals
+rm -rf ~/.local/state/moarchy-vitals
 ```
 
-ruff, then every file format and every rate against hand-written machines, then
-the widgets on a virtual screen, then a real run that fails on any GTK warning.
-That last one is the one that matters: a layout error is not an exception — the
-app starts, the window appears, and one widget is the wrong size, with a single
-line on stderr as the only sign.
+## Developing
 
-The unit tests include one class that goes the other way and reads the *real*
-`/proc`, asserting only that the answers are sane. A fixture proves the parser
-is right about a file; only the live kernel proves the file is the one the
-parser was written for, because the fixture was written by the same person as
-the parser.
+```sh
+quickshell -p apps/vitals/shell.qml                     # this machine
+MOARCHY_VITALS_DIR=$(mktemp -d) sh -c \
+  'python3 apps/vitals/dev/demo.py && quickshell -p apps/vitals/shell.qml'   # the recorded phone
+```
+
+`dev/demo.py` writes 64 frames of a PinePhone, two seconds apart, with a browser
+loading a page partway through. Each frame's `/proc/stat` is the sum of its
+processes' shares, so the task list and the graph agree. With
+`MOARCHY_VITALS_DIR` set, the app plays the frames through, holds the last
+one, and signals nothing.
+
+Checks and pictures, in the `moarchy-qml` image (`docker/Dockerfile.qml`, plus
+`ttf-jetbrains-mono-nerd` for the icons):
+
+```sh
+qmltestrunner -input apps/vitals/tests        # the parsers and the collector
+qmllint apps/vitals/*.qml
+apps/vitals/dev/shots.sh                          # docs/screenshots, both sizes
+```
 
 | variable | what it does |
 |---|---|
-| `MOARCHY_VITALS_DIR` | read this directory instead of `/proc` — a frame, or a reel of them |
-| `MOARCHY_VITALS_QUIT_AFTER` | quit after N seconds, for headless runs |
-| `MOARCHY_VITALS_PAGE` | open on `overview`, `tasks` or `network` |
+| `MOARCHY_VITALS_DIR` | read demo.py's recording instead of this machine |
+| `MOARCHY_VITALS_ROOT` | read a directory shaped like `/` instead of `/` |
+| `MOARCHY_VITALS_PAGE` | open on `overview`, `processor`, `memory`, `tasks`, `network` or `settings` |
 | `MOARCHY_VITALS_TASKS` | `apps` or `all` |
-| `MOARCHY_VITALS_SORT` | `cpu`, `memory` or `name` |
-| `MOARCHY_VITALS_SEARCH` | open with the search bar up, holding this text |
-| `MOARCHY_VITALS_PICK` | open straight onto a pid, or an app or process by name |
+| `MOARCHY_VITALS_PICK` | open straight onto an app by name, or a pid |
+| `MOARCHY_VITALS_QUIT_AFTER` | quit after N seconds, for headless runs |
 
-## Licence
+## Credits
 
-MIT.
+MIT licensed. Not affiliated with Omarchy or Quickshell.

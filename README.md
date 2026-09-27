@@ -20,7 +20,7 @@ the aarch64 repos, the AUR or Flathub. This is where they get written.
 | [mill](apps/mill) | Nine Men's Morris: three squares, an opponent on a clock, and the rule everybody forgets | v0.1.0 |
 | [fiveletters](apps/fiveletters) | A five-letter word a day: its own keyboard, and a mark as well as a colour | v0.1.0 |
 | [breakout](apps/breakout) | Breakout: a bat that follows your thumb, and a clock that stops with the window | v0.1.0 |
-| [vitals](apps/vitals) | A task manager: processor, memory, tasks and network, read from /proc | v0.1.0 |
+| [vitals](apps/vitals) | A task manager: processor, memory, storage, battery, network and tasks, read from /proc — in Quickshell, for the desktop and the phone | v0.2.0 |
 | [puzzle-games](apps/puzzle-games) | *Packaging only:* sidhant947's suite of 300+ small puzzles, minus the titlebar | 1.1.4 |
 | [crypto-market](apps/crypto-market) | *Not a moarchy app:* CoinGecko prices, coin pages, a watchlist and a portfolio, for any Quickshell desktop | v1.1.1 |
 | [couch-for-trakt](apps/couch-for-trakt) | *Not a moarchy app:* a movie and TV tracker for Trakt — discover, up next, calendar, watchlist, history — for any Quickshell desktop | v1.1.0 |
@@ -88,9 +88,12 @@ already lists two — `gnome-usage`, and `bottom`, which is there because *btop
 does not fit a phone's terminal at 47 columns*. What a phone lacks is the
 content of btop with a thumb-sized switcher along the bottom: per-core bars,
 network throughput, heat and charge, and a task list that groups a browser's
-twenty processes into one row you can end with a tap. It also reads nothing but
-`/proc`, so it costs the stock image no package at all beyond the GUI stack that
-is already on it.
+twenty processes into one row you can end with a tap. It reads nothing but
+`/proc` and `/sys`, and since 0.2.0 it is a Quickshell app in the shape Couch
+and Airwaves have: a window of its own on any Quickshell desktop, a panel
+inside the Omarchy shell when the shell has it, one column on a phone and two
+or three across on a desktop. The GTK version and the plugin in `plugins/`
+were replaced by it rather than kept beside it.
 
 Coins was the fourth, and it has gone. Its place is taken by
 [Crypto Market](apps/crypto-market), which is the one row here that is not a

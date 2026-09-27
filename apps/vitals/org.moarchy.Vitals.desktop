@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=Vitals
+GenericName=System monitor
+Comment=Processor, memory, storage, battery and network, and what is using them
+Exec=moarchy-vitals
+Icon=org.moarchy.Vitals
+Terminal=false
+StartupNotify=false
+Categories=System;Monitor;
+Keywords=system;monitor;task manager;cpu;memory;process;network;battery;disk;
