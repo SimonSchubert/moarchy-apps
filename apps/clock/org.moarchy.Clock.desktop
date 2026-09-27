@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=Clock
+GenericName=Clock
+Comment=The time, an alarm that says when it is late, a stopwatch and a timer
+Exec=moarchy-clock
+Icon=org.moarchy.Clock
+Terminal=false
+Categories=Utility;Clock;
+Keywords=clock;alarm;stopwatch;timer;countdown;time;
+StartupNotify=false

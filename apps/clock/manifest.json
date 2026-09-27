@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "id": "org.moarchy.clock",
+  "name": "Clock",
+  "version": "0.2.0",
+  "author": "Simon Schubert",
+  "license": "MIT",
+  "description": "The time, an alarm that rings late and says so, a stopwatch and a timer. Inside the Omarchy shell alarms ring with the window closed. Desktop and phone layouts.",
+  "homepage": "https://github.com/SimonSchubert/moarchy-apps/tree/main/apps/clock",
+  "repository": "https://github.com/SimonSchubert/moarchy-apps",
+  "keywords": ["clock", "alarm", "stopwatch", "timer", "countdown", "time"],
+  "icon": "icon.svg",
+  "kinds": ["panel"],
+  "keepLoaded": true,
+  "entryPoints": {
+    "panel": "Panel.qml"
+  }
+}

@@ -1,0 +1,24 @@
+# What to photograph, for scripts/app-shot.sh.
+#
+# Nine minutes past ten on Tuesday 15 September 2026, pinned in both halves:
+# demo.py dates its fixture from it and the app reads its clock from it. A
+# clock photographed at whatever time the run happens is a clock whose
+# pictures all disagree, and at 10:09 the hands make a V and none covers
+# another.
+NOW=MOARCHY_CLOCK_NOW=1789466976
+
+shot phone $NOW
+shot phone-light $NOW LOOK=light
+shot phone-stopwatch $NOW MOARCHY_CLOCK_PAGE=stopwatch
+shot phone-timer $NOW MOARCHY_CLOCK_PAGE=timer
+shot phone-keypad $NOW MOARCHY_CLOCK_PAGE=keypad MOARCHY_CLOCK_TYPED=1500
+shot phone-editor $NOW MOARCHY_CLOCK_PAGE=editor
+shot phone-ringing $NOW MOARCHY_CLOCK_PAGE=ring
+shot desktop $NOW SIZE=1280x820
+shot desktop-light $NOW SIZE=1280x820 LOOK=light
+shot desktop-stopwatch $NOW SIZE=1280x820 MOARCHY_CLOCK_PAGE=stopwatch
+shot desktop-keypad $NOW SIZE=1280x820 MOARCHY_CLOCK_PAGE=keypad MOARCHY_CLOCK_TYPED=1500
+[[ -f .themes/catppuccin-latte/colors.toml ]] && \
+  shot desktop-latte-stopwatch $NOW SIZE=1280x820 MOARCHY_CLOCK_PAGE=stopwatch THEME=.themes/catppuccin-latte/colors.toml
+[[ -f .themes/tokyo-night/colors.toml ]] && \
+  shot phone-tokyo $NOW THEME=.themes/tokyo-night/colors.toml
