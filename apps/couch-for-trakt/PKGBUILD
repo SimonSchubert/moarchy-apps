@@ -18,7 +18,7 @@ depends=('quickshell' 'ttf-jetbrains-mono-nerd' 'hicolor-icon-theme')
 # A release asset that packaging/release.sh builds from apps/couch-for-trakt
 # at the tag, not GitHub's generated archive of the whole repository.
 source=("$url/releases/download/couch-for-trakt-v$pkgver/$pkgname-$pkgver.tar.gz")
-sha256sums=('SKIP')
+sha256sums=('7ba63d1256af99082d662f4b0e1172ccc82d8fb500d9a451ea2a149facb504ad')
 
 package() {
   cd "$pkgname-$pkgver"
