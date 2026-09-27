@@ -1,7 +1,7 @@
 import QtQuick
 
-// A labelled one-line text field. Focus comes from a press, never from the
-// field appearing, so the phone's keyboard comes up because somebody asked
+// A labelled one-line text field. `label` is optional; without it the field
+// is just the box. Focus comes from a press, never from the field appearing, so the phone's keyboard comes up because somebody asked
 // for it; Escape and Enter hand the keys back to the window.
 Column {
   id: root
@@ -10,6 +10,9 @@ Column {
   property alias text: input.text
   property string placeholder: ""
   property int inputHints: Qt.ImhNone
+  property alias input: input
+  property alias echoMode: input.echoMode
+  property alias readOnly: input.readOnly
   signal accepted()
   function takeFocus() { input.forceActiveFocus() }
 

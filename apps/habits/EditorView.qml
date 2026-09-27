@@ -65,7 +65,7 @@ Item {
       width: Math.min(flick.width - x * 2, 560)
       spacing: 20
 
-      Field {
+      TextField {
         id: nameField
         app: root.app
         width: parent.width
@@ -75,7 +75,7 @@ Item {
         onAccepted: root.save()
       }
 
-      Field {
+      TextField {
         id: questionField
         app: root.app
         width: parent.width
@@ -100,7 +100,7 @@ Item {
         visible: root.kind === H.MEASURABLE
         width: parent.width
         spacing: 12
-        Field {
+        TextField {
           id: targetField
           app: root.app
           width: (parent.width - 12) / 2
@@ -110,7 +110,7 @@ Item {
           text: root.habit && root.habit.kind === H.MEASURABLE ? String(root.habit.target) : "1"
           onAccepted: root.app.resetFocus()
         }
-        Field {
+        TextField {
           id: unitField
           app: root.app
           width: (parent.width - 12) / 2
