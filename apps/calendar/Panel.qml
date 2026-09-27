@@ -322,6 +322,12 @@ App {
     }
   }
 
+  // On a phone the editor is a pushed page: its picker closes before it does.
+  pageStepBack: function () {
+    if (pickingDate) { pickingDate = false; return true }
+    return false
+  }
+
   // Before the tabs: the picker, then the desktop's editor pane.
   stepBack: function () {
     if (pickingDate) { pickingDate = false; return true }

@@ -191,6 +191,10 @@ Item {
   // The open Dialog, if any. Back closes it first.
   property var dialog: null
 
+  // One step out of the pushed page before the page itself goes: a picker
+  // open inside an editor. function () -> true when it stepped.
+  property var pageStepBack: null
+
   // One step out of wherever the app is, before the tabs are: a search query
   // cleared, a selection dropped. function () -> true when it stepped.
   property var stepBack: null
@@ -202,6 +206,7 @@ Item {
   function back() {
     resetFocus()
     if (dialog) { dialog.close(); return true }
+    if (topPage && typeof pageStepBack === "function" && pageStepBack()) return true
     if (pop()) return true
     if (typeof stepBack === "function" && stepBack()) return true
     if (tab !== homeTab) { setTab(homeTab); return true }
