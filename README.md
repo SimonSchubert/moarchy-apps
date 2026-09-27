@@ -26,7 +26,7 @@ the aarch64 repos, the AUR or Flathub. This is where they get written.
 | [couch-for-trakt](apps/couch-for-trakt) | *Not a moarchy app:* a movie and TV tracker for Trakt — discover, up next, calendar, watchlist, history — for any Quickshell desktop | v1.1.0 |
 | [transit](apps/transit) | *Not a moarchy app:* public transport journeys and live departures, worldwide, on Transitous, for any Quickshell desktop | v1.1.0 |
 | [airwaves](apps/airwaves) | *Not a moarchy app:* internet radio from radio-browser.info — 50,000 stations by genre, country and language, the song on air, favourites — for any Quickshell desktop | v1.0.0 |
-| [food](apps/food) | Point the camera at a barcode: nutrition facts from Open Food Facts | v0.1.0 |
+| [food](apps/food) | Point the camera at a barcode: nutrition facts from Open Food Facts — in Quickshell, for the desktop and the phone | v0.2.0, unreleased |
 | [launches](apps/launches) | Upcoming rockets: a countdown, a pad, and the ones you star — in Quickshell, for the desktop and the phone | v0.2.0, unreleased |
 | [calculator](apps/calculator) | The four operations, a tape you can tap, and arithmetic that counts in tens — in Quickshell, for the desktop and the phone | v0.2.0, unreleased |
 | [weather](apps/weather) | Now, the next day and the week, where you are and in the places you named — in Quickshell, for the desktop and the phone | v0.2.0, unreleased |

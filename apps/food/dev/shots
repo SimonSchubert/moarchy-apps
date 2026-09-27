@@ -1,0 +1,20 @@
+# What to photograph, for scripts/app-shot.sh.
+#
+# Every shot is offline (the history dev/demo.py wrote, and no socket). The
+# camera is the fake scanner: idle.txt sees nothing, so the viewfinder shows
+# the barcode still behind the reticle; scan.txt "sees" Nutella a moment in,
+# which is the whole of a scan -- read, looked up in the cache, opened.
+OFF=MOARCHY_FOOD_OFFLINE=1
+IDLE="MOARCHY_FOOD_SCAN_FAKE=idle.txt MOARCHY_FOOD_PREVIEW=barcode.png"
+SEES="MOARCHY_FOOD_SCAN_FAKE=scan.txt MOARCHY_FOOD_PREVIEW=barcode.png MOARCHY_FOOD_SCAN_FAKE_DELAY=0.5"
+
+shot phone $OFF $IDLE
+shot phone-product $OFF MOARCHY_FOOD_PAGE=product
+shot phone-history $OFF MOARCHY_FOOD_PAGE=history
+shot phone-light LOOK=light $OFF MOARCHY_FOOD_PAGE=product MOARCHY_FOOD_CODE=8000500037560
+shot phone-missing $OFF MOARCHY_FOOD_PAGE=missing MOARCHY_FOOD_CODE=4006381333931
+shot phone-nocamera $OFF MOARCHY_FOOD_CAMERA=0
+shot phone-tokyo THEME=.themes/tokyo-night/colors.toml $OFF MOARCHY_FOOD_PAGE=history
+shot desktop SIZE=1280x820 $OFF $SEES
+shot desktop-light SIZE=1280x820 LOOK=light $OFF MOARCHY_FOOD_PAGE=history MOARCHY_FOOD_CODE=8000500037560
+shot desktop-latte SIZE=1280x820 THEME=.themes/catppuccin-latte/colors.toml $OFF $IDLE MOARCHY_FOOD_PAGE=product

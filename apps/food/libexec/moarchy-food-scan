@@ -1,0 +1,335 @@
+#!/usr/bin/python3
+"""The camera, and the barcodes it sees, as lines on stdout.
+
+Food's window is QML, and QML has no camera it can trust on this phone and
+no barcode decoder at all. GStreamer has both -- v4l2src for the sensor and
+zbar, from gst-plugins-bad, posting a message the moment a code is in frame
+-- so the scanning is this process, started by the app when its scan page
+opens and ended when the page closes. Nothing here runs with the page shut.
+
+One JSON object a line:
+
+    {"event": "ready"}                              the camera is running
+    {"event": "code", "kind": "EAN-13", "symbol": "3017620422003"}
+    {"event": "frame", "path": ".../preview.jpg", "n": 12}
+    {"event": "error", "reason": "No camera found."}
+
+The app decides what a code is -- which kinds are products, the check digit,
+the debounce -- because it has the tests for it. This only reports.
+
+**The preview is a still, four times a second.** A JPEG of the frame,
+480 px wide, written beside itself and renamed into place so the window
+never reads half a file, and announced with a counter so the window knows
+to load it again. That is cheaper on a PinePhone than it sounds -- jpegenc
+of a small frame at 4 fps -- and far cheaper than shipping a video sink the
+window cannot embed. It is also optional: MOARCHY_FOOD_SCAN_PREVIEW=0 turns
+it off, and the page says "point at a barcode" either way.
+
+**It ends on SIGTERM, SIGINT, or its stdin closing** -- the last is the app
+having gone away without saying so. The pipeline is set to NULL first, so
+the sensor is released rather than left streaming for the next process.
+
+Without a lens:
+
+    MOARCHY_FOOD_SCAN_FAKE=<file>    replays one code a line from the file
+                                     (`EAN-13 3017620422003`, or just digits)
+                                     a second apart, no GStreamer involved
+    MOARCHY_FOOD_PREVIEW=<png>       a still of a barcode instead of a device,
+                                     through the real zbar pipeline
+    MOARCHY_FOOD_CAMERA=0            no camera, to photograph the empty state
+"""
+
+from __future__ import annotations
+
+import fcntl
+import json
+import os
+import signal
+import stat
+import struct
+import sys
+import threading
+import time
+from pathlib import Path
+
+PREVIEW_FPS = 4
+PREVIEW_WIDTH = 480
+FAKE_DELAY_S = 1.0
+
+# struct v4l2_capability is 104 bytes on every LP64 we ship: driver[16],
+# card[32], bus_info[32], version, capabilities, device_caps, reserved[3].
+_VIDIOC_QUERYCAP = 0x80685600
+_V4L2_CAP_VIDEO_CAPTURE = 0x00000001
+_V4L2_CAP_DEVICE_CAPS = 0x80000000
+
+
+def emit(event: str, **fields) -> None:
+    fields = {"event": event, **fields}
+    try:
+        sys.stdout.write(json.dumps(fields) + "\n")
+        sys.stdout.flush()
+    except BrokenPipeError:
+        # The app is gone; so is the reason to run.
+        os._exit(0)
+
+
+# --- which /dev/video* is a camera -------------------------------------------
+
+
+def v4l2_is_capture(buf: bytes) -> bool:
+    """Does a QUERYCAP buffer advertise video capture?
+
+    A PinePhone has four /dev/video* nodes and one of them is a camera: the
+    others are a rotator, a decoder and a deinterlacer. Opening those as
+    v4l2src is how a launch spends seconds in PLAYING on something that will
+    never produce a frame.
+    """
+    if len(buf) < 92:
+        return False
+    caps, device_caps = struct.unpack_from("<II", buf, 84)
+    flags = device_caps if caps & _V4L2_CAP_DEVICE_CAPS else caps
+    return bool(flags & _V4L2_CAP_VIDEO_CAPTURE)
+
+
+def _node_is_capture(path: Path) -> bool:
+    try:
+        fd = os.open(path, os.O_RDONLY | os.O_NONBLOCK)
+    except OSError:
+        return False
+    try:
+        buf = bytearray(104)
+        fcntl.ioctl(fd, _VIDIOC_QUERYCAP, buf)
+    except OSError:
+        return False
+    finally:
+        os.close(fd)
+    return v4l2_is_capture(bytes(buf))
+
+
+def devices(root: Path = Path("/dev")) -> list[Path]:
+    """Capture nodes that might be a camera; every readable node if the
+    ioctl was refused on all of them."""
+    nodes = [p for p in sorted(root.glob("video*")) if p.exists() and os.access(p, os.R_OK)]
+    capture = [p for p in nodes if _node_is_capture(p)]
+    return capture or nodes
+
+
+# --- the fake ----------------------------------------------------------------
+
+
+def fixture(name: str) -> str:
+    """A path from the environment; a bare name is looked for in
+    MOARCHY_FOOD_DIR, where dev/demo.py writes its fixtures."""
+    raw = os.environ.get(name, "")
+    if not raw or os.path.isabs(raw):
+        return raw
+    base = os.environ.get("MOARCHY_FOOD_DIR", "")
+    return os.path.join(base, raw) if base else raw
+
+
+def fake_codes(text: str) -> list[tuple[str, str]]:
+    """`KIND SYMBOL` or `SYMBOL` a line; blank lines and # comments skipped."""
+    out = []
+    for line in text.splitlines():
+        line = line.strip()
+        if not line or line.startswith("#"):
+            continue
+        parts = line.split()
+        out.append((parts[0], parts[1]) if len(parts) > 1 else ("EAN-13", parts[0]))
+    return out
+
+
+def run_fake(path: str, stop: threading.Event) -> int:
+    try:
+        codes = fake_codes(Path(path).read_text(encoding="utf-8"))
+    except OSError as exc:
+        emit("error", reason=f"No fake scanner file: {exc.strerror}.")
+        return 2
+    delay = float(os.environ.get("MOARCHY_FOOD_SCAN_FAKE_DELAY") or FAKE_DELAY_S)
+    emit("ready")
+    # A still to show as the viewfinder, so the scan page can be photographed
+    # somewhere with no GStreamer at all.
+    still = fixture("MOARCHY_FOOD_PREVIEW")
+    if still and Path(still).is_file():
+        emit("frame", path=os.path.abspath(still), n=1)
+    for kind, symbol in codes:
+        if stop.wait(delay):
+            return 0
+        emit("code", kind=kind, symbol=symbol)
+    stop.wait()
+    return 0
+
+
+# --- the pipeline ------------------------------------------------------------
+
+
+def describe(source: str, preview: str | None) -> str:
+    """The gst-launch line: the source, a tee, zbar on one branch and the
+    low-rate JPEG preview on the other (or nothing, with no preview)."""
+    decode = "t. ! queue leaky=downstream max-size-buffers=2 ! videoconvert ! zbar ! fakesink sync=false"
+    line = f"{source} ! tee name=t {decode}"
+    if preview:
+        line += (
+            " t. ! queue leaky=downstream max-size-buffers=2 ! videorate drop-only=true ! "
+            f"video/x-raw,framerate={PREVIEW_FPS}/1 ! videoconvert ! videoscale ! "
+            f"video/x-raw,width={PREVIEW_WIDTH},pixel-aspect-ratio=1/1 ! "
+            "jpegenc quality=70 ! appsink name=frames emit-signals=true max-buffers=1 drop=true sync=false"
+        )
+    return line
+
+
+def sources() -> list[str]:
+    still = fixture("MOARCHY_FOOD_PREVIEW")
+    if still and Path(still).is_file():
+        location = still.replace("\\", "\\\\").replace('"', '\\"')
+        return [f'filesrc location="{location}" ! pngdec ! imagefreeze ! videoconvert']
+    return [f"v4l2src device={device}" for device in devices()]
+
+
+def preview_path() -> Path | None:
+    if os.environ.get("MOARCHY_FOOD_SCAN_PREVIEW") == "0":
+        return None
+    base = os.environ.get("XDG_RUNTIME_DIR") or "/tmp"
+    folder = Path(base) / f"moarchy-food-{os.getuid()}"
+    try:
+        folder.mkdir(mode=0o700, exist_ok=True)
+    except OSError:
+        return None
+    return folder / "preview.jpg"
+
+
+def run_camera(stop: threading.Event) -> int:
+    if os.environ.get("MOARCHY_FOOD_CAMERA") == "0":
+        emit("error", reason="No camera found.")
+        return 2
+    candidates = sources()
+    if not candidates:
+        emit("error", reason="No camera found.")
+        return 2
+    try:
+        import gi
+
+        gi.require_version("Gst", "1.0")
+        from gi.repository import GLib, Gst
+    except (ImportError, ValueError):
+        emit("error", reason="GStreamer is not installed.")
+        return 2
+    os.environ.setdefault("GST_DEBUG", "0")
+    Gst.init(None)
+    if Gst.ElementFactory.find("zbar") is None:
+        emit("error", reason="The zbar plugin is not installed.")
+        return 2
+
+    preview = preview_path()
+    loop = GLib.MainLoop()
+    pipeline = None
+    for source in candidates:
+        try:
+            candidate = Gst.parse_launch(describe(source, str(preview) if preview else None))
+        except GLib.Error:
+            continue
+        if candidate.set_state(Gst.State.PLAYING) == Gst.StateChangeReturn.FAILURE:
+            candidate.set_state(Gst.State.NULL)
+            continue
+        pipeline = candidate
+        break
+    if pipeline is None:
+        emit("error", reason="The camera did not start.")
+        return 2
+
+    frames = [0]
+
+    def on_frame(sink):
+        sample = sink.emit("pull-sample")
+        if sample is None or preview is None:
+            return Gst.FlowReturn.OK
+        buffer = sample.get_buffer()
+        ok, info = buffer.map(Gst.MapFlags.READ)
+        if ok:
+            try:
+                tmp = preview.with_suffix(".tmp")
+                tmp.write_bytes(bytes(info.data))
+                os.replace(tmp, preview)
+                frames[0] += 1
+                emit("frame", path=str(preview), n=frames[0])
+            except OSError:
+                pass
+            finally:
+                buffer.unmap(info)
+        return Gst.FlowReturn.OK
+
+    sink = pipeline.get_by_name("frames")
+    if sink is not None:
+        sink.connect("new-sample", on_frame)
+
+    status = [0]
+
+    def on_message(_bus, message):
+        if message.type == Gst.MessageType.ELEMENT:
+            s = message.get_structure()
+            if s is not None and s.get_name() == "barcode":
+                emit("code", kind=s.get_string("type") or "", symbol=s.get_string("symbol") or "")
+        elif message.type == Gst.MessageType.ERROR:
+            err, _debug = message.parse_error()
+            emit("error", reason=err.message if err is not None else "The camera stopped.")
+            status[0] = 1
+            loop.quit()
+
+    bus = pipeline.get_bus()
+    bus.add_signal_watch()
+    bus.connect("message", on_message)
+
+    def watch_stop():
+        if stop.is_set():
+            loop.quit()
+            return False
+        return True
+
+    GLib.timeout_add(100, watch_stop)
+    emit("ready")
+    loop.run()
+    bus.remove_signal_watch()
+    pipeline.set_state(Gst.State.NULL)
+    return status[0]
+
+
+def stdin_is_pipe() -> bool:
+    try:
+        return stat.S_ISFIFO(os.fstat(sys.stdin.fileno()).st_mode)
+    except (OSError, ValueError, AttributeError):
+        return False
+
+
+def main() -> int:
+    stop = threading.Event()
+    for sig in (signal.SIGTERM, signal.SIGINT):
+        signal.signal(sig, lambda *_: stop.set())
+
+    # Stdin closing is the app gone without a word.
+    # The raw descriptor, not sys.stdin: a thread blocked in the buffered
+    # reader holds its lock, and the interpreter aborts on it at exit.
+    def watch_stdin():
+        try:
+            while os.read(0, 4096):
+                pass
+        except OSError:
+            pass
+        stop.set()
+
+    # Only a pipe: /dev/null reads as closed at once, and a terminal is a
+    # person running this by hand.
+    if stdin_is_pipe():
+        threading.Thread(target=watch_stdin, daemon=True).start()
+
+    fake = fixture("MOARCHY_FOOD_SCAN_FAKE")
+    if fake:
+        return run_fake(fake, stop)
+    return run_camera(stop)
+
+
+if __name__ == "__main__":
+    status = main()
+    sys.stdout.flush()
+    # Not SystemExit: the stdin thread may still be in read(), and a normal
+    # shutdown would wait on it.
+    os._exit(status)

@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "id": "org.moarchy.food",
+  "name": "Food",
+  "version": "0.2.0",
+  "author": "Simon Schubert",
+  "license": "MIT",
+  "description": "Point the camera at a barcode: the name, Nutri-Score, NOVA, Eco-Score, the table per 100 g and the allergens, from Open Food Facts. A history that opens offline. Desktop and phone layouts.",
+  "homepage": "https://github.com/SimonSchubert/moarchy-apps/tree/main/apps/food",
+  "repository": "https://github.com/SimonSchubert/moarchy-apps",
+  "keywords": ["food", "nutrition", "barcode", "scan", "nutri-score", "open food facts", "allergens"],
+  "icon": "icon.svg",
+  "kinds": ["panel"],
+  "keepLoaded": true,
+  "entryPoints": {
+    "panel": "Panel.qml"
+  }
+}
