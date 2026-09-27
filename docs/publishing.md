@@ -47,7 +47,7 @@ As of 2026-09-14, and this table is the thing to re-check rather than trust:
 | tictactoe | `moarchy-tictactoe` | 0.1.0 released; 0.2.0, the Quickshell rewrite, in the tree and not tagged | yes | yes | **yes** — 0.1.0, the GTK app |
 | solitaire | `moarchy-solitaire` | 0.1.0 | yes | yes | **yes** |
 | pegsolitaire | `moarchy-pegsolitaire` | 0.1.0 | yes | yes | **yes** |
-| minesweeper | `moarchy-minesweeper` | 0.1.0 | yes | yes | **yes** |
+| minesweeper | `moarchy-minesweeper` | 0.1.0 released; 0.2.0, the Quickshell rewrite, in the tree and not tagged | yes | yes | **yes** — 0.1.0, the GTK app |
 | mill | `moarchy-mill` | 0.1.0 | yes | yes | **yes** |
 | fiveletters | `moarchy-fiveletters` | 0.1.0 | yes | yes | **yes** |
 | breakout | `moarchy-breakout` | 0.1.0 | yes | yes | **yes** |

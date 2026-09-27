@@ -4,19 +4,24 @@ Minesweeper for a Linux phone: boards shaped for a portrait screen, a flag
 button that latches, and a clock that stops when the app is not on screen.
 
 <p align="center">
-  <img src="docs/screenshots/board.png" width="30%" alt="A game in progress: 15 mines and 1:39 on the clock above a 10 by 13 field of grey tiles, numbers in blue, green, red and purple, and several red flags">
-  <img src="docs/screenshots/lost.png" width="30%" alt="A lost board: one mine on a red cell, every other mine revealed, one flag crossed out in orange, and the status reading A mine and 1 flag wrong">
-  <img src="docs/screenshots/levels.png" width="30%" alt="The new-game sheet: Gentle, Standard and Hard, each with its size, mine count and best time">
+  <img src="docs/screenshots/phone.png" width="30%" alt="A game in progress on a phone: 12 mines and 0:49 either side of the Flag button, a 10 by 13 field of raised grey tiles with numbers in blue, green and red and several red flags, and New game and This board again under it">
+  <img src="docs/screenshots/phone-lost.png" width="30%" alt="A lost board: one mine on a red cell, every other mine revealed, one flag crossed out in orange, and the status reading A mine and 1 flag wrong">
+  <img src="docs/screenshots/phone-newgame.png" width="30%" alt="The new-game sheet: Gentle, Standard and Hard, each with its size, mine count and best time, and a note that the game in progress will count as a loss">
+</p>
+<p align="center">
+  <img src="docs/screenshots/desktop-latte.png" width="92%" alt="The same app on a desktop under catppuccin-latte: a lost board on the left, and beside it the readings, the buttons and the record">
 </p>
 
-<p align="center"><em>360×720, the size of a PinePhone's screen under
-mobileomarchy. The eight numbers are the eight hues the active Omarchy theme
-names, and <code>omarchy-theme-set</code> repaints them while the game is on the
-screen.</em></p>
+<p align="center"><em>360×720, and a desktop window. One app: below 720 px it
+lays out as a phone app, above it the record sits beside the board. The eight
+numbers are the eight hues the active Omarchy theme names, and a theme switch
+repaints them while the game is on the screen.</em></p>
 
-Built for [mobileomarchy](https://github.com/SimonSchubert/mobileomarchy), but
-nothing in it is specific to that: it is a GTK4/libadwaita app and runs on
-Phosh, Plasma Mobile, postmarketOS or an ordinary desktop.
+A Quickshell app. Inside the Omarchy shell it is a panel the shell keeps
+loaded, so opening it is showing a window rather than starting a process; on
+any other Quickshell desktop `moarchy-minesweeper` runs it as its own. 0.1.0
+was a GTK4/libadwaita app, and a board left in it is the board found here: the
+file is the same, and the same seed lays the same mines.
 
 ## This one is not a gap
 
@@ -65,12 +70,13 @@ That argument is right. Minesweeper cannot follow it, because a best time is
 most of what this game's record has ever been. So the clock is kept and the
 argument is answered instead:
 
-> **It runs only while this is the active window.**
+> **It runs only while the board can be looked at.**
 
-Put the phone down, take a message, switch to the browser — the second hand
-stops and the reading goes dim to say so. What is stored is accumulated seconds
-rather than a start time, because the thing being measured stops and starts, and
-a start time would need correcting every time focus moved.
+Close it, take a message, switch to the browser — the second hand stops. As its
+own process that means while it has the focus; inside the shell, which is one
+process for every panel, it means while its window is open. What is stored is
+accumulated seconds rather than a start time, because the thing being measured
+stops and starts, and a start time would need correcting every time it did.
 
 It is also written to disk once a minute rather than once a second. An fsync per
 second for an hour is three and a half thousand writes to a phone's flash, and
@@ -115,10 +121,10 @@ very often half the board. An animation would mean a person waiting to find out
 whether they had just lost. The one thing that would be worth animating is the
 flood, and the flood is exactly the thing nobody wants slowed down.
 
-It is also why the field is one drawing area rather than a hundred and ninety-two
-buttons: a single tap on a Hard board can open a hundred and fifty cells, which
-as widgets is a hundred and fifty style contexts to re-resolve and a hundred and
-fifty render nodes to rebuild in one frame. Drawn, it is one repaint.
+A tap changes the board in place and bumps one revision number; every cell's
+bindings read it, so a flood of a hundred and fifty cells is one frame of the
+scene graph re-reading a hundred and fifty booleans, not a hundred and fifty
+animations queued behind each other.
 
 ## The file
 
@@ -137,16 +143,19 @@ fifty render nodes to rebuild in one frame. Drawn, it is one repaint.
 ```
 
 **The mines are not in the file.** What is saved is a seed and the taps made;
-the same few lines in `minesweeper.py` put the same mines back from the seed and
+the same few lines in `Minesweeper.js` put the same mines back from the seed and
 the first tap. That is partly because it is smaller, and mostly because a file
 holding the answer is a file somebody can read — this game is played on a device
 where the save is a JSON file in the home directory, and a person who gets stuck
 at two in the morning should have to want it rather badly.
 
-The shuffle is written out by hand rather than taken from `random.sample`,
-because reproducing a layout a month later means depending on an algorithm
-promised not to change, and the one thing CPython promises not to change is the
-stream out of `random.random()`.
+The shuffle is written out by hand on top of `random()`, because reproducing a
+layout a month later means depending on an algorithm promised not to change,
+and the one thing CPython promises not to change is the stream out of
+`random.random()`. The GTK version used exactly that, so `Random.js` is
+CPython's Mersenne Twister — `init_by_array` seeding and `genrand_res53` —
+pinned by tests against CPython's own output. That is what lets a board saved
+by 0.1.0 come back here with the same mines under it.
 
 A move is one small integer: `cell * 3 + action`, where the three actions are
 open, flag and chord. A chord is a move in its own right rather than shorthand
@@ -168,34 +177,39 @@ say about losing one of those is that it happened.
 ## Running it
 
 ```sh
-python3 -m moarchy_minesweeper
+quickshell -p apps/minesweeper/shell.qml
 ```
 
 To see it part-played rather than untouched:
 
 ```sh
 export MOARCHY_MINESWEEPER_DIR=$(mktemp -d)
-python3 demo.py          # a board two thirds opened, with flags on it
-python3 demo.py lost     # ...the same board with a mine gone off
-python3 demo.py won      # ...or cleared
-python3 -m moarchy_minesweeper
+python3 apps/minesweeper/dev/demo.py        # a board part opened, with flags on it
+python3 apps/minesweeper/dev/demo.py lost   # ...the same board with a mine gone off
+python3 apps/minesweeper/dev/demo.py won    # ...or cleared
+quickshell -p apps/minesweeper/shell.qml
 ```
 
-`demo.py` refuses to run without `MOARCHY_MINESWEEPER_DIR` set, so it cannot
-overwrite a real game. It opens cells it knows are safe because it can see the
-mines, which is cheating in a way that shows up nowhere: the board in the picture
-is one a good player could have reached, with the numbers the mines under it
-actually produce. A hand-drawn field is the app telling a lie about its own
-arithmetic, and anybody who counts will see it.
+`demo.py` lays the mines the way the app does — Python's own `random.Random`,
+the same shuffle — and opens cells it knows are safe because it can see them,
+which is cheating in a way that shows up nowhere: the board in the picture is
+one a good player could have reached, with the numbers the mines under it
+actually produce.
+
+On a desktop the right button flags, the arrow keys move a cursor over the
+board, Space or Enter opens (or clears round a number), `f` flags, `m` latches
+the flag button, `n` starts a new game and `a` plays this board again.
 
 ## Checks
 
 ```sh
-scripts/check.sh minesweeper
+docker run --rm -v "$PWD:/src" -w /src moarchy-qml scripts/app-check.sh minesweeper
+docker run --rm -v "$PWD:/src" -w /src moarchy-qml scripts/app-shot.sh minesweeper
 ```
 
-ruff, then the rules and the file, then the widgets on a virtual screen, then a
-real run that fails on any GTK warning.
+The first is qmllint, the rules, the random stream and the file (`tests/`, the
+cases 0.1.0's Python tests had), and a real run that fails on any QML warning.
+The second photographs `dev/shots` at a phone's size and a desktop's.
 
 Two of the rule tests carry the weight. **The same seed puts the same mines
 back** is what the saved game rests on; if it stopped being true a person would
@@ -207,10 +221,11 @@ and the half that is missed produces a first tap that opens a lone 4.
 | variable | what it does |
 |---|---|
 | `MOARCHY_MINESWEEPER_DIR` | where the game lives |
-| `MOARCHY_MINESWEEPER_QUIT_AFTER` | quit after N seconds, for headless runs |
+| `MOARCHY_QUIT_AFTER` | quit after N seconds, for headless runs |
 | `MOARCHY_MINESWEEPER_PAGE` | open straight into `record`, for the screenshots |
 | `MOARCHY_MINESWEEPER_NEW` | open with the new-game sheet up |
 | `MOARCHY_MINESWEEPER_MARKING` | open with the flag button latched |
+| `MOARCHY_MINESWEEPER_SETTINGS` | open on Settings |
 
 ## Licence
 

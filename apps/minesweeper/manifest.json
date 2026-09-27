@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "id": "org.moarchy.minesweeper",
+  "name": "Minesweeper",
+  "version": "0.2.0",
+  "author": "Simon Schubert",
+  "license": "MIT",
+  "description": "Minesweeper: three portrait boards, a first tap that is never a mine, a latching flag, the same mines again after losing, and a clock that stops with the window. Desktop and phone layouts.",
+  "homepage": "https://github.com/SimonSchubert/moarchy-apps/tree/main/apps/minesweeper",
+  "repository": "https://github.com/SimonSchubert/moarchy-apps",
+  "keywords": ["minesweeper", "mines", "puzzle", "logic", "game"],
+  "icon": "icon.svg",
+  "kinds": ["panel"],
+  "keepLoaded": true,
+  "entryPoints": {
+    "panel": "Panel.qml"
+  }
+}
