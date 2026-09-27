@@ -24,7 +24,7 @@ optdepends=('mpv-mpris: the station on media keys and the lock screen')
 # A release asset that packaging/release.sh builds from apps/airwaves at the
 # tag, not GitHub's generated archive of the whole repository.
 source=("$url/releases/download/airwaves-v$pkgver/$pkgname-$pkgver.tar.gz")
-sha256sums=('SKIP')
+sha256sums=('fb3c31a5cf018e662ca7f4e3b9807d392803a91f592b8ea5f4c1bb31e1d2a5e1')
 
 package() {
   cd "$pkgname-$pkgver"
