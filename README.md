@@ -22,7 +22,6 @@ the aarch64 repos, the AUR or Flathub. This is where they get written.
 | [breakout](apps/breakout) | Breakout: a bat that follows your thumb, and a clock that stops with the window | v0.1.0 |
 | [vitals](apps/vitals) | A task manager: processor, memory, tasks and network, read from /proc | v0.1.0 |
 | [puzzle-games](apps/puzzle-games) | *Packaging only:* sidhant947's suite of 300+ small puzzles, minus the titlebar | 1.1.4 |
-| [coins](apps/coins) | A coin tracker: the top hundred by market cap, and the ones you star | v0.1.1 |
 | [food](apps/food) | Point the camera at a barcode: nutrition facts from Open Food Facts | v0.1.0 |
 | [launches](apps/launches) | Upcoming rockets: a countdown, a pad, and the ones you star | v0.1.0 |
 | [calculator](plugins/org.moarchy.calculator) | *Shell plugin only:* the four operations, and arithmetic that counts in tens | v0.1.0 |
@@ -89,15 +88,13 @@ twenty processes into one row you can end with a tap. It also reads nothing but
 `/proc`, so it costs the stock image no package at all beyond the GUI stack that
 is already on it.
 
-Coins is the fourth, and it is the one whose README had to go and look. The
-gaps list does not ask for a coin tracker — it is drawn from F-Droid filtered by
-translation count and screenshots, and no tracker survived that — but the probe
-it describes, run by hand against the same three sets, comes back with a
-terminal ticker in `extra`, a desktop trading terminal on the AUR, and wallets
-on Flathub. Somewhere to *keep* coins is a different and much more dangerous
-thing than somewhere to look at what they cost, which is why this one has no
-wallet, no portfolio and no amount in it anywhere — and why the only thing it
-ever sends is the name of a starred coin that has fallen out of the top hundred.
+Coins was the fourth, and it has left. Its place is taken by
+[Crypto Market](https://github.com/SimonSchubert/omarchy-crypto-market), a
+Quickshell app in a repository of its own, packaged as `crypto-market`: it
+runs in the Omarchy shell when the shell has it and as its own Quickshell
+window everywhere else. It is also
+the argument Coins made against itself — it has a portfolio — which is one
+reason it is not a moarchy app any more.
 
 Calculator is the one row that is not a directory in `apps/`. It has no GTK
 half and is not going to get one: it was written as a shell plugin, which is
