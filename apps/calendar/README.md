@@ -1,30 +1,27 @@
-# Calendar, in the shell
+# moarchy-calendar
 
 The month, the day under it, and what is next.
 
 <p align="center">
-  <img src="docs/screenshots/month.png" width="30%" alt="September 2026 as a six-row grid with Tuesday the 15th filled in blue, coloured dots under the days that have something on them, and three cards below it: Dentist at 11:00 on an orange wash, Lunch with Ada at 13:00 on a pink one, Pick up the parcel at 17:30 on a yellow one">
-  <img src="docs/screenshots/agenda.png" width="30%" alt="The agenda: a column of weekday and date down the left with today's in blue, and beside each a stack of coloured cards — the dentist and lunch today, Bin day on Thursday, the train to Hamburg on Friday, the standup on Monday">
-  <img src="docs/screenshots/editor.png" width="30%" alt="The editor as four labelled boxes: What, holding a name field reading Dentist and a Where field reading Charlottenstraße 4; When, holding the full date in a row with a calendar glyph, an All day checkbox and two time fields reading 11:00 and 11:45 with 45 min under them; Repeats, holding five chips with Once selected; and Colour, holding eight discs with a tick on the orange one">
+  <img src="docs/screenshots/phone.png" width="30%" alt="September 2026 as a six-row grid with Tuesday the 15th filled in blue, coloured dots under the days that have something on them, and three cards below it: Dentist, Lunch with Ada, Pick up the parcel">
+  <img src="docs/screenshots/phone-agenda.png" width="30%" alt="The agenda: weekday and date down the left with today's in blue, and beside each a stack of coloured cards">
+  <img src="docs/screenshots/phone-editor.png" width="30%" alt="The editor as labelled boxes: What, When with the date and two time fields reading 11:00 and 11:45, Repeats and Colour">
 </p>
-
 <p align="center">
-  <img src="docs/screenshots/picker.png" width="30%" alt="The same editor with the date row open, showing a compact month grid inside it — the same grid as the first screen, drawn smaller, with the 15th filled">
-  <img src="docs/screenshots/tokyo-night.png" width="30%" alt="The month screen under the tokyo-night theme: a near-black window, the selected day in that theme's light blue, and the event cards washed in its own reds and greens">
-  <img src="docs/screenshots/catppuccin-latte.png" width="30%" alt="The month screen under catppuccin-latte: a near-white window, grey weekend columns, the 15th on a solid blue disc, and the cards as pale tints of their own colours">
+  <img src="docs/screenshots/desktop.png" width="92%" alt="The same app in a desktop window: a large month grid naming what is on each day, with the chosen day's events in a pane beside it">
 </p>
 
-<p align="center"><em>360×720, the size of a PinePhone's screen under
-mobileomarchy. Every colour is the active Omarchy theme's, and
-<code>omarchy-theme-set</code> repaints the grid without restarting the
-shell.</em></p>
+<p align="center"><em>360×720, and a desktop window. One app: below 720 px
+it lays out as a phone app with the day under the grid and the editor a page
+of its own; above it the grid is big enough to name what is on each day, and
+the day -- or the event being edited -- is a pane beside it. Every colour is
+the active Omarchy theme's.</em></p>
 
-This one is not a port. There is no GTK calendar in `apps/` and there is not
-going to be one: it was written for the shell first, which is what a calendar
-should have been. A plugin is an `Item` the shell already holds, so summoning
-it is `visible = true` on a window that exists rather than four seconds of
-starting a process — and a calendar is opened for six seconds, several times a
-day, usually while somebody is being asked whether Thursday works.
+A Quickshell app. Inside the Omarchy shell it is a panel the shell keeps
+loaded, so opening it is showing a window rather than starting a process; on
+any other Quickshell desktop `moarchy-calendar` runs it as its own. It began as
+a shell plugin for the phone; 0.2.0 is the first package, and reads the same
+`calendar.json`.
 
 ## This one is not a gap either
 
@@ -154,7 +151,8 @@ needing to be read twice.
 Which day a week begins on is the phone's business, not this app's.
 `Qt.locale().firstDayOfWeek` is Monday here, Sunday in the United States and
 Saturday in much of the Gulf, and it is the one thing on this screen that would
-be *wrong* rather than merely foreign if it were hardcoded. The day names stay
+be *wrong* rather than merely foreign if it were hardcoded. Settings can pin it
+for a machine set to a country its owner does not live in. The day names stay
 English, because the rest of the app is.
 
 The grid is six rows whatever the month needs — four, five and six all happen —
@@ -227,7 +225,9 @@ qs ipc call calendar show 2026-12-24
 qs ipc call calendar add '{"title":"Release","date":"2026-09-30","start":"16:00"}'
 ```
 
-`add` is the only way into the file that is not a thumb, and it is the reason a
+(`quickshell ipc -p /usr/share/moarchy-calendar/shell.qml call calendar ...`
+when it runs as its own process.) `add` is the only way into the file that is
+not a thumb, and it is the reason a
 build that finishes at four can put itself in somebody's calendar. It returns
 the id it wrote, which is what `remove` takes.
 
@@ -235,91 +235,55 @@ the id it wrote, which is what `remove` takes.
 
 Nothing, and that had to be made true rather than assumed.
 
-`keepLoaded` in the manifest means the shell instantiates this app while *it*
-is starting, hours before anybody taps Calendar — which is the whole argument
-for a plugin, and also the thing that makes a plugin dangerous. A fault in an
-app that starts when you open it is a broken app. A fault in an app the shell
-holds open is a broken **phone**: the shell never finishes starting, and there
-is no bar, no drawer and no way to get at anything.
+Inside the shell the app is loaded while the shell is starting, hours before
+anybody taps Calendar -- which is the whole argument for it, and also the thing
+that makes a fault in it a broken phone rather than a broken app: the shell
+never finishes starting. The phone-only version shipped that fault once, with a
+month pager over eighteen hundred months laying itself out in a window nobody
+could see. So the grid is given no events and the agenda walks no days until
+the window is open, and the one timer -- midnight, checked once a minute --
+runs only while it is.
 
-This app shipped that fault. The month pager is a `ListView` over eighteen
-hundred months, and it was laying itself out in the unopened window and then
-jumping the nine hundred months from the start of its model to this one,
-building and throwing away a grid per month on the way. On a phone that is a
-core at 99%, no IPC targets registered, and a wallpaper. It did not show up in
-any check here, because `shell.qml` opened the window on the first line and so
-never once exercised the state the shell actually runs it in.
+## Keys
 
-So the pager's model is empty until the window is on screen, the agenda's is
-too, and `shell.qml` grew a switch for the state that was missing:
+On a desktop: `1` and `2` for Month and Agenda, the arrows move the chosen day
+(up and down a week), Page Up and Page Down the month, `t` goes to today, `n`
+starts an event on the chosen day, Enter opens its first one, and Escape steps
+back -- out of the date picker, out of the editor, back to the month.
+
+## Running it
 
 ```sh
-MOARCHY_CALENDAR_HIDDEN=1 MOARCHY_CALENDAR_QUIT_AFTER=20 \
-  plugins/org.moarchy.calendar/run-local.sh
+quickshell -p apps/calendar/shell.qml
 ```
 
-That loads the app and opens nothing, which is what the shell does. Watch what
-the process burns: it should be nothing, and on the phone it is six ticks in
-ten seconds against the nine hundred a pinned core would be.
-
-## The bottom of the screen is not ours
-
-The shell keeps it: the gesture bar across the middle and moarchy-keyboard's
-toggle at the right. Both are layer surfaces, so they draw over any app and
-take the taps that land on them — measured on a PinePhone at 360x740 by the
-calculator, which reserves the bottom 60px for the same reason this does.
-
-Here it is the tab bar that cannot be under them. Vitals draws under both and
-loses half of its Network tab; a switcher nobody can press is worse than that.
-So the 60px is reserved **only inside the shell**, where `shell` is not null.
-Run from `shell.qml` on a laptop there is no furniture down there and a
-reserved strip would be a bug rather than a fix.
-
-## Install on the phone
+With a fortnight in it rather than nothing:
 
 ```sh
-plugins/org.moarchy.calendar/install-on-device.sh
-```
-
-That copies the plugin into `~/.config/omarchy/plugins/org.moarchy.calendar`,
-asks the shell to validate and enable it, writes a `.desktop` entry so the
-drawer can summon it, and restarts the shell. Then tap **Calendar** in the
-drawer.
-
-```sh
-omarchy-shell shell toggle org.moarchy.calendar
-omarchy plugin validate org.moarchy.calendar
-```
-
-## Run it without the shell
-
-`shell.qml` is the same app as its own Quickshell process, for a machine that
-has Quickshell and none of omarchy:
-
-```sh
-plugins/org.moarchy.calendar/run-local.sh
-MOARCHY_CALENDAR_DIR=/tmp/c plugins/org.moarchy.calendar/demo.py
-MOARCHY_CALENDAR_DIR=/tmp/c plugins/org.moarchy.calendar/run-local.sh
+export MOARCHY_CALENDAR_DIR=$(mktemp -d) MOARCHY_CALENDAR_TODAY=2026-09-15
+python3 apps/calendar/dev/demo.py
+quickshell -p apps/calendar/shell.qml
 ```
 
 ## Checks
 
 ```sh
-scripts/qml-check.sh org.moarchy.calendar
-scripts/qml-shot.sh org.moarchy.calendar
+docker run --rm -v "$PWD:/src" -w /src moarchy-qml scripts/app-check.sh calendar
+docker run --rm -v "$PWD:/src" -w /src moarchy-qml scripts/app-shot.sh calendar
 ```
 
-qmllint with every warning fatal, then the three test files, then a real run at
-360×720 that fails on any QML diagnostic.
+The first is qmllint with every warning fatal, the three test files, and a real
+run that fails on any QML diagnostic. The second photographs `dev/shots` at a
+phone's size and a desktop's.
 
-The tests are worth more here than in most of these plugins, because what is
-being tested has a right answer that predates the app: the 29th of February
-exists in 2024 and not in 2026 whatever this code thinks. `tst_dates.qml` is
-the arithmetic — the civil-date conversion both ways for every day of four
-years, the grid, and every way a person writes half past nine. `tst_events.qml`
-is the recurrence table above and a file somebody has edited by hand.
-`tst_store.qml` is what goes out, what comes back, and the row that is kept
-even though it cannot be read.
+The tests are worth more here than in most apps, because what is being tested
+has a right answer that predates the app: the 29th of February exists in 2024
+and not in 2026 whatever this code thinks. `tst_dates.qml` is the arithmetic --
+the civil-date conversion both ways for every day of four years, the grid, and
+every way a person writes half past nine. `tst_events.qml` is the recurrence
+table above and a file somebody has edited by hand. `tst_store.qml` is what
+goes out, what comes back, and the row that is kept even though it cannot be
+read.
 
 | variable | what it does |
 |---|---|
@@ -327,12 +291,11 @@ even though it cannot be read.
 | `MOARCHY_CALENDAR_TODAY` | pin today, so two shots either side of midnight agree |
 | `MOARCHY_CALENDAR_WEEK_START` | pin the first day of the week, 0 Sunday to 6 Saturday |
 | `MOARCHY_CALENDAR_DAY` | the day to open on |
-| `MOARCHY_CALENDAR_PAGE` | `agenda` opens on the agenda |
+| `MOARCHY_CALENDAR_PAGE` | `agenda` or `settings` to open on that |
 | `MOARCHY_CALENDAR_EDIT` | open an event by name, for the editor shots |
 | `MOARCHY_CALENDAR_PICKING` | with it, open the date picker too |
 | `MOARCHY_CALENDAR_NEW` | open on a new event |
-| `MOARCHY_CALENDAR_HIDDEN` | load it and do not open it, which is how the shell runs it |
-| `MOARCHY_CALENDAR_QUIT_AFTER` | quit after N seconds, for headless runs |
+| `MOARCHY_QUIT_AFTER` | quit after N seconds, for headless runs |
 
 ## Licence
 

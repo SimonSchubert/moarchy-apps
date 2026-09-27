@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "id": "org.moarchy.calendar",
+  "name": "Calendar",
+  "version": "0.2.0",
+  "author": "Simon Schubert",
+  "license": "MIT",
+  "description": "The month, the day under it, and what is next -- in one file, with no daemon and no account behind it. Desktop and phone layouts.",
+  "homepage": "https://github.com/SimonSchubert/moarchy-apps/tree/main/apps/calendar",
+  "repository": "https://github.com/SimonSchubert/moarchy-apps",
+  "keywords": ["calendar", "events", "agenda", "appointments", "schedule"],
+  "icon": "icon.svg",
+  "kinds": ["panel"],
+  "keepLoaded": true,
+  "entryPoints": {
+    "panel": "Panel.qml"
+  }
+}

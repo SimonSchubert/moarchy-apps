@@ -46,11 +46,6 @@ var DOTS = 4
 var DEFAULT_START = 9 * 60
 var DEFAULT_LENGTH = 60
 
-function hue(colours, name) {
-  var hues = (colours && colours.hues) || {}
-  return hues[name] || (colours ? colours.accent : "#3584e4")
-}
-
 function isColour(name) {
   return COLOURS.indexOf(String(name)) >= 0
 }
