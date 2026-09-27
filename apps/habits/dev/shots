@@ -1,0 +1,12 @@
+# What to photograph, for scripts/app-shot.sh. The day is pinned so the
+# strip and the history are the same picture whenever they are taken.
+T=MOARCHY_HABITS_TODAY=2026-09-15
+shot phone $T
+shot phone-light LOOK=light $T
+shot phone-detail $T MOARCHY_HABITS_OPEN=Read
+shot phone-achievements $T MOARCHY_HABITS_PAGE=achievements
+shot phone-editor $T MOARCHY_HABITS_NEW=1
+shot desktop SIZE=1280x820 $T MOARCHY_HABITS_OPEN=Read
+shot desktop-light SIZE=1280x820 LOOK=light $T MOARCHY_HABITS_OPEN=Water
+shot desktop-achievements SIZE=1280x820 $T MOARCHY_HABITS_PAGE=achievements
+shot desktop-latte SIZE=1280x820 THEME=.themes/catppuccin-latte/colors.toml $T

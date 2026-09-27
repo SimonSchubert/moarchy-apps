@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "id": "org.moarchy.habits",
+  "name": "Habits",
+  "version": "0.2.0",
+  "author": "Simon Schubert",
+  "license": "MIT",
+  "description": "Habit tracking: a tap a day, a streak, how strong that makes it, sixteen weeks of history, points that only go up and ten achievements. Kept in one file on the device. Desktop and phone layouts.",
+  "homepage": "https://github.com/SimonSchubert/moarchy-apps/tree/main/apps/habits",
+  "repository": "https://github.com/SimonSchubert/moarchy-apps",
+  "keywords": ["habits", "habit tracker", "streak", "routine", "daily", "goal"],
+  "icon": "icon.svg",
+  "kinds": ["panel"],
+  "keepLoaded": true,
+  "entryPoints": {
+    "panel": "Panel.qml"
+  }
+}
