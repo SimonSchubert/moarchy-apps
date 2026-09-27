@@ -19,7 +19,7 @@ the aarch64 repos, the AUR or Flathub. This is where they get written.
 | [minesweeper](apps/minesweeper) | Minesweeper: a portrait board, a latching flag, and a clock that stops — in Quickshell, for the desktop and the phone | v0.2.0, unreleased |
 | [mill](apps/mill) | Nine Men's Morris: three squares, an opponent on a clock, and the rule everybody forgets | v0.1.0 |
 | [fiveletters](apps/fiveletters) | A five-letter word a day: its own keyboard, and a mark as well as a colour — in Quickshell, for the desktop and the phone | v0.2.0, unreleased |
-| [breakout](apps/breakout) | Breakout: a bat that follows your thumb, and a clock that stops with the window | v0.1.0 |
+| [breakout](apps/breakout) | Breakout: a bat that follows your thumb, and a clock that stops with the window — in Quickshell, for the desktop and the phone | v0.2.0, unreleased |
 | [vitals](apps/vitals) | A task manager: processor, memory, storage, battery, network and tasks, read from /proc — in Quickshell, for the desktop and the phone | v0.2.0 |
 | [puzzle-games](apps/puzzle-games) | *Packaging only:* sidhant947's suite of 300+ small puzzles, minus the titlebar | 1.1.4 |
 | [crypto-market](apps/crypto-market) | *Not a moarchy app:* CoinGecko prices, coin pages, a watchlist and a portfolio, for any Quickshell desktop | v1.1.1 |

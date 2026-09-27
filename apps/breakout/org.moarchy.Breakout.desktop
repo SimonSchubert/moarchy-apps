@@ -8,5 +8,4 @@ Icon=org.moarchy.Breakout
 Terminal=false
 Categories=Game;ArcadeGame;
 Keywords=breakout;arkanoid;bricks;ball;bat;arcade;
-StartupNotify=true
-StartupWMClass=org.moarchy.Breakout
+StartupNotify=false

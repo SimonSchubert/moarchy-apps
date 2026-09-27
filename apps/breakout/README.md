@@ -1,22 +1,28 @@
 # moarchy-breakout
 
-Breakout for a Linux phone: a bat that follows your thumb from anywhere on the
+Breakout for a Linux phone and a desktop: a bat that follows your thumb from anywhere on the
 field, a wall in your theme's colours, and a frame loop that stops the moment
 the window does.
 
 <p align="center">
-  <img src="docs/screenshots/board.png" width="30%" alt="A rally in progress: a wall of red, orange, yellow, green and cyan bricks eaten away from the left, a ball in mid-flight and a blue bat at the bottom">
-  <img src="docs/screenshots/waiting.png" width="30%" alt="The ball sitting on the bat with Tap to serve written under it">
-  <img src="docs/screenshots/record.png" width="30%" alt="The record: 23 played, best 2140, furthest 4 of 5, and a list of the five walls with the ones reached ticked">
+  <img src="docs/screenshots/phone.png" width="30%" alt="A rally in progress on a phone: a wall of red, orange, yellow, green and cyan bricks eaten away from the right, a ball in mid-flight and a blue bat at the bottom">
+  <img src="docs/screenshots/phone-late.png" width="30%" alt="Deep into the second wall, one life gone: the tough bricks that are left carry an inset groove">
+  <img src="docs/screenshots/phone-record.png" width="30%" alt="The record: 23 played, best 2140, furthest 4 of 5, and the five walls with the ones reached ticked">
+</p>
+<p align="center">
+  <img src="docs/screenshots/desktop.png" width="92%" alt="The same app on a desktop: the field on the left, and beside it the score, the lives, Pause and New game, and the record">
 </p>
 
-<p align="center"><em>360×720, the size of a PinePhone's screen under
-mobileomarchy. The rows are the active Omarchy theme's eight hues in order, and
-<code>omarchy-theme-set</code> repaints the wall mid-rally.</em></p>
+<p align="center"><em>360×720, and a desktop window. One app: below 720 px it
+lays out as a phone app, above it the record sits beside the field. The rows
+are the active Omarchy theme's hues in order, and a theme switch repaints the
+wall mid-rally.</em></p>
 
-Built for [mobileomarchy](https://github.com/SimonSchubert/mobileomarchy), but
-nothing in it is specific to that: it is a GTK4/libadwaita app and runs on
-Phosh, Plasma Mobile, postmarketOS or an ordinary desktop.
+A Quickshell app. Inside the Omarchy shell it is a panel the shell keeps
+loaded, so opening it is showing a window rather than starting a process; on
+any other Quickshell desktop `moarchy-breakout` runs it as its own. 0.1.0 was
+a GTK4/libadwaita app, and a game left in it is the game found here: the file
+is the same, and so are the physics, constant for constant.
 
 ## The only app here with a clock in it
 
@@ -26,11 +32,19 @@ three things follow.
 
 **The loop stops when the window does.** A game that kept stepping while the
 phone was in a pocket would be a game that lost three lives in a trouser leg,
-and a tick callback that kept firing would be sixty wakeups a second for a
-window nobody is looking at — which on a phone is a battery reading somebody
-will blame on the wrong app. The loop is installed when this becomes the active
-window and removed the moment it stops being one, and the status line says
-**Paused** rather than leaving anybody to wonder.
+and a loop that kept firing would be sixty wake-ups a second for a window
+nobody is looking at — and the shell keeps this app loaded with its window
+shut, so that would be for ever. The frame loop runs only while the window is
+open, the game is not paused and the ball is in the air (or the pause before a
+serve is running out). Closed, the game is paused where it stands and saved,
+and the process does nothing: measured, no processor time at all over five
+seconds with the window shut, against a steady trickle while playing.
+
+Run as its own process it also pauses when another window takes the focus.
+The GTK version paused on *visibility* instead, because on a phone the app
+drawer takes the focus from every window while leaving the game in view;
+Quickshell cannot see visibility, so here a pause under the drawer is the
+price, and a tap goes on.
 
 **A frame is capped, and a frame is sliced.** The time between two frames is
 whatever the compositor says it is, and after a phone wakes up it can say two
@@ -65,26 +79,23 @@ serve and then reaching for the bat.
 There is a short pause before a ball can be served, so that the tap which ended
 the last life does not launch the next one.
 
-On a desktop the arrow keys move the bat and space serves.
+On a desktop the pointer is the bat — it follows the mouse without a click —
+and the arrow keys or A and D nudge it. Space serves, and pauses and goes on
+once the ball is in the air; `n` starts a new game.
 
 ## The wall
 
 Five walls, written as art the way Peg Solitaire's figures are — a digit is a
 brick and how many hits it takes, a dot is a gap:
 
-```python
-Level(
-    "chevron",
-    "Chevron",
-    """
-3.....3
-23...32
-123.321
-.12321.
-..232..
-...3...
-""",
-)
+```js
+{ key: "chevron", label: "Chevron", art: [
+  "3.....3",
+  "23...32",
+  "123.321",
+  ".12321.",
+  "..232..",
+  "...3..."] },
 ```
 
 Past the last one it starts again, faster. That is the honest arcade answer: the
@@ -92,7 +103,7 @@ game gets harder because the ball does and because there is one more wall to
 clear, not because somebody wrote a hundred walls.
 
 **A row of bricks takes a hue each**, in the order every Omarchy theme names
-them — red at the top where they are worth most, cool at the bottom. That is
+them — the theme's own where it names one, GNOME's where it does not — red at the top where they are worth most, cool at the bottom. That is
 what a Breakout wall has looked like since 1976 and it is the one place in this
 repository where using the whole palette at once is the design rather than a
 failure to choose.
@@ -130,41 +141,41 @@ level dealt fresh, because the alternative is bricks on the screen that the
 rules do not have.
 
 Saving happens when something discrete happens — a life goes, a level is
-cleared, the window stops being the active one — and at most once and a half
-seconds during a rally. Not every frame, which would be sixty fsyncs a second.
+cleared, the window closes — and at most once every one and a half seconds
+during a rally. Not every frame, which would be sixty writes a second. A file
+that will not parse is moved aside as `breakout.broken-<time>.json` before
+anything is written over it.
 
 ## Running it
 
 ```sh
-python3 -m moarchy_breakout
+quickshell -p apps/breakout/shell.qml
 ```
 
 To see it mid-rally rather than at a full wall:
 
 ```sh
 export MOARCHY_BREAKOUT_DIR=$(mktemp -d)
-python3 demo.py          # a third of the wall down
-python3 demo.py late     # deep into the second wall, one life gone
-python3 -m moarchy_breakout
+python3 apps/breakout/dev/demo.py          # a third of the wall down
+python3 apps/breakout/dev/demo.py late     # deep into the second wall, one life gone
+MOARCHY_BREAKOUT_SERVED=1 quickshell -p apps/breakout/shell.qml
 ```
 
-`demo.py` refuses to run without `MOARCHY_BREAKOUT_DIR` set. It plays a real
-game with this app's own physics, because a real wall is eaten from the middle
-outwards along the lines the ball has actually taken and an invented one is not.
-The bat it plays with follows the ball with a lean that *changes* — two other
-bats were tried and neither works. One that tracks the ball exactly sends it
-straight up and down a single column forever; one that leans by a fixed amount
-falls into a cycle and spends four hundred seconds missing the same four bricks.
-A little noise is what a person is.
+`dev/demo.py` refuses to run without `MOARCHY_BREAKOUT_DIR` set. Its walls are
+the ones 0.1.0's demo left by playing a real game with these physics, recorded
+rather than rubbed out by hand, because a real wall is eaten from the middle
+outwards along the lines the ball has taken and an invented one is not.
 
 ## Checks
 
 ```sh
-scripts/check.sh breakout
+docker run --rm -v "$PWD:/src" -w /src moarchy-qml scripts/app-check.sh breakout
+docker run --rm -v "$PWD:/src" -w /src moarchy-qml scripts/app-shot.sh breakout
 ```
 
-ruff, then the world and the file, then the widgets on a virtual screen, then a
-real run that fails on any GTK warning.
+The first is qmllint, the world and the file (`tests/`, the cases 0.1.0's
+Python tests had), and a real run that fails on any QML warning. The second
+photographs `dev/shots` at a phone's size and a desktop's.
 
 The world tests are the ones that matter, and two of them are worth naming.
 **The ball never passes through the wall** is checked by aiming it at every
@@ -177,9 +188,9 @@ is a typo in a string rather than a hard wall.
 | variable | what it does |
 |---|---|
 | `MOARCHY_BREAKOUT_DIR` | where the game lives |
-| `MOARCHY_BREAKOUT_QUIT_AFTER` | quit after N seconds, for headless runs |
+| `MOARCHY_QUIT_AFTER` | quit after N seconds, for headless runs |
 | `MOARCHY_BREAKOUT_PAGE` | open straight into `record`, for the screenshots |
-| `MOARCHY_BREAKOUT_SERVED` | serve, play half a second and freeze, for the screenshots |
+| `MOARCHY_BREAKOUT_SERVED` | serve, play half a second and hold still, for the screenshots |
 
 ## Licence
 

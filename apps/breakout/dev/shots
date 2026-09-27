@@ -1,0 +1,14 @@
+# What to photograph, for scripts/app-shot.sh.
+#
+# MOARCHY_BREAKOUT_SERVED asks for a ball in flight: a saved game always comes
+# back with the ball on the bat, so a rally has to be asked for, and it is held
+# still for the picture.
+shot phone MOARCHY_BREAKOUT_SERVED=1
+shot phone-waiting
+shot phone-light LOOK=light MOARCHY_BREAKOUT_SERVED=1
+shot phone-record MOARCHY_BREAKOUT_PAGE=record
+shot phone-late DEMO=late MOARCHY_BREAKOUT_SERVED=1
+shot phone-tokyo THEME=.themes/tokyo-night/colors.toml MOARCHY_BREAKOUT_SERVED=1
+shot desktop SIZE=1280x820 MOARCHY_BREAKOUT_SERVED=1
+shot desktop-light SIZE=1280x820 LOOK=light DEMO=late MOARCHY_BREAKOUT_SERVED=1
+shot desktop-latte SIZE=1280x820 THEME=.themes/catppuccin-latte/colors.toml
