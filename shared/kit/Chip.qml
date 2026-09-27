@@ -15,7 +15,7 @@ Rectangle {
   implicitHeight: app.ui.chip
   implicitWidth: Math.max(app.ui.chip + 8, content.implicitWidth + hpad)
   radius: height / 2
-  color: selected ? app.alpha(tint, 0.16) : mouse.pressed ? app.ui.pressed : mouse.containsMouse ? app.ui.hover : app.ui.surface
+  color: selected ? app.ui.alpha(tint, 0.16) : mouse.pressed ? app.ui.pressed : mouse.containsMouse ? app.ui.hover : app.ui.surface
   border.width: 1
   border.color: selected ? tint : app.ui.border
   Accessible.role: Accessible.Button

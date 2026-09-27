@@ -15,40 +15,47 @@ import Quickshell.Io
 // the two are one entry, never a duplicate, and the phone removes it with
 // the plugin.
 //
-// Installed as the moarchy-vitals package, the app has an entry already --
-// /usr/share/applications/org.moarchy.Vitals.desktop, whose launcher asks the
-// shell first -- and outside the shell there is nothing for `shell summon` to
+// Installed as a package, the app has an entry already --
+// /usr/share/applications/<desktopId>.desktop, whose launcher asks the shell
+// first -- and outside the shell there is nothing for `shell summon` to
 // reach. Either way this writes nothing.
 Item {
   id: root
   property var app
   property string pluginId: ""
+  property string desktopId: ""
+  property string name: ""
+  property string genericName: ""
+  property string comment: ""
+  property string categories: ""
+  property string keywords: ""
+  // The app's own folder, where icon.svg is.
+  property string appDir: ""
 
-  readonly property string systemFile: "/usr/share/applications/org.moarchy.Vitals.desktop"
+  readonly property string systemFile: desktopId ? "/usr/share/applications/" + desktopId + ".desktop" : ""
   property bool systemChecked: false
   property bool packaged: false
   readonly property bool active: !app.standalone && !packaged
 
   readonly property string dataHome: Quickshell.env("XDG_DATA_HOME") || (Quickshell.env("HOME") + "/.local/share")
   readonly property string file: dataHome + "/applications/omarchy-plugin-" + pluginId + ".desktop"
-  // This file's own folder is the plugin's, wherever it was installed.
-  readonly property string iconPath: String(Qt.resolvedUrl("icon.svg")).replace(/^file:\/\//, "")
 
   function content(show) {
     return [
       "[Desktop Entry]",
       "X-Omarchy-Plugin=" + pluginId,
       "Type=Application",
-      "Name=Vitals",
-      "GenericName=System monitor",
-      "Comment=Processor, memory, storage, battery and network, and what is using them",
+      "Name=" + name
+    ].concat(genericName ? ["GenericName=" + genericName] : [])
+     .concat(comment ? ["Comment=" + comment] : [])
+     .concat([
       "Exec=omarchy-shell shell summon " + pluginId,
-      "Icon=" + iconPath,
+      "Icon=" + appDir + "/icon.svg",
       "Terminal=false",
-      "StartupNotify=false",
-      "Categories=System;Monitor;",
-      "Keywords=system;monitor;task manager;cpu;memory;process;network;battery;disk;"
-    ].concat(show ? [] : ["NoDisplay=true"]).join("\n") + "\n"
+      "StartupNotify=false"
+    ]).concat(categories ? ["Categories=" + categories] : [])
+      .concat(keywords ? ["Keywords=" + keywords] : [])
+      .concat(show ? [] : ["NoDisplay=true"]).join("\n") + "\n"
   }
 
   // From Settings: the person asked, so our own entry is rewritten.
@@ -58,9 +65,11 @@ Item {
   }
 
   function write(show) {
-    if (!/^[A-Za-z0-9._-]+$/.test(pluginId)) return
+    if (!/^[A-Za-z0-9._-]+$/.test(pluginId) || !name) return
     var w = writer.createObject(root, { path: root.file })
+    // qmllint disable missing-property
     w.setText(content(show))
+    // qmllint enable missing-property
     w.destroy()
   }
 

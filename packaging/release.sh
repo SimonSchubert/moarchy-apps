@@ -53,6 +53,17 @@ if [ -d "$root/moarchy_$app" ] || compgen -G "$root"/*.py >/dev/null; then
   _python=1
 fi
 
+# A Quickshell app has shared/kit linked in as kit/, and a link to
+# ../../shared is a link to nothing once the app is out of the repo. The kit is
+# put in its place, from the same tag, minus its tests: the tarball is the app
+# and the exact kit it was checked against.
+if [ -L "$root/kit" ]; then
+  rm "$root/kit"
+  mkdir "$root/kit"
+  git archive "$tag:shared/kit" | tar x -C "$root/kit"
+  rm -rf "$root/kit/tests"
+fi
+
 # The screenshots are for the repository's README, not for the package. They are
 # the bulk of the download -- Keep's are half a megabyte -- and the PKGBUILD
 # installs neither them nor the relative links in README.md that point at them,

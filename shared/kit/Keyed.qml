@@ -4,8 +4,8 @@ import QtQuick
 //
 // Handing a view a JS array resets it on every assignment: each delegate is
 // thrown away and built again, the list jumps back to its top, and the row
-// under a finger is a different row. The task list is a new array on every
-// tick, so that would be a list nobody can scroll or tap.
+// under a finger is a different row. A list rebuilt on every tick or every
+// refresh would be one nobody can scroll or tap.
 //
 // Here a row that is still there keeps its delegate. Rows that left are
 // removed, new ones inserted and moved ones moved, and the rest only see new
@@ -15,7 +15,7 @@ ListModel {
 
   property var items: []
 
-  // An app by its key, a process by its pid.
+  // A row's identity: its `key`, else its `id`, else its place.
   function keyOf(m, i) {
     if (!m) return "#" + i
     if (m.key) return String(m.key)

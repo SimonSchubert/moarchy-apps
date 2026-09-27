@@ -1,4 +1,5 @@
 import QtQuick
+import "kit"
 import "Sysinfo.js" as Sysinfo
 import "Glyphs.js" as G
 

@@ -1,4 +1,5 @@
 import QtQuick
+import "kit"
 import "Sysinfo.js" as Sysinfo
 import "Glyphs.js" as G
 
@@ -34,7 +35,7 @@ Item {
     lastSample = s
     // A reading without processes -- a network page tick -- says nothing.
     if (!item || !s.processes.length) return
-    cpuHist = app.push(cpuHist, item.cpu)
+    cpuHist = app.pushSample(cpuHist, item.cpu)
   }
 
   function openProcess(pid) {

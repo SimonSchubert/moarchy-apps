@@ -1,4 +1,5 @@
 import QtQuick
+import "kit"
 
 // One direction of a network: an arrow in its colour, the rate, its name.
 Row {

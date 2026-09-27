@@ -1,4 +1,5 @@
 import QtQuick
+import "kit"
 
 // The headline of a card: one big figure, a line under it, and optionally a
 // second, smaller figure on the right.

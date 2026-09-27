@@ -1,4 +1,5 @@
 import QtQuick
+import "kit"
 
 // A label over a figure, in a tile. Two across fits a number and its name on
 // 360px without either being abbreviated.

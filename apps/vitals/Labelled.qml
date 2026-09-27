@@ -1,4 +1,5 @@
 import QtQuick
+import "kit"
 
 // A name, a figure on the right, and a bar under both: a filesystem, swap.
 Column {
