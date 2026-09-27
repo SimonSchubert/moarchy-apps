@@ -1,0 +1,8 @@
+# What to photograph, for scripts/app-shot.sh.
+shot phone "MOARCHY_CALCULATOR_TYPED=1234.5+20%"
+shot phone-light LOOK=light "MOARCHY_CALCULATOR_TYPED=1234.5+20%"
+shot phone-tape MOARCHY_CALCULATOR_PAGE=tape
+shot phone-tokyo THEME=.themes/tokyo-night/colors.toml "MOARCHY_CALCULATOR_TYPED=1234.5+20%"
+shot desktop SIZE=1280x820 "MOARCHY_CALCULATOR_TYPED=1234.5+20%"
+shot desktop-light SIZE=1280x820 LOOK=light "MOARCHY_CALCULATOR_TYPED=(12+3)*4"
+shot desktop-latte SIZE=1280x820 THEME=.themes/catppuccin-latte/colors.toml "MOARCHY_CALCULATOR_TYPED=0.1+0.2"

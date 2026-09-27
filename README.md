@@ -28,7 +28,7 @@ the aarch64 repos, the AUR or Flathub. This is where they get written.
 | [airwaves](apps/airwaves) | *Not a moarchy app:* internet radio from radio-browser.info — 50,000 stations by genre, country and language, the song on air, favourites — for any Quickshell desktop | v1.0.0 |
 | [food](apps/food) | Point the camera at a barcode: nutrition facts from Open Food Facts | v0.1.0 |
 | [launches](apps/launches) | Upcoming rockets: a countdown, a pad, and the ones you star — in Quickshell, for the desktop and the phone | v0.2.0, unreleased |
-| [calculator](plugins/org.moarchy.calculator) | *Shell plugin only:* the four operations, and arithmetic that counts in tens | v0.1.0 |
+| [calculator](apps/calculator) | The four operations, a tape you can tap, and arithmetic that counts in tens — in Quickshell, for the desktop and the phone | v0.2.0, unreleased |
 | [weather](apps/weather) | Now, the next day and the week, where you are and in the places you named — in Quickshell, for the desktop and the phone | v0.2.0, unreleased |
 | [calendar](plugins/org.moarchy.calendar) | *Shell plugin only:* the month, the day under it, and what is next | v0.1.0 |
 | [clock](plugins/org.moarchy.clock) | *Shell plugin only:* an alarm that rings late and says so, a stopwatch and a timer | v0.1.0 |
@@ -121,17 +121,18 @@ Airwaves is the fourth, and the first written here rather than brought in: a
 radio built the way Couch is, on radio-browser.info, playing through mpv.
 `airwaves` on the AUR.
 
-Calculator is the one row that is not a directory in `apps/`. It has no GTK
-half and is not going to get one: it was written as a shell plugin, which is
-what a calculator should have been all along. The argument `plugins/` exists to
-make is that summoning an app can be `visible = true` on a window the shell
-already holds rather than four seconds of starting Python and GTK, and a
-calculator is the app that argument is *about* — it is opened for eleven
-seconds, several times a day, usually while somebody is holding something else
-in their other hand. It is also not a gap, and its README says so in as many
-words: `gnome-calculator` is in `extra`, it is adaptive, and it knows more
-mathematics than this ever will. What it is not is a keypad whose keys are 62px
-with the sum sitting on them and no second screen anywhere. The part worth reading is `Decimal.js`, which is there
+Calculator has no GTK half and is not going to get one: it was written as a
+shell plugin first, which is what a calculator should have been all along, and
+0.2.0 is the same app in `apps/calculator` with a package, a desktop layout and
+a tape. The argument for the shell is that summoning an app can be
+`visible = true` on a window the shell already holds rather than four seconds
+of starting Python and GTK, and a calculator is the app that argument is
+*about* — it is opened for eleven seconds, several times a day, usually while
+somebody is holding something else in their other hand. It is also not a gap,
+and its README says so in as many words: `gnome-calculator` is in `extra`, it
+is adaptive, and it knows more mathematics than this ever will. What it is not
+is a keypad whose keys are 62px with the sum sitting on them. The part worth
+reading is `Decimal.js`, which is there
 because `0.1 + 0.2` in JavaScript is 0.30000000000000004 and a calculator is the
 one program on the phone where that is a wrong answer rather than a rounding
 detail — Python's half of this repository would reach for `decimal`, and QML has

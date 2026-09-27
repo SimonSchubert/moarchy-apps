@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "id": "org.moarchy.calculator",
+  "name": "Calculator",
+  "version": "0.2.0",
+  "author": "Simon Schubert",
+  "license": "MIT",
+  "description": "The four operations, a tape you can tap, and arithmetic that counts in tens. 62px keys on a phone, the whole keyboard on a desktop.",
+  "homepage": "https://github.com/SimonSchubert/moarchy-apps/tree/main/apps/calculator",
+  "repository": "https://github.com/SimonSchubert/moarchy-apps",
+  "keywords": ["calculator", "calc", "arithmetic", "percent", "tape", "decimal"],
+  "icon": "icon.svg",
+  "kinds": ["panel"],
+  "keepLoaded": true,
+  "entryPoints": {
+    "panel": "Panel.qml"
+  }
+}

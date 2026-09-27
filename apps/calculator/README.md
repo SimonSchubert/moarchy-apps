@@ -1,26 +1,31 @@
-# Calculator, in the shell
+# moarchy-calculator
 
-The four operations, and arithmetic that counts in tens.
+The four operations, a tape you can tap, and arithmetic that counts in tens.
 
 <p align="center">
-  <img src="docs/screenshots/keypad.png" width="30%" alt="1234.5+20% typed across a rounded display box with 1481.4 under it in blue, above a keypad of twenty rounded keys: AC in red, brackets and per cent in grey, the operators in blue down the right, and a solid blue equals in the corner">
-  <img src="docs/screenshots/tokyo-night.png" width="30%" alt="The same screen under the tokyo-night theme: a near-black window, the operator keys and the running answer in the theme's light blue, AC in its red">
-  <img src="docs/screenshots/catppuccin-latte.png" width="30%" alt="The same screen under catppuccin-latte: a near-white window, grey keys, a solid blue equals key with white on it, and AC on a pink wash">
+  <img src="docs/screenshots/phone.png" width="30%" alt="1234.5+20% typed across a rounded display box with 1481.4 under it in blue, above a keypad of twenty rounded keys: AC in red, brackets and per cent in grey, the operators in blue down the right, and a solid blue equals in the corner">
+  <img src="docs/screenshots/phone-tokyo.png" width="30%" alt="The same screen under the tokyo-night theme: a near-black window, the operator keys and the running answer in the theme's light blue, AC in its red">
+  <img src="docs/screenshots/phone-tape.png" width="30%" alt="The tape: seven answered sums, newest at the bottom, each with its answer under it">
+</p>
+<p align="center">
+  <img src="docs/screenshots/desktop-latte.png" width="92%" alt="On a desktop under catppuccin-latte: the display and keypad on the left, the tape of answered sums down the right">
 </p>
 
-<p align="center"><em>360×720, the size of a PinePhone's screen under
-mobileomarchy. Every colour is the active Omarchy theme's, and
-<code>omarchy-theme-set</code> repaints the keypad without restarting the
-shell.</em></p>
+<p align="center"><em>360×720, and a desktop window. One app: below 720 px
+the keypad is the bottom half of a phone, above it the tape sits beside the
+keys and the whole keyboard types. Every colour is the active Omarchy
+theme's.</em></p>
 
-This one is not a port. The rest of `plugins/` is the QML half of an app in
-`apps/`; there is no GTK calculator here and there is not going to be one. It
-was written for the shell first, which is what it should have been: a plugin is
-an `Item` the shell already holds, so summoning it is `visible = true` on a
-window that exists rather than four seconds of starting Python and GTK. A
-calculator is the app that argument is *about* — it is opened for eleven
-seconds, several times a day, usually while somebody is holding something else
-in their other hand.
+A Quickshell app. Inside the Omarchy shell it is a panel the shell keeps
+loaded, so opening it is a window becoming visible rather than a process
+starting; on any other Quickshell desktop `moarchy-calculator` runs it as its
+own. 0.2.0 is its first package: 0.1.0 was a shell plugin only, copied onto a
+phone by hand, and this reads the file that plugin wrote.
+
+There is no GTK calculator in this repository and there is not going to be
+one. A calculator is the app the plugin argument is *about* — it is opened for
+eleven seconds, several times a day, usually while somebody is holding
+something else in their other hand.
 
 ## This one is not a gap either
 
@@ -39,30 +44,23 @@ What it is not is a *phone* calculator, and two things here are:
   window for the sum.
 - **It starts instantly**, because it is already running. See above.
 
-There is no scientific mode, no memory, no history and no second page of keys
-behind a toggle. Each of those is a row answering a question somebody standing
-at a till does not have, and there is a `gnome-calculator` for anybody who does.
-Twenty keys and one screen.
+There is no scientific mode, no memory and no second page of keys behind a
+toggle. Each of those is a row answering a question somebody standing at a till
+does not have, and there is a `gnome-calculator` for anybody who does. Twenty
+keys and one screen.
 
-## The bottom of the screen is not ours
+The one thing past the keypad is **the tape**: every sum `=` has answered, as
+the sum and the answer, newest at the bottom the way a till roll reads. Tap a
+line and its answer is back on the display to carry on from. It is the price
+from ten minutes ago, which is the thing a phone calculator is most often
+reopened to find. On a phone it is a page behind the button in the header; on
+a desktop it is beside the keys.
 
-The shell keeps it: the gesture bar across the middle and moarchy-keyboard's
-toggle at the right. Both are layer surfaces, so they draw over any app and take
-the taps that land on them.
+## The bottom of the screen
 
-Drawn under them, this app's bottom row loses the middle of `=` to the keyboard
-toggle — the pill sits exactly where the glyph is — and the same bite out of `.`
-and the backspace to the gesture bar. Vitals draws under both and loses half of
-its Network tab; a keypad cannot make the same trade, because the keys it would
-lose are the ones people press. So the keypad reserves the bottom 60px when it
-is running inside the shell.
-
-Only inside the shell. Run from `shell.qml` on a laptop there is no furniture
-down there, and a reserved strip would be a bug rather than a fix.
-
-It was measured rather than guessed, and it needed the phone: the container that
-runs the checks has no shell around the window, so there was nothing over the
-keypad to see.
+Omarchy Mobile draws its gesture bar over the bottom of every app, and a keypad
+cannot lose the middle of `=` to it. The kit knows when the phone's gesture bar
+is installed and keeps its 20 px clear under the keys.
 
 ## It counts in tens
 
@@ -141,13 +139,14 @@ keypad, which is what lets the answer be recomputed on every keystroke.
 ## The file
 
 `~/.local/share/moarchy-calculator/calculator.json`, or
-`$MOARCHY_CALCULATOR_DIR`. Two fields.
+`$MOARCHY_CALCULATOR_DIR`. The sum, whether it is an answer, and the tape.
 
 ```json
 {
  "schema": 1,
  "entry": "1234.5+20%",
- "answered": false
+ "answered": false,
+ "tape": [{"sum": "0.1+0.2", "answer": "0.3"}]
 }
 ```
 
@@ -155,8 +154,8 @@ A desktop calculator is a window you leave open; a phone calculator is a thing
 you are holding when somebody rings, and what happens next is that the
 compositor reclaims the app without asking. Coming back to a blank screen is
 what makes a phone calculator annoying, so the sum is written down — not per
-keystroke, which is a write per digit onto a phone's flash, but when the window
-stops being mapped, which is the event immediately before being reclaimed.
+keystroke, which is a write per digit onto a phone's flash, but on `=` and when
+the window goes away.
 
 `answered` is there because it cannot be worked out from the rest. The entry
 comes back either from `=`, in which case it is an answer and the next digit
@@ -164,62 +163,66 @@ starts a new sum, or from the window going away mid-sum, in which case it is a
 number being typed and the next digit belongs on the end of it. Both look like
 `1428` in a file.
 
+`tape` is new in 0.2.0: fifty lines at most, and the same sum answered twice in
+a row is one line. A file the plugin wrote has none, and reads as an empty
+tape; the plugin ignores the key.
+
 **The file is read exactly once, at startup.** That guard is not an
-optimisation. `setText` writes the file, the watch on it fires, and the reload
-hands back what was saved — so without it, pressing `=` and carrying on typing
-puts the answer back on the display a moment later and takes the new sum away
-with it. Every other plugin here gets away without the guard because re-reading
-its own write restores the state it was already in; this one has a field that
-moves on between the write and the read, which is what made it visible. It was
-found in a screenshot, not in a test.
+optimisation. A save fires the watch on the file, and the reload hands back
+what was saved — so without it, pressing `=` and carrying on typing puts the
+answer back on the display a moment later and takes the new sum away with it.
+It was found in a screenshot, not in a test.
 
-## Install on the phone
+A file that will not parse is moved aside as `calculator.broken-<time>.json`
+before anything is written over it.
 
-```sh
-plugins/org.moarchy.calculator/install-on-device.sh
-```
+## The keyboard
 
-That copies the plugin into `~/.config/omarchy/plugins/org.moarchy.calculator`,
-asks the shell to validate and enable it, writes a `.desktop` entry so the
-drawer can summon it, and restarts the shell. Then tap **Calculator** in the
-drawer.
+On a desktop the whole keyboard types: digits, `.` or `,`, `+ - * / %`, `x`
+for times, brackets, Enter or `=` to answer, Backspace to take back a key,
+Delete to clear. Escape clears the sum, and a second Escape closes the window.
+Ctrl+C copies the running answer, plain digits with no separators; Ctrl+V
+types a pasted number through the keys, so a paste can only make a sum the
+keypad could have.
 
-```sh
-omarchy-shell shell toggle org.moarchy.calculator
-omarchy plugin validate org.moarchy.calculator
-```
+The phone's back gesture does not clear the sum. It is what the app is kept
+for, and a swipe that threw it away would be the annoying calculator this is
+not.
 
-## Run it without the shell
-
-`shell.qml` is the same app as its own Quickshell process, for a machine that
-has Quickshell and none of omarchy:
+## Running it
 
 ```sh
-plugins/org.moarchy.calculator/run-local.sh          # vendors ui/, then quickshell -p
-MOARCHY_CALCULATOR_TYPED=1234.5+20% plugins/org.moarchy.calculator/run-local.sh
+quickshell -p apps/calculator/shell.qml
+MOARCHY_CALCULATOR_TYPED=1234.5+20% quickshell -p apps/calculator/shell.qml
 ```
 
 ## Checks
 
 ```sh
-scripts/qml-check.sh org.moarchy.calculator
+docker run --rm -v "$PWD:/src" -w /src moarchy-qml scripts/app-check.sh calculator
+docker run --rm -v "$PWD:/src" -w /src moarchy-qml scripts/app-shot.sh calculator
 ```
 
-qmllint with every warning fatal, then the three test files, then a real run at
-360×720 that fails on any QML diagnostic.
+The first is qmllint with every warning fatal, the three test files, and a real
+run that fails on any QML diagnostic. The second photographs `dev/shots` at a
+phone's size and a desktop's.
 
-The tests are worth more here than in most of these plugins, because the thing
-being tested has a right answer that predates the app. `tst_decimal.qml` is the
-arithmetic against sums a person would write down; `tst_calc.qml` is the four
-percentage readings and every key that has to do something sensible with a
-keypress that makes no sense; `tst_store.qml` is a file that has been edited by
-hand.
+The tests are worth more here than in most apps, because the thing being tested
+has a right answer that predates the app. `tst_decimal.qml` is the arithmetic
+against sums a person would write down; `tst_calc.qml` is the four percentage
+readings and every key that has to do something sensible with a keypress that
+makes no sense; `tst_store.qml` is a file that has been edited by hand, and the
+tape.
 
 | variable | what it does |
 |---|---|
-| `MOARCHY_CALCULATOR_DIR` | where the sum is kept |
+| `MOARCHY_CALCULATOR_DIR` | where the sum and the tape are kept |
 | `MOARCHY_CALCULATOR_TYPED` | keys to press on arrival, for the screenshots |
-| `MOARCHY_CALCULATOR_QUIT_AFTER` | quit after N seconds, for headless runs |
+| `MOARCHY_CALCULATOR_PAGE` | `tape`: open on the tape, on a phone |
+| `MOARCHY_QUIT_AFTER` | quit after N seconds, for headless runs |
+
+The IPC handler (`quickshell ipc call calculator key|keys|sum|answer`) drives
+the app through the keys, the way a thumb does.
 
 ## Licence
 
