@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "id": "org.moarchy.mill",
+  "name": "Mill",
+  "version": "0.2.0",
+  "author": "Simon Schubert",
+  "license": "MIT",
+  "description": "Nine Men's Morris: three squares, an opponent on a clock at three levels, two people across a table, and the rule everybody forgets. Desktop and phone layouts.",
+  "homepage": "https://github.com/SimonSchubert/moarchy-apps/tree/main/apps/mill",
+  "repository": "https://github.com/SimonSchubert/moarchy-apps",
+  "keywords": ["mill", "nine men's morris", "morris", "merels", "board game", "strategy"],
+  "icon": "icon.svg",
+  "kinds": ["panel"],
+  "keepLoaded": true,
+  "entryPoints": {
+    "panel": "Panel.qml"
+  }
+}

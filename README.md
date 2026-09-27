@@ -17,7 +17,7 @@ the aarch64 repos, the AUR or Flathub. This is where they get written.
 | [solitaire](apps/solitaire) | Klondike: one tap a move, and an app that says when a deal is lost — in Quickshell, for the desktop and the phone | v0.2.0, unreleased |
 | [pegsolitaire](apps/pegsolitaire) | Peg solitaire: nine figures, all solvable, and a hint that is a proof — in Quickshell, for the desktop and the phone | v0.2.0, unreleased |
 | [minesweeper](apps/minesweeper) | Minesweeper: a portrait board, a latching flag, and a clock that stops — in Quickshell, for the desktop and the phone | v0.2.0, unreleased |
-| [mill](apps/mill) | Nine Men's Morris: three squares, an opponent on a clock, and the rule everybody forgets | v0.1.0 |
+| [mill](apps/mill) | Nine Men's Morris: three squares, an opponent on a clock, and the rule everybody forgets — in Quickshell, for the desktop and the phone | v0.2.0, unreleased |
 | [fiveletters](apps/fiveletters) | A five-letter word a day: its own keyboard, and a mark as well as a colour — in Quickshell, for the desktop and the phone | v0.2.0, unreleased |
 | [breakout](apps/breakout) | Breakout: a bat that follows your thumb, and a clock that stops with the window — in Quickshell, for the desktop and the phone | v0.2.0, unreleased |
 | [vitals](apps/vitals) | A task manager: processor, memory, storage, battery, network and tasks, read from /proc — in Quickshell, for the desktop and the phone | v0.2.0 |

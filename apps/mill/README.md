@@ -4,19 +4,24 @@ Nine Men's Morris for a Linux phone: three squares drawn for 360px, an opponent
 that thinks on a clock, and the rule everybody forgets implemented properly.
 
 <p align="center">
-  <img src="docs/screenshots/board.png" width="30%" alt="A game in progress: a wooden three-ring Morris board with white and black pieces on it, a score line reading 9 YOU against 6 MEDIUM, and Undo and New game along the bottom">
-  <img src="docs/screenshots/picked.png" width="30%" alt="The same board with one white piece ringed in yellow and the two points it can move to ringed in green">
-  <img src="docs/screenshots/take.png" width="30%" alt="A mill just closed: every black piece ringed in red, with the status reading A mill, take one of Medium's pieces">
+  <img src="docs/screenshots/phone.png" width="30%" alt="A game in progress on a phone: a wooden three-ring Morris board with white and black pieces on it, a score reading 9 You against 6 Medium, and Undo and New game along the bottom">
+  <img src="docs/screenshots/phone-picked.png" width="30%" alt="The same board with one white piece ringed in yellow and the two points it can move to ringed in green">
+  <img src="docs/screenshots/phone-take.png" width="30%" alt="A mill just closed: every black piece that may be taken ringed in red, and the status reading A mill, take one of Medium's pieces">
+</p>
+<p align="center">
+  <img src="docs/screenshots/desktop.png" width="92%" alt="The same app on a desktop: the board on the left, and beside it the score, the two buttons, the record by difficulty and the rules">
 </p>
 
-<p align="center"><em>360×720, the size of a PinePhone's screen under
-mobileomarchy. The board is not the app's own brown — it is the active Omarchy
-theme's, and <code>omarchy-theme-set</code> repaints it while the game is on the
-screen.</em></p>
+<p align="center"><em>360×720, and a desktop window. One app: below 720 px it
+lays out as a phone app, above it the record and the rules sit beside the
+board. The board is not the app's own brown — it is the active Omarchy theme's,
+and a theme switch repaints it while the game is on the screen.</em></p>
 
-Built for [mobileomarchy](https://github.com/SimonSchubert/mobileomarchy), but
-nothing in it is specific to that: it is a GTK4/libadwaita app and runs on
-Phosh, Plasma Mobile, postmarketOS or an ordinary desktop.
+A Quickshell app. Inside the Omarchy shell it is a panel the shell keeps
+loaded, so opening it is showing a window rather than starting a process; on
+any other Quickshell desktop `moarchy-mill` runs it as its own. 0.1.0 was a
+GTK4/libadwaita app, and a game left in it is the game found here: the file is
+the same.
 
 ## This one might actually be a gap
 
@@ -64,10 +69,9 @@ It is three squares and four spokes. The points are at the corners and the
 midpoints of those squares, and the gaps between them are not cells — they are
 board with nothing on it.
 
-So the board is one drawing area rather than twenty-four widgets, for Reversi's
-reason and one more of its own: a grid of widgets would have to be a 7×7 with
-twenty-five holes in it, laid out, measured and tappable, to describe a shape
-that here is nine lines and twenty-four circles.
+So the board is three squares, four spokes and twenty-four points, placed by
+arithmetic, rather than a grid: a grid would have to be a 7×7 with twenty-five
+holes in it to describe a shape that is nine lines and twenty-four circles.
 
 And a tap is answered by **the nearest point**, not by the cell it landed in.
 The points are about 50px apart at 360 wide, so a finger anywhere within half
@@ -92,10 +96,10 @@ loader guessing which of nine pieces a recorded game had taken.
 
 **In the search**, it means a child position can have the same player to move as
 its parent — and negamax's flip-the-sign is wrong exactly there. Every recursion
-in `ai.py` asks whose turn the child is before deciding whether to negate. A
+in `Ai.js` asks whose turn the child is before deciding whether to negate. A
 search that gets this wrong plays well right up until it makes a mill and then
 throws a piece away, which is easy to write and very hard to see, so
-`tests/test_ai.py` tests it directly on a position where the difference is one
+`tests/tst_ai.qml` tests it directly on a position where the difference is one
 piece.
 
 **In undo**, it means a turn is sometimes two entries, so taking a move back
@@ -122,15 +126,17 @@ opponent that hands over a piece for nothing does not read as easy, it reads as
 broken — and in this game handing over a piece is most of the way to handing
 over the game.
 
-Nothing is searched while anything is moving. The order after a tap is
+The search runs in a `WorkerScript`, so the board keeps sliding while the
+computer thinks, and it does not start until the board has stopped moving:
 
 ```
 tap -> play -> animate -> settled -> think -> play -> animate -> settled
 ```
 
-and the search does not start until the board has stopped. That is not
-politeness, it is CPython: the search is a Python thread and holds the GIL, so a
-search running under an animation turns a 210ms slide into a slideshow.
+A worker cannot be interrupted, so every answer carries the generation of the
+board it was asked about, and one for a game since taken back or restarted is
+dropped. Nothing thinks with the window closed, and the worker is taken down
+before a standalone process quits.
 
 ## The pieces stay white and black
 
@@ -140,7 +146,7 @@ the popular pair fails for the eight percent of men who cannot separate red from
 green. Light against dark survives daylight, a 31px piece and everybody's eyes.
 
 <p align="center">
-  <img src="docs/screenshots/board-tokyo-night.png" width="32%" alt="The same board under tokyo-night: a dark brown board on a near-black window, with the same white and black pieces">
+  <img src="docs/screenshots/desktop-tokyo.png" width="80%" alt="The same board on a desktop under tokyo-night: a dark brown board on a near-black window, the same white and black pieces, and every black piece a mill may take ringed in red">
 </p>
 
 What does take a hue is the three things that are not pieces — the ring round a
@@ -180,51 +186,51 @@ board with a result still owed to it, and the app pays it on the way in.
 ## Running it
 
 ```sh
-python3 -m moarchy_mill
+quickshell -p apps/mill/shell.qml
 ```
 
-To see it mid-game rather than empty:
+Mid-game rather than empty:
 
 ```sh
 export MOARCHY_MILL_DIR=$(mktemp -d)
-python3 demo.py          # the middle game, pieces all placed, you to move
-python3 demo.py take     # ...or a mill just closed, with the takeable ringed
-python3 -m moarchy_mill
+python3 apps/mill/dev/demo.py         # the middle game, all placed, you to move
+python3 apps/mill/dev/demo.py take    # ...or a mill just closed, the takeable ringed
+python3 apps/mill/dev/demo.py won     # ...or a game you have won with three left
+quickshell -p apps/mill/shell.qml
 ```
 
 `demo.py` refuses to run without `MOARCHY_MILL_DIR` set, so it cannot overwrite
-a real game. Both sides are played by the search this app ships, at levels a
-shade apart with the clocks turned right down, so the position is one two
-competent players could have reached — a hand-placed board is the app telling a
-lie about its own rules, and in this game the lie is visible: a side with six
-pieces and none in hand has had three taken, and a board that does not add up
-says so.
+a real game. Its games are real ones: 0.1.0's own opponent played against
+itself at a fixed seed, kept as move lists -- a hand-placed board is the app
+telling a lie about its own rules, and in this game the lie is visible.
 
 ## Checks
 
 ```sh
-scripts/check.sh mill
+docker run --rm -v "$PWD:/src" -w /src moarchy-qml scripts/app-check.sh mill
+docker run --rm -v "$PWD:/src" -w /src moarchy-qml scripts/app-shot.sh mill
 ```
 
-ruff, then the rules, the search and the file, then the widgets on a virtual
-screen, then a real run that fails on any GTK warning.
+The first is qmllint, the rules, the search and the file (`tests/`, the cases
+0.1.0's Python tests had), and a real run that fails on any QML warning. The
+second photographs `dev/shots` at a phone's size and a desktop's.
 
-Three of the tests are the ones worth knowing about. One plays the search
-against itself at two depths and fails if the deeper one does not win more. One
-asserts that a mill and the removal it earns are worth about a piece *more* than
-a quiet move, which is the sign test for the half-turn described above. And one
-walks every point on the board at six widget sizes and fails if any piece would
-be drawn outside it — because the first cut of this board put the outer ring at
-89% of the half-width and photographed with the left and right columns of pieces
-sliced off by the window.
+Two of the tests are the ones worth knowing about. One plays the search against
+itself at two depths and fails if the deeper one does not win more. The other
+asserts that a mill and the removal it earns are worth about a piece *more*
+than a quiet move, which is the sign test for the half-turn described above.
+
+On a desktop the arrow keys walk the lines of the board and Enter taps the
+point; `u` undoes and `n` starts a new game. Escape puts a piece back down.
 
 | variable | what it does |
 |---|---|
 | `MOARCHY_MILL_DIR` | where the game lives |
-| `MOARCHY_MILL_QUIT_AFTER` | quit after N seconds, for headless runs |
+| `MOARCHY_QUIT_AFTER` | quit after N seconds, for headless runs |
 | `MOARCHY_MILL_PAGE` | open straight into `record`, for the screenshots |
 | `MOARCHY_MILL_NEW` | open with the new-game sheet up |
 | `MOARCHY_MILL_PICK` | open with a piece picked up, for the screenshots |
+| `MOARCHY_MILL_SETTINGS` | open on Settings |
 
 ## Licence
 
