@@ -210,14 +210,29 @@ Item {
   // ------------------------------------------------------------ toasts
 
   property string toastText: ""
-  function toast(text) {
+  // A word on the toast that does something -- Undo, after a delete -- and
+  // what it does. A toast with one stays up longer: it is a choice to make.
+  property string toastAction: ""
+  property var toastCallback: null
+  function toast(text, actionText, action) {
     toastText = text
+    toastAction = actionText && typeof action === "function" ? actionText : ""
+    toastCallback = toastAction ? action : null
+    toastTimer.interval = toastAction ? 5000 : 2600
     toastTimer.restart()
+  }
+  function toastActed() {
+    var act = toastCallback
+    toastText = ""
+    toastAction = ""
+    toastCallback = null
+    toastTimer.stop()
+    if (typeof act === "function") act()
   }
   Timer {
     id: toastTimer
     interval: 2600
-    onTriggered: root.toastText = ""
+    onTriggered: { root.toastText = ""; root.toastAction = ""; root.toastCallback = null }
   }
 
   // ------------------------------------------------------------ plumbing
@@ -654,23 +669,44 @@ Item {
             anchors.horizontalCenter: main.horizontalCenter
             anchors.bottom: main.bottom
             anchors.bottomMargin: 16
-            width: Math.min(toastLabel.implicitWidth + 36, main.width - 32)
-            height: 40
-            radius: 20
+            width: Math.min(toastRow.implicitWidth + 36, main.width - 32)
+            height: root.toastAction ? 44 : 40
+            radius: height / 2
             color: root.ui.text
             opacity: root.toastText !== "" ? 1 : 0
             visible: opacity > 0
             Behavior on opacity { NumberAnimation { duration: 160 } }
-            Text {
-              id: toastLabel
+            Row {
+              id: toastRow
               anchors.centerIn: parent
-              width: Math.min(implicitWidth, parent.width - 24)
-              text: root.toastText
-              color: root.ui.bg
-              font.family: root.ui.font
-              font.pixelSize: root.ui.fs.sm
-              font.weight: Font.DemiBold
-              elide: Text.ElideRight
+              spacing: 16
+              Text {
+                id: toastLabel
+                anchors.verticalCenter: parent.verticalCenter
+                width: Math.min(implicitWidth, main.width - 80 - (toastButton.visible ? toastButton.width + 16 : 0))
+                text: root.toastText
+                color: root.ui.bg
+                font.family: root.ui.font
+                font.pixelSize: root.ui.fs.sm
+                font.weight: Font.DemiBold
+                elide: Text.ElideRight
+              }
+              Text {
+                id: toastButton
+                visible: root.toastAction !== ""
+                anchors.verticalCenter: parent.verticalCenter
+                text: root.toastAction
+                color: Qt.tint(root.ui.bg, root.alpha(root.ui.accent, 0.8))
+                font.family: root.ui.font
+                font.pixelSize: root.ui.fs.sm
+                font.weight: Font.Bold
+                MouseArea {
+                  anchors.fill: parent
+                  anchors.margins: -12
+                  cursorShape: Qt.PointingHandCursor
+                  onClicked: root.toastActed()
+                }
+              }
             }
           }
         }
