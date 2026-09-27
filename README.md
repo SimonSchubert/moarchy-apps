@@ -36,6 +36,24 @@ only while it is open.
 
 ## Install
 
+There are two ways in, and they combine.
+
+**As a package**, on any Arch Linux or Arch Linux ARM system with a Wayland
+desktop:
+
+```sh
+yay -S crypto-market      # or any AUR helper; the package is `crypto-market`
+```
+
+That installs Quickshell if it is not there already, and a `crypto-market`
+command with an app menu entry. The command opens the app inside the running
+Omarchy shell when the shell has the plugin (below), and as its own Quickshell
+window everywhere else -- another desktop, or Omarchy without the plugin.
+Closing that window ends the process. `crypto-market bitcoin` opens straight
+on a coin page.
+
+**As an Omarchy plugin**, so it stays loaded in the shell and opens instantly:
+
 ```sh
 omarchy plugin add https://github.com/SimonSchubert/omarchy-crypto-market.git --enable
 ```
@@ -85,7 +103,10 @@ If you added a keybinding, remove it from `~/.config/hypr/bindings.lua`.
 
 ## Requirements
 
-Omarchy with its Quickshell shell, and network access to `api.coingecko.com`.
+Quickshell (the package depends on it, along with the JetBrains Mono Nerd Font
+the icons are drawn in), and network access to `api.coingecko.com`. Omarchy
+is optional: without it the app runs as its own Quickshell window, in a plain
+light or dark palette that follows the desktop's preference.
 It installs no packages and changes no Omarchy configuration. It reads and
 writes only its own files, listed below.
 
@@ -140,5 +161,8 @@ and paste it into Settings. The key is stored in
 ## Credits
 
 Market data by [CoinGecko](https://www.coingecko.com). This is not financial advice.
+
+Crypto Market is an independent project. It is not affiliated with or endorsed
+by Omarchy, 37signals, Quickshell or CoinGecko.
 
 MIT licensed.
