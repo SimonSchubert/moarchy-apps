@@ -30,7 +30,9 @@ QtObject {
   readonly property color muted: Theme.mutedReads(theme.muted, theme.background)
     ? theme.muted : Qt.tint(bg, alpha(text, 0.62))
   readonly property color accent: theme.accent
-  readonly property color onAccent: Theme.onColor(accent)
+  // Text on a filled accent. Not `onAccent`: a name that is `on` and a
+  // capital is read as a signal handler, and the property comes out black.
+  readonly property color inkOnAccent: Theme.onColor(accent)
   readonly property color border: theme.border
   readonly property color surface: Qt.tint(bg, alpha(text, dark ? 0.05 : 0.035))
   readonly property color surfaceHigh: Qt.tint(bg, alpha(text, dark ? 0.10 : 0.07))

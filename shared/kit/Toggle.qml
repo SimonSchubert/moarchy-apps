@@ -57,7 +57,7 @@ Item {
       radius: 9
       y: 3
       x: root.checked ? parent.width - width - 3 : 3
-      color: root.checked ? root.app.ui.onAccent : root.app.ui.muted
+      color: root.checked ? root.app.ui.inkOnAccent : root.app.ui.muted
       Behavior on x { NumberAnimation { duration: 120 } }
     }
   }

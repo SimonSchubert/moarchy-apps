@@ -5,19 +5,24 @@ has the whole game solved and is told to err anyway, and a score that keeps
 count across the sitting rather than the game.
 
 <p align="center">
-  <img src="docs/screenshots/board.png" width="30%" alt="A game in progress: a score line reading X 2 YOU against O 1 FAIR with one drawn between them, a hash with two crosses and two noughts on it, and Undo live with Play again greyed out">
-  <img src="docs/screenshots/won.png" width="30%" alt="A finished game: three crosses struck through with a blue line, every other mark faded, the score up to 3, and Play again now the suggested button">
-  <img src="docs/screenshots/record.png" width="30%" alt="The record: 46 played, 21 won, 12 unbeaten, and a row per difficulty ending with a note that Perfect cannot be beaten">
+  <img src="docs/screenshots/phone.png" width="30%" alt="A game in progress on a phone: the score two to one with four draws, Your move, Undo live and Play again greyed, and a hash with two crosses and two noughts on it">
+  <img src="docs/screenshots/phone-won.png" width="30%" alt="A finished game: three crosses struck through, every other mark faded, the score up to three, and Play again lit">
+  <img src="docs/screenshots/phone-record.png" width="30%" alt="The record: 42 played, 16 won, 8 unbeaten, and a row per difficulty ending with a note that Perfect cannot be beaten">
+</p>
+<p align="center">
+  <img src="docs/screenshots/desktop-latte.png" width="92%" alt="The same app on a desktop under catppuccin-latte: the board on the left, and beside it the score, the two buttons and the record">
 </p>
 
-<p align="center"><em>360×720, the size of a PinePhone's screen under
-mobileomarchy. The marks are not the app's own blue and red — they are the
-active Omarchy theme's, and <code>omarchy-theme-set</code> repaints them while
-the game is on the screen.</em></p>
+<p align="center"><em>360×720, and a desktop window. One app: below 720 px it
+lays out as a phone app, above it the record sits beside the board. The marks
+are the active Omarchy theme's blue and orange, and a theme switch repaints
+them while the game is on the screen.</em></p>
 
-Built for [mobileomarchy](https://github.com/SimonSchubert/mobileomarchy), but
-nothing in it is specific to that: it is a GTK4/libadwaita app and runs on
-Phosh, Plasma Mobile, postmarketOS or an ordinary desktop.
+A Quickshell app. Inside the Omarchy shell it is a panel the shell keeps
+loaded, so opening it is showing a window rather than starting a process; on
+any other Quickshell desktop `moarchy-tictactoe` runs it as its own. 0.1.0 was
+a GTK4/libadwaita app, and a game left in it is the game found here: the file
+is the same.
 
 ## This one is not a gap
 
@@ -96,17 +101,16 @@ cannot win a game it should draw. It wins the games where somebody taps without
 looking, which on a phone, on a bus, is most of them. It is also why it opens in
 a corner rather than in the centre: every reply to a corner loses except one.
 
-`tests/test_ai.py` plays four hundred games at each level and fails if the
+`tests/tst_levels.qml` plays hundreds of seeded games at each level and fails if the
 levels stop being ordered by strength — the only property of an opponent a
-person can feel, and the one a tweak to any number in `ai.py` can quietly break.
+person can feel, and the one a tweak to any number in `Tictactoe.js` can quietly break.
 
 ## The pause
 
-The computer sits on a move it already has, for 340 milliseconds.
+The computer sits on a move it already has, for 420 milliseconds.
 
-This is the opposite of Reversi's wait, which exists because the search is a
-Python thread holding the GIL and would turn an animation into a slideshow.
-Here the move is known before the tap lands. The wait is for the person: an
+This is the opposite of Reversi's wait, which exists because a search takes
+time. Here the move is known before the tap lands. The wait is for the person: an
 opponent that answers in nought milliseconds does not read as a strong player,
 it reads as a script, and its mark is on the board before the eye has left the
 one you drew.
@@ -123,25 +127,19 @@ Play again in the middle of a game would throw away something undo cannot get
 back. Abandoning a game is what New game in the menu is for, and it says in
 advance that the series goes with it.
 
-## The phone's colours
+## The theme's colours
 
-<p align="center">
-  <img src="docs/screenshots/board-tokyo-night.png" width="32%" alt="The same board under tokyo-night: a lifted near-black sheet, grey rules, and the theme's own blue crosses and red noughts">
-</p>
-
-The same game under `tokyo-night`. The paper is that theme's surface, the rules
-are pencil mixed into the paper, and the marks are that theme's blue and red —
-so `omarchy-theme-set` repaints the board while the game is on the screen, the
-way it repaints the bar and the keyboard.
+The marks are the theme's blue and orange, the rules are its text faded into
+its background, and the struck line is the winner's colour -- so
+`omarchy-theme-set` repaints the board while a game is on it, the way it
+repaints the bar. Without an Omarchy theme it follows the desktop's light or
+dark, and Settings can pin either.
 
 **Two hues here, and none in Reversi.** That is not an inconsistency, it is the
 shapes. Reversi's discs are a circle and a circle, so colour is the only thing
-telling them apart, and the popular pair fails for the eight percent of men who
-cannot separate red from green. An X is not an O at any size, in any light, to
-anybody: the colour is decoration on top of a distinction the shape has already
-made, so it can follow the theme without carrying any of the reading. It is
-still blue and red rather than red and green, because a hue that fails is a hue
-that fails and this pair costs nothing to keep.
+telling them apart. An X is not an O at any size, in any light, to anybody: the
+colour is decoration on top of a distinction the shape has already made, so it
+can follow the theme without carrying any of the reading.
 
 The grid is a **hash and not a box** — four rules that overshoot their crossings,
 no border around the outside. That is what a person actually draws, and it is
@@ -186,48 +184,46 @@ a page with a win percentage at the top would be telling somebody they are bad
 at a game they have in fact solved. The longest run without losing is a thing
 you can get better at against all three levels.
 
-Writes go through a temp file, an fsync and a rename, and they happen on every
-mark rather than on a timer.
+Writes go through a temp file and a rename, on every mark rather than on a
+timer. A file that will not parse is moved aside as
+`tictactoe.broken-<time>.json` before anything is written over it.
 
 ## Running it
 
 ```sh
-python3 -m moarchy_tictactoe
+quickshell -p apps/tictactoe/shell.qml
 ```
 
-To see it with a game in progress rather than an empty board:
+With a game in progress rather than an empty board:
 
 ```sh
 export MOARCHY_TICTACTOE_DIR=$(mktemp -d)
-python3 demo.py          # a game in progress, you to move
-python3 demo.py won      # ...or a finished one, struck through
-python3 -m moarchy_tictactoe
+python3 apps/tictactoe/dev/demo.py        # a game in progress, you to move
+python3 apps/tictactoe/dev/demo.py won    # ...or a finished one, struck through
+quickshell -p apps/tictactoe/shell.qml
 ```
-
-`demo.py` refuses to run without `MOARCHY_TICTACTOE_DIR` set, so it cannot
-overwrite a real game. It plays a real one with the opponent this app ships
-rather than placing marks, because a hand-placed board is the app telling a lie
-about its own rules — and in a game this small, everybody who looks at the
-screenshot knows the rules.
 
 ## Checks
 
 ```sh
-scripts/check.sh tictactoe
+docker run --rm -v "$PWD:/src" -w /src moarchy-qml scripts/app-check.sh tictactoe
+docker run --rm -v "$PWD:/src" -w /src moarchy-qml scripts/app-shot.sh tictactoe
 ```
 
-ruff, then the rules, the opponent and the file, then the widgets on a virtual
-screen, then a real run that fails on any GTK warning. That last one is the one
-that matters: a layout error is not an exception — the app starts, the window
-appears, and one widget is the wrong size, with a single line on stderr as the
-only sign.
+The first is qmllint, the rules, the solver and the file (`tests/`, the cases
+0.1.0's Python tests had), and a real run that fails on any QML warning. The
+second photographs `dev/shots` at a phone's size and a desktop's.
+
+On a desktop: `1`–`9` play a square, `u` undoes, Enter plays again, `n` starts
+a new game.
 
 | variable | what it does |
 |---|---|
 | `MOARCHY_TICTACTOE_DIR` | where the game lives |
-| `MOARCHY_TICTACTOE_QUIT_AFTER` | quit after N seconds, for headless runs |
+| `MOARCHY_QUIT_AFTER` | quit after N seconds, for headless runs |
 | `MOARCHY_TICTACTOE_PAGE` | open straight into `record`, for the screenshots |
 | `MOARCHY_TICTACTOE_NEW` | open with the new-game sheet up |
+| `MOARCHY_TICTACTOE_SETTINGS` | open on Settings |
 
 ## Licence
 

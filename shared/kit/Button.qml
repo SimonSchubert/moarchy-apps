@@ -35,13 +35,13 @@ Rectangle {
       text: root.glyph
       size: 17
       width: 20
-      color: root.primary ? root.app.ui.onAccent : root.active ? root.tint : root.app.ui.text
+      color: root.primary ? root.app.ui.inkOnAccent : root.active ? root.tint : root.app.ui.text
     }
     Text {
       visible: root.text !== ""
       anchors.verticalCenter: parent.verticalCenter
       text: root.text
-      color: root.primary ? root.app.ui.onAccent : root.active ? root.tint : root.app.ui.text
+      color: root.primary ? root.app.ui.inkOnAccent : root.active ? root.tint : root.app.ui.text
       font.family: root.app.ui.font
       font.pixelSize: root.app.ui.fs.sm
       font.weight: Font.DemiBold

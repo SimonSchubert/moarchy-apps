@@ -36,6 +36,11 @@ run python3 scripts/pkgbuild-lint.py
 for app in "${apps[@]}"; do
   dir="apps/$app"
   [[ -d $dir ]] || { echo "no such app: $app" >&2; status=1; continue; }
+  # A Quickshell app, or packaging for somebody else's: nothing here is Python.
+  # scripts/app-check.sh checks the first kind.
+  if [[ -f $dir/Panel.qml || ! -f $dir/demo.py ]] && ! compgen -G "$dir/moarchy_*" >/dev/null; then
+    continue
+  fi
   printf '\n########## %s ##########\n' "$app"
 
   # shared first on the path, so an app importing moarchy_ui gets this tree's

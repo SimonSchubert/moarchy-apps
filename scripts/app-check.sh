@@ -47,7 +47,14 @@ for name in "${names[@]}"; do
 
   # -W 0 makes any warning a failure. --unqualified=info is visible but not
   # fatal, until the delegates carry `pragma ComponentBehavior: Bound`.
-  run qmllint -W 0 --unqualified=info "$work"/app/*.qml "$work"/app/kit/*.qml
+  # Only the warnings are printed: the info notes are hundreds of lines and
+  # say the same thing about every delegate.
+  printf '\n==> qmllint\n'
+  if qmllint -W 0 --unqualified=info "$work"/app/*.qml "$work"/app/kit/*.qml >"$work/lint.log" 2>&1; then
+    echo "clean"
+  else
+    grep -E '^(Warning|Error)' "$work/lint.log" | sed "s|$work/app/||"; status=1
+  fi
 
   if [[ -d $dir/tests ]]; then
     run env QT_QPA_PLATFORM=offscreen qmltestrunner -input "$dir/tests"

@@ -1,0 +1,10 @@
+# What to photograph, for scripts/app-shot.sh.
+shot phone
+shot phone-light LOOK=light
+shot phone-record MOARCHY_TICTACTOE_PAGE=record
+shot phone-newgame MOARCHY_TICTACTOE_NEW=1
+shot desktop SIZE=1280x820
+shot desktop-light SIZE=1280x820 LOOK=light
+shot desktop-latte SIZE=1280x820 THEME=.themes/catppuccin-latte/colors.toml
+shot phone-won DEMO=won
+shot desktop-won SIZE=1280x820 DEMO=won

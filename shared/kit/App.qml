@@ -99,9 +99,7 @@ Item {
 
   property Tokens ui: Tokens { theme: root.hostTheme; compact: root.compact }
 
-  // For widgets written before Tokens had these.
   function alpha(c, a) { return Qt.rgba(c.r, c.g, c.b, a) }
-  readonly property color onAccent: ui.onAccent
 
   // Omarchy Mobile draws its gesture bar over the bottom of every app, on
   // purpose: an app's background reaches the glass, and its controls stay
@@ -128,6 +126,7 @@ Item {
   // header on a phone, and `,` on a keyboard.
   property Component settings: null
   readonly property bool inSettings: tab === "settings"
+  readonly property bool hasRail: !compact && tabbed
 
   // Pages over the current tab: plain objects, drawn by `page`, which reads
   // the top one as `app.topPage`. Capped, so a long walk from page to page does
@@ -336,7 +335,9 @@ Item {
           // ---------------------------------------------------- rail
           Rectangle {
             id: rail
-            visible: !root.compact && (root.tabbed || root.settings !== null)
+            // Only for an app with pages to choose between. One with a single
+            // screen -- a game -- keeps the width, and its Settings is a gear.
+            visible: root.hasRail
             width: visible ? 216 : 0
             anchors.top: parent.top
             anchors.bottom: parent.bottom
@@ -471,8 +472,8 @@ Item {
                 id: headBack
                 x: 4
                 anchors.verticalCenter: parent.verticalCenter
-                // Settings is a page on a phone, with no tab to go back with.
-                visible: root.compact && root.inSettings
+                // Settings is a page wherever there is no rail to leave it by.
+                visible: root.inSettings && !root.hasRail
                 width: visible ? implicitWidth : 0
                 app: root
                 glyph: KG.back
@@ -486,7 +487,8 @@ Item {
                 anchors.rightMargin: 8
                 anchors.verticalCenter: parent.verticalCenter
                 spacing: 10
-                readonly property bool marked: root.mark !== null && root.compact && root.tab === root.homeTab
+                // The app's mark where the rail is not showing it.
+                readonly property bool marked: root.mark !== null && !root.hasRail && root.tab === root.homeTab && !root.inSettings
                 Loader {
                   active: parent.marked
                   visible: active
@@ -531,7 +533,7 @@ Item {
                   sourceComponent: root.actions
                 }
                 IconButton {
-                  visible: root.compact && root.settings !== null && !root.inSettings
+                  visible: !root.hasRail && root.settings !== null && !root.inSettings
                   anchors.verticalCenter: parent.verticalCenter
                   app: root
                   glyph: KG.settings
@@ -678,7 +680,7 @@ Item {
 
   function headTitle() {
     if (inSettings) return "Settings"
-    if (compact && tab === homeTab) return title
+    if (!hasRail && tab === homeTab) return title
     for (var i = 0; i < tabs.length; i++) if (tabs[i].key === tab) return tabbed ? tabs[i].label : title
     return title
   }
