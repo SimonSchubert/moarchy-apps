@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "id": "org.moarchy.reversi",
+  "name": "Reversi",
+  "version": "0.2.0",
+  "author": "Simon Schubert",
+  "license": "MIT",
+  "description": "Reversi against the computer at three levels, or two people across a table, with a record kept by difficulty. The search runs off the UI thread. Desktop and phone layouts.",
+  "homepage": "https://github.com/SimonSchubert/moarchy-apps/tree/main/apps/reversi",
+  "repository": "https://github.com/SimonSchubert/moarchy-apps",
+  "keywords": ["reversi", "othello", "game", "board game", "strategy"],
+  "icon": "icon.svg",
+  "kinds": ["panel"],
+  "keepLoaded": true,
+  "entryPoints": {
+    "panel": "Panel.qml"
+  }
+}

@@ -1,4 +1,4 @@
-// The opponent, against apps/reversi/moarchy_reversi/ai.py.
+// The opponent, against the GTK version's ai.py (0.1.0).
 //
 // The evaluation is checked number for number, because a port that is nearly
 // right plays nearly the same game and nobody can tell which one is wrong. The

@@ -5,19 +5,24 @@ opponent that answers inside a second on a slow CPU, and a game that survives
 being killed.
 
 <p align="center">
-  <img src="docs/screenshots/board.png" width="30%" alt="A game in progress: two score chips reading 14 to 16, a green board of black and white discs with faint dots marking the four squares the player may play, and Undo and New game along the bottom">
-  <img src="docs/screenshots/newgame.png" width="30%" alt="The new-game sheet: against the computer, difficulty Medium, you play dark">
-  <img src="docs/screenshots/record.png" width="30%" alt="The record: 19 played, 10 won, best win +24, and a row per difficulty with win percentages">
+  <img src="docs/screenshots/phone.png" width="30%" alt="A game in progress: score boxes reading 14 to 16, a green board of black and white discs with small dots marking the squares the player may play, the last move outlined, and Undo and New game along the bottom">
+  <img src="docs/screenshots/phone-newgame.png" width="30%" alt="The new-game sheet: against the computer, difficulty Medium, you play dark">
+  <img src="docs/screenshots/phone-record.png" width="30%" alt="The record: 19 played, 10 won, best win +24, and a row per difficulty with win percentages">
+</p>
+<p align="center">
+  <img src="docs/screenshots/desktop-over.png" width="92%" alt="A finished game on a desktop under catppuccin-latte: the board with its files and ranks on the left, and beside it the score 43 to 20, You win, the buttons and the record">
 </p>
 
-<p align="center"><em>360×720, the size of a PinePhone's screen under
-mobileomarchy. The felt is not the app's own green — it is the active Omarchy
-theme's, and <code>omarchy-theme-set</code> repaints it while the game is on the
-screen.</em></p>
+<p align="center"><em>360×720, and a desktop window. One app: below 720 px it
+lays out as a phone app, above it the record sits beside the board. The felt is
+not the app's own green — it is the active Omarchy theme's, and a theme switch
+repaints it while the game is on the screen.</em></p>
 
-Built for [mobileomarchy](https://github.com/SimonSchubert/mobileomarchy), but
-nothing in it is specific to that: it is a GTK4/libadwaita app and runs on
-Phosh, Plasma Mobile, postmarketOS or an ordinary desktop.
+A Quickshell app. Inside the Omarchy shell it is a panel the shell keeps
+loaded, so opening it is showing a window rather than starting a process; on
+any other Quickshell desktop `moarchy-reversi` runs it as its own. 0.1.0 was a
+GTK4/libadwaita app, and a game left in it is the game found here: the file is
+the same.
 
 ## This one is not a gap
 
@@ -51,7 +56,9 @@ not an argument that it is not — it is an app written to a different brief.
   touch screen is not a place to find out by being refused
 - **The discs turn over as a wave**, out from the one you played, edge-on at
   the halfway point like a real disc in a hand. It is the whole reward of the
-  move and it costs arithmetic
+  move and it costs one property per disc
+- **On a desktop** the board has its files and ranks, the record sits beside
+  it, and the arrow keys move over the board with Enter to play
 - **Three levels**, and the easy one genuinely errs rather than being a strong
   opponent with less to think with
 - **Two players on one phone**, passing it across a table, with no computer and
@@ -63,16 +70,18 @@ not an argument that it is not — it is an app written to a different brief.
 - **A record** of games against the computer, by difficulty
 - **Everything local.** One JSON file, no account, no network code in the app
 
-## The phone's colours
+## The theme's colours
 
 <p align="center">
-  <img src="docs/screenshots/board-tokyo-night.png" width="32%" alt="The same board under the tokyo-night theme: a deep olive felt on a near-black window, with black and white discs">
+  <img src="docs/screenshots/desktop-tokyo.png" width="70%" alt="The same board under the tokyo-night theme: a deep olive felt on a near-black window, with black and white discs">
 </p>
 
 The same game under `tokyo-night`. The felt is that theme's green mixed into
-that theme's background, the grid is a darker shade of the felt, and the ring on
-the last move is the theme's accent — so `omarchy-theme-set` repaints the board
-while the game is on the screen, the way it repaints the bar and the keyboard.
+that theme's background, the grid is a darker shade of the felt, and the
+outline on the last move is the theme's accent — so `omarchy-theme-set`
+repaints the board while the game is on the screen, the way it repaints the
+bar. Without an Omarchy theme it follows the desktop's light or dark, and
+Settings can pin either.
 
 The discs are the one thing that does not become a hue of the theme. Two
 theme colours is the kind of theming that looks good in a screenshot and fails
@@ -84,9 +93,10 @@ tint from the theme and keep their contrast.
 
 It is alpha-beta over bitboards, and both halves of that are about the phone.
 
-**A position is two 64-bit integers**, one bit per square per colour, so finding
-every legal move is a handful of shifts and masks rather than a walk of 64
-squares by 8 directions by 7 steps in interpreted bytecode. A search is worth as
+**A position is two 64-bit boards**, one bit per square per colour -- each a
+pair of 32-bit halves, because JavaScript's bitwise operators are 32-bit
+(`Bits.js`) -- so finding every legal move is a handful of shifts and masks
+rather than a walk of 64 squares by 8 directions by 7 steps. A search is worth as
 many positions a second as the rules can be applied, and on an A53 that is the
 difference between an opponent worth beating and one that is not.
 
@@ -102,21 +112,17 @@ only by Hard. An easy opponent that plays the endgame perfectly is easy right up
 until the part of the game that decides it, which feels like being cheated
 rather than beaten.
 
-**Nothing is searched while anything is moving.** The order after a tap is
+**The search is on its own thread.** `search.js` runs in a WorkerScript, so
+the discs keep turning while the computer thinks, and it starts a beat after
+your move lands rather than on top of it. A worker cannot be interrupted, so
+every answer carries the generation of the board it was asked about, and one
+for a board that has since been taken back, restarted or closed is dropped.
+Nothing is searched while the window is shut.
 
-```
-tap -> play -> animate -> settled -> think -> play -> animate -> settled
-```
-
-and the search does not start until the discs have stopped turning. That is not
-politeness, it is CPython: the search is a Python thread and holds the GIL, so a
-search running under an animation turns a 240ms flip into a slideshow. It costs
-a quarter of a second that is being spent watching the flip anyway.
-
-All of it lives in `reversi.py` and `ai.py`, which import no GTK, so the rules
-and the opponent are covered by tests rather than by a screenshot —
-`tests/test_ai.py` plays Hard against Easy from both sides on a shortened clock
-and fails if the levels stop being ordered by strength.
+The rules (`Reversi.js`) and the opponent (`Ai.js`) are the same code the
+worker runs and the tests read, and they were checked position by position
+against 0.1.0's Python. `tests/tst_levels.qml` plays a four-ply Hard against
+Easy from both sides and fails if the levels stop being ordered by strength.
 
 ## The file
 
@@ -139,49 +145,54 @@ edited or half-written cannot describe a board that legal play could not reach,
 because loading it is playing it.** A move that will not play is where the file
 stops being a game, and the rest of it goes.
 
-Writes go through a temp file, an fsync and a rename, and they happen on every
-move rather than on a timer. Habits debounces because a thumb can tick five
-marks in a row; a move here is seconds of thinking apart at the very least, and
-on a phone the app is not closed, it is killed.
+Writes go through a temp file and a rename, on every move rather than on a
+timer: a move here is seconds of thinking apart at the very least, and on a
+phone the app is not closed, it is killed. A file that will not parse is moved
+aside as `reversi.broken-<time>.json` before anything is written over it.
 
 ## Running it
 
 ```sh
-python3 -m moarchy_reversi
+quickshell -p apps/reversi/shell.qml
 ```
 
-To see it with a game in progress rather than an opening:
+With a game in progress rather than an opening:
 
 ```sh
 export MOARCHY_REVERSI_DIR=$(mktemp -d)
-python3 demo.py
-python3 -m moarchy_reversi
+python3 apps/reversi/dev/demo.py          # 26 plies in, you to move
+python3 apps/reversi/dev/demo.py over     # ...or a finished game, passes and all
+quickshell -p apps/reversi/shell.qml
 ```
 
-`demo.py` refuses to run without `MOARCHY_REVERSI_DIR` set, so it cannot
-overwrite a real game. It plays a real one with the search this app ships rather
-than scattering discs, because a hand-placed board is the app telling a lie
-about its own rules and anyone who knows the game will see it.
+The fixture is a game 0.1.0's own opponent played, not scattered discs: a
+hand-placed board is the app telling a lie about its own rules, and anyone who
+knows the game will see it.
 
 ## Checks
 
 ```sh
-scripts/check.sh reversi
+docker run --rm -v "$PWD:/src" -w /src moarchy-qml scripts/app-check.sh reversi
+docker run --rm -v "$PWD:/src" -w /src moarchy-qml scripts/app-shot.sh reversi
 ```
 
-ruff, then the rules, the search and the file, then the widgets on a virtual
-screen, then a real run that fails on any GTK warning. That last one is the one
-that matters: a layout error is not an exception — the app starts, the window
-appears, and one widget is the wrong size, with a single line on stderr as the
-only sign. It is what caught the board claiming eighty pixels of height it then
-centred a square inside of.
+The first is qmllint, the rules, the opponent and the file (`tests/`, the
+cases 0.1.0's Python tests had), and a real run that fails on any QML warning.
+The second photographs `dev/shots` at a phone's size and a desktop's.
+
+On a desktop: the arrow keys move over the board and Enter or Space plays the
+square, `u` undoes, `n` starts a new game.
 
 | variable | what it does |
 |---|---|
 | `MOARCHY_REVERSI_DIR` | where the game lives |
-| `MOARCHY_REVERSI_QUIT_AFTER` | quit after N seconds, for headless runs |
+| `MOARCHY_QUIT_AFTER` | quit after N seconds, for headless runs |
 | `MOARCHY_REVERSI_PAGE` | open straight into `record`, for the screenshots |
 | `MOARCHY_REVERSI_NEW` | open with the new-game sheet up |
+| `MOARCHY_REVERSI_SETTINGS` | open on Settings |
+
+The IPC target `reversi` answers `play <square>` (`play d3`), `board`, `score`
+and `settled`, for a script that wants to drive a game.
 
 ## Licence
 

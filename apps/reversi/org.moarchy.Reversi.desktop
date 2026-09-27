@@ -8,5 +8,4 @@ Icon=org.moarchy.Reversi
 Terminal=false
 Categories=Game;BoardGame;
 Keywords=reversi;othello;board;game;strategy;discs;
-StartupNotify=true
-StartupWMClass=org.moarchy.Reversi
+StartupNotify=false

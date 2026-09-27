@@ -1,4 +1,4 @@
-// The rules, against the positions apps/reversi/moarchy_reversi/reversi.py
+// The rules, against the positions the GTK version's reversi.py (0.1.0)
 // actually reaches.
 //
 // The centrepiece is a whole game: sixty-four moves chosen by one deterministic

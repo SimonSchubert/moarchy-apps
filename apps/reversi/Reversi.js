@@ -1,6 +1,6 @@
 // The rules, as bitboards.
 //
-// The port of apps/reversi/moarchy_reversi/reversi.py. Every line of it reads
+// Ported from the GTK version's reversi.py (0.1.0). Every line of it reads
 // the way the Python reads, because Bits.js already took the difficulty: there
 // are no 64-bit integers on this engine, and pretending otherwise is a board
 // that silently loses its top half.
@@ -17,6 +17,8 @@ var PASS = -1
 var DARK = 0
 var LIGHT = 1
 var NAMES = { 0: "Dark", 1: "Light" }
+
+function other(colour) { return colour === DARK ? LIGHT : DARK }
 
 // Every square but the first column, and every square but the last: a shift
 // that steps sideways must not wrap onto the opposite edge.
@@ -41,7 +43,7 @@ function index(row, column) { return row * SIZE + column }
 function rowOf(cell) { return Math.floor(cell / SIZE) }
 function columnOf(cell) { return cell % SIZE }
 
-// a1 is the bottom-left, as reversi.py numbers it.
+// a1 is square 0, drawn at the top-left, as reversi.py numbers and drew it.
 function notation(cell) {
   if (cell === PASS) return "--"
   return "abcdefgh".charAt(columnOf(cell)) + String(rowOf(cell) + 1)
@@ -154,4 +156,77 @@ function replay(moveList) {
     history.push(p)
   }
   return { position: p, history: history }
+}
+
+// --- a game, as the GTK version's Game class played it ------------------------
+
+// As much of a recorded game as will legally play: a pass only where one is
+// forced, a move only where it is legal. Where a file stops making sense is
+// where the game stops -- anything else is a guess, and a guess here is a
+// board somebody never played. Returns the moves kept.
+function resume(moveList) {
+  var p = OPENING
+  var kept = []
+  for (var i = 0; i < moveList.length; i++) {
+    var cell = moveList[i]
+    if (cell === PASS) {
+      if (!mustPass(p)) break
+      p = passed(p)
+    } else {
+      if (!isLegal(p, cell)) break
+      p = play(p, cell)
+    }
+    kept.push(cell)
+  }
+  return kept
+}
+
+// A move, then a pass for whoever cannot answer it: a position where the side
+// to move has nothing to do is not a state the board should ever show.
+// Returns { moves, passes, flipped }.
+function playTurn(moveList, cell) {
+  var p = replay(moveList).position
+  var flipped = flippedBy(p, cell)
+  p = play(p, cell)
+  var out = moveList.concat([cell])
+  var passes = 0
+  while (mustPass(p)) {
+    p = passed(p)
+    out.push(PASS)
+    passes += 1
+  }
+  return { moves: out, passes: passes, flipped: flipped }
+}
+
+// One move taken back, and any passes that followed it. null at the opening.
+function undo(moveList) {
+  var out = moveList.slice()
+  while (out.length && out[out.length - 1] === PASS) out.pop()
+  if (!out.length) return null
+  out.pop()
+  return out
+}
+
+// Rewind until `colour` is on move again with something to play, and with
+// something undone -- one thumb on a bus lands one square off, and undoing a
+// single ply would hand the board back with the computer's reply still on it.
+// null when there was nothing to take back.
+function takeback(moveList, colour) {
+  var out = moveList
+  var undone = false
+  while (out.length) {
+    var next = undo(out)
+    if (next === null) break
+    out = next
+    undone = true
+    var p = replay(out).position
+    if (p.turn === colour && !mustPass(p)) break
+  }
+  return undone ? out : null
+}
+
+// The last square played, skipping passes, or -1.
+function lastMove(moveList) {
+  for (var i = moveList.length - 1; i >= 0; i--) if (moveList[i] !== PASS) return moveList[i]
+  return -1
 }

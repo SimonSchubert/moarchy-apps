@@ -1,6 +1,6 @@
 // The computer player: alpha-beta over the bitboards, on a clock.
 //
-// The port of apps/reversi/moarchy_reversi/ai.py, and the clock is why it ports
+// Ported from the GTK version's ai.py (0.1.0), and the clock is why it ports
 // straight across: the search already took its deadline as an argument and
 // checked it every CHECK_MASK nodes, precisely so a slower machine would get a
 // shallower answer rather than a hung one. A phone is that slower machine, and

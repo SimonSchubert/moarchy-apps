@@ -1,0 +1,10 @@
+# What to photograph, for scripts/app-shot.sh.
+shot phone
+shot phone-light LOOK=light
+shot phone-record MOARCHY_REVERSI_PAGE=record
+shot phone-newgame MOARCHY_REVERSI_NEW=1
+shot phone-over DEMO=over
+shot desktop SIZE=1280x820
+shot desktop-light SIZE=1280x820 LOOK=light
+shot desktop-tokyo SIZE=1280x820 THEME=.themes/tokyo-night/colors.toml
+shot desktop-over SIZE=1280x820 DEMO=over THEME=.themes/catppuccin-latte/colors.toml
