@@ -1,0 +1,11 @@
+# What to photograph, for scripts/app-shot.sh. The day is pinned, so the word
+# under the tiles is the same word every time.
+shot phone MOARCHY_FIVELETTERS_TODAY=2026-09-12 MOARCHY_FIVELETTERS_TYPED=SPINE
+shot phone-light LOOK=light MOARCHY_FIVELETTERS_TODAY=2026-09-12
+shot phone-solved MOARCHY_FIVELETTERS_TODAY=2026-09-12 DEMO=solved
+shot phone-lost LOOK=light MOARCHY_FIVELETTERS_TODAY=2026-09-12 DEMO=lost
+shot phone-record MOARCHY_FIVELETTERS_TODAY=2026-09-12 MOARCHY_FIVELETTERS_PAGE=record
+shot phone-tokyo THEME=.themes/tokyo-night/colors.toml MOARCHY_FIVELETTERS_TODAY=2026-09-12
+shot desktop SIZE=1280x820 MOARCHY_FIVELETTERS_TODAY=2026-09-12 MOARCHY_FIVELETTERS_TYPED=SPI
+shot desktop-light SIZE=1280x820 LOOK=light MOARCHY_FIVELETTERS_TODAY=2026-09-12 DEMO=solved
+shot desktop-latte SIZE=1280x820 THEME=.themes/catppuccin-latte/colors.toml MOARCHY_FIVELETTERS_TODAY=2026-09-12

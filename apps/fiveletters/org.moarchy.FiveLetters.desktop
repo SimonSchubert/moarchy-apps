@@ -8,5 +8,4 @@ Terminal=false
 Icon=org.moarchy.FiveLetters
 Categories=Game;LogicGame;
 Keywords=word;letters;guess;puzzle;daily;
-StartupNotify=true
-StartupWMClass=org.moarchy.FiveLetters
+StartupNotify=false

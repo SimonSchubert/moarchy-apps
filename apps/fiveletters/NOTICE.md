@@ -1,11 +1,14 @@
 # The word lists
 
-Two files, both UPPERCASE, one word per line, five letters, A–Z only, sorted and
-deduplicated:
+Two lists, both in `Lists.js`, both UPPERCASE, one word per line, five letters,
+A–Z only, sorted and deduplicated. Until 0.2.0 they were `data/answers.txt` and
+`data/guesses.txt`; they moved into a JavaScript file unchanged, because a QML
+app and its tests can both import one of those and neither can open a file
+without a runtime the tests do not have.
 
-- `answers.txt` — 1,510 words that can be the secret. Common, fair, and every
+- `ANSWERS` — 1,510 words that can be the secret. Common, fair, and every
   one of them a word somebody would use.
-- `guesses.txt` — 12,167 words the app will accept as a guess. A superset of the
+- `GUESSES` — 12,167 words the app will accept as a guess. A superset of the
   answers, and much wider: guessing an obscure word is a legitimate strategy and
   being told "not in word list" for one is the most annoying thing this kind of
   game does.

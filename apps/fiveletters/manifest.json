@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "id": "org.moarchy.fiveletters",
+  "name": "Five Letters",
+  "version": "0.2.0",
+  "author": "Simon Schubert",
+  "license": "MIT",
+  "description": "A five-letter word a day: six guesses, a keyboard of its own coloured by what you know, a mark on every tile as well as a colour, and a streak. Desktop and phone layouts.",
+  "homepage": "https://github.com/SimonSchubert/moarchy-apps/tree/main/apps/fiveletters",
+  "repository": "https://github.com/SimonSchubert/moarchy-apps",
+  "keywords": ["word game", "five letters", "daily", "puzzle", "guess"],
+  "icon": "icon.svg",
+  "kinds": ["panel"],
+  "keepLoaded": true,
+  "entryPoints": {
+    "panel": "Panel.qml"
+  }
+}

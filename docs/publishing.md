@@ -52,7 +52,7 @@ As of 2026-09-14, and this table is the thing to re-check rather than trust:
 | clock | `moarchy-clock` | 0.2.0, the first package (a shell plugin until now), in the tree and not tagged | no | no | no |
 | editor | `moarchy-editor` | 0.2.0, the first package (a shell plugin until now), in the tree and not tagged | no | no | no |
 | mill | `moarchy-mill` | 0.1.0 | yes | yes | **yes** |
-| fiveletters | `moarchy-fiveletters` | 0.1.0 | yes | yes | **yes** |
+| fiveletters | `moarchy-fiveletters` | 0.1.0 released; 0.2.0, the Quickshell rewrite, in the tree and not tagged | yes | yes | **yes** — 0.1.0, the GTK app |
 | breakout | `moarchy-breakout` | 0.1.0 | yes | yes | **yes** |
 | launches | `moarchy-launches` | 0.2.0, the Quickshell rewrite, in the tree and not tagged; 0.1.0 was never released | no | no | no |
 | files | `moarchy-files` | 0.2.0, its first package — 0.1.0 was a shell plugin only — in the tree and not tagged | no | no | no |
