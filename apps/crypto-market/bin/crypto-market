@@ -1,0 +1,30 @@
+#!/bin/sh
+# Open Crypto Market: in the running Omarchy shell when it has the plugin,
+# as its own Quickshell process when it does not.
+#
+#   crypto-market            open it
+#   crypto-market bitcoin    open it on a coin page
+#
+# `omarchy-shell shell summon` answers "ok" only when the shell is running and
+# has the plugin installed and enabled. Anything else -- no Omarchy, the shell
+# down, the plugin not added -- starts the copy this package installed.
+set -eu
+
+ID=io.github.simonschubert.crypto-market
+APPDIR=${CRYPTO_MARKET_DIR:-/usr/share/crypto-market}
+
+payload='{}'
+if [ $# -gt 0 ]; then
+  case $1 in
+    *[!a-z0-9-]*|'') echo "crypto-market: not a coin id: $1" >&2; exit 2 ;;
+  esac
+  payload="{\"coin\":\"$1\"}"
+fi
+
+if command -v omarchy-shell >/dev/null 2>&1; then
+  if [ "$(omarchy-shell shell summon "$ID" "$payload" 2>/dev/null)" = ok ]; then
+    exit 0
+  fi
+fi
+
+CRYPTO_MARKET_PAYLOAD=$payload exec quickshell -n -p "$APPDIR/shell.qml"
