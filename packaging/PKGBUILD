@@ -16,7 +16,7 @@ license=('MIT')
 # unneeded -- as it does quickshell, for the same reason.
 depends=('quickshell' 'ttf-jetbrains-mono-nerd' 'hicolor-icon-theme')
 source=("$pkgname-$pkgver.tar.gz::$url/archive/refs/tags/v$pkgver.tar.gz")
-sha256sums=('SKIP')
+sha256sums=('2fee44cbf557b7f4ceab64848a6dad468f630e7466fd0b5ee9b1934957a8fc15')
 
 package() {
   cd "omarchy-crypto-market-$pkgver"
