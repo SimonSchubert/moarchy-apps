@@ -1,0 +1,14 @@
+pkgbase = moarchy-vitals
+	pkgdesc = A task manager: processor, memory, storage, battery and network, and what is using them, for Quickshell
+	pkgver = 0.2.0
+	pkgrel = 1
+	url = https://github.com/SimonSchubert/moarchy-apps
+	arch = any
+	license = MIT
+	depends = quickshell
+	depends = ttf-jetbrains-mono-nerd
+	depends = hicolor-icon-theme
+	source = https://github.com/SimonSchubert/moarchy-apps/releases/download/vitals-v0.2.0/moarchy-vitals-0.2.0.tar.gz
+	sha256sums = 59184efc4d32970354755b8b8bc80955ed69ad44339e4feff7956e8947eed71e
+
+pkgname = moarchy-vitals
