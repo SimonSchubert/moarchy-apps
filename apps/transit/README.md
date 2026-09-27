@@ -1,12 +1,12 @@
 # Transit
 
-Public transport as an Omarchy app: journeys and live departures for trains,
+Public transport as a Quickshell app: journeys and live departures for trains,
 metros, trams, buses and ferries, anywhere with an open timetable. One app
 window lays itself out for the desktop and for the phone.
 
-![Transit on the desktop](preview.png)
+![Transit on the desktop](docs/screenshots/desktop.png)
 
-<img src="preview-phone.png" alt="Transit on a phone" width="300">
+<img src="docs/screenshots/phone.png" alt="Transit on a phone" width="300">
 
 ## What it does
 
@@ -61,53 +61,48 @@ Times are shown in the time zone your device is set to.
 
 ## Install
 
+On Arch Linux or Arch Linux ARM, with a Wayland desktop, from the AUR:
+
 ```sh
-omarchy plugin add https://github.com/SimonSchubert/omarchy-transit.git --enable
+yay -S transit      # or any AUR helper
 ```
 
-To open it, bind a key in `~/.config/hypr/bindings.lua`:
+That installs Quickshell too if it is not there yet, and gives you a
+`transit` command and an app menu entry. The app opens in a window of its own;
+closing the window ends it. Under Omarchy it takes the Omarchy theme when its
+shell has the plugin installed, and opens inside that shell.
 
-```lua
-o.bind("SUPER + SHIFT + T", "Transit", "omarchy-shell shell toggle io.github.simonschubert.transit")
+To open it with a key on Hyprland:
+
 ```
-
-Or run `omarchy-shell shell toggle io.github.simonschubert.transit` from
-anywhere.
-
-The first time it loads, Transit also adds itself to Omarchy's app menu, so
-you can search for it by name. It does this once, and only if no entry by that
-name exists yet. **Settings → App launcher** hides or shows the entry.
-
-On Omarchy Mobile it appears in the app drawer as its own app.
+bind = SUPER SHIFT, T, exec, transit
+```
 
 ## Remove
 
 ```sh
-omarchy plugin remove io.github.simonschubert.transit
+sudo pacman -Rns transit
 ```
 
-That removes the plugin itself. Your places, trips and settings stay in
-`~/.local/state/transit/`, the saved boards stay in `~/.cache/transit/`, and
-the app menu entry stays in `~/.local/share/applications/`. To remove those
-as well:
+Your places, trips and settings stay in `~/.local/state/transit/`, and the
+saved boards in `~/.cache/transit/`. To remove those as well:
 
 ```sh
 rm -rf ~/.local/state/transit ~/.cache/transit
-rm -f ~/.local/share/applications/omarchy-plugin-io.github.simonschubert.transit.desktop
 ```
-
-If you added a keybinding, remove it from `~/.config/hypr/bindings.lua`.
 
 ## Requirements
 
-Omarchy with its Quickshell shell, and network access to `api.transitous.org`.
-It installs no packages and changes no Omarchy configuration. It reads and
+Quickshell (the package depends on it, along with the JetBrains Mono Nerd Font
+the icons are drawn in), and network access to `api.transitous.org`. Omarchy
+is optional: without it the app runs as its own Quickshell window, in a plain
+light or dark palette that follows the desktop's preference. It reads and
 writes only its own files, listed below.
 
 ## Keys (desktop)
 
 Transit opens as a normal window, so Hyprland tiles, focuses and closes it
-like any other app. The keybinding above toggles it.
+like any other app.
 
 | Key | Action |
 | --- | --- |
@@ -143,8 +138,6 @@ itself.
     recent trips, and settings
   - `~/.cache/transit/snapshot.json`: the last boards and journeys, for
     opening instantly
-  - `~/.local/share/applications/omarchy-plugin-io.github.simonschubert.transit.desktop`:
-    its app menu entry, created once and never over an existing file
 - Everything the server sends is shown as plain text: stop names and operator
   notices can't render as markup.
 
@@ -159,3 +152,6 @@ by Pictogrammers (Apache License 2.0), as drawn by the Nerd Fonts; the app icon
 uses its tram.
 
 MIT licensed.
+
+Transit is an independent app, not affiliated with or endorsed by Transitous,
+Omarchy or Quickshell.

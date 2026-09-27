@@ -14,10 +14,20 @@ import Quickshell.Io
 // phone the shell keeps an entry per app plugin under exactly this name, so
 // the two are one entry, never a duplicate, and the phone removes it with
 // the plugin.
+//
+// Installed as the transit package, the app has an entry already --
+// /usr/share/applications/transit.desktop, whose launcher asks the shell
+// first -- and outside the shell there is nothing for `shell summon` to reach.
+// Either way this writes nothing.
 Item {
   id: root
   property var app
   property string pluginId: ""
+
+  readonly property string systemFile: "/usr/share/applications/transit.desktop"
+  property bool systemChecked: false
+  property bool packaged: false
+  readonly property bool active: !app.standalone && !packaged
 
   readonly property string dataHome: Quickshell.env("XDG_DATA_HOME") || (Quickshell.env("HOME") + "/.local/share")
   readonly property string file: dataHome + "/applications/omarchy-plugin-" + pluginId + ".desktop"
@@ -56,6 +66,7 @@ Item {
 
   // Once per install, after the preferences have loaded.
   function firstStart() {
+    if (!systemChecked || !active) return
     if (!app.store.ready || app.store.prefs.launcherAdded) return
     app.store.set("launcherAdded", true)
     probe.path = root.file
@@ -66,6 +77,14 @@ Item {
     function onReadyChanged() { root.firstStart() }
   }
   Component.onCompleted: firstStart()
+
+  FileView {
+    path: root.systemFile
+    preload: true
+    printErrors: false
+    onLoaded: { root.packaged = true; root.systemChecked = true }
+    onLoadFailed: { root.systemChecked = true; root.firstStart() }
+  }
 
   // Is there an entry by this name already? Then it stays as it is.
   FileView {
