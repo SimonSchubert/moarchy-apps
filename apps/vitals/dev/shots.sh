@@ -3,7 +3,7 @@
 #
 #   docker run --rm -v "$PWD:/src" moarchy-qml apps/vitals/dev/shots.sh [out]
 #
-# scripts/qml-shot.sh is this for the plugins in plugins/, at one size. This
+# scripts/app-shot.sh is this for every other app, from a shot list. This
 # app has two layouts, so each shot names the screen size it is taken at, and
 # the machine is always the recording: a system monitor photographed against
 # a container is a flat line and five processes.

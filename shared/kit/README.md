@@ -5,8 +5,8 @@ window, the host API, the theme, the phone and desktop layouts, the way back
 out, and the dozen widgets every app was drawing again. It was taken out of
 Vitals, Couch and Airwaves, where the same files had been copied three times.
 
-`shared/qs_ui` is the older kit that the phone-only plugins in `plugins/`
-still vendor. It is deleted when the last of them has moved here.
+Every app in `apps/` that is ours is built on it; the older phone-only kit,
+`shared/qs_ui`, went with the last of the plugins that used it.
 
 ## How an app gets it
 

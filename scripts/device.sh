@@ -79,9 +79,21 @@ phone() { ssh "${SSH_OPTS[@]}" "$PHONE" "$@"; }
 pkg_of()  { echo "moarchy-$1"; }
 appid_of() {
   local file
-  file=$(ls "$ROOT/apps/$1/data/"org.moarchy.*.desktop 2>/dev/null | head -1)
+  file=$(ls "$ROOT/apps/$1/"org.moarchy.*.desktop "$ROOT/apps/$1/data/"org.moarchy.*.desktop 2>/dev/null | grep -v '\.open\.desktop$' | head -1)
   [[ -n $file ]] || return 1
   basename "$file" .desktop
+}
+# How Hyprland knows the app's window. A Quickshell app's windows are all class
+# org.quickshell, so one of those is told apart by its title, which is the
+# App's `title:`; anything else by its class, which is its app id.
+window_of() {
+  local panel="$ROOT/apps/$1/Panel.qml" title
+  if [[ -f $panel ]]; then
+    title=$(sed -n 's/^  title: "\(.*\)"$/\1/p' "$panel" | head -1)
+    echo "title|$title"
+  else
+    echo "class|$(appid_of "$1")"
+  fi
 }
 newest_pkg() { ls -t "$ROOT/packages/$(pkg_of "$1")"-*.pkg.tar.* 2>/dev/null | head -1; }
 
@@ -165,7 +177,7 @@ step_install() {
   # The app drawer lists desktop entries, so an app whose .desktop is wrong is
   # an app that cannot be started by tapping, however well it runs from a shell.
   local appid
-  appid=$(appid_of "$app") || die "no .desktop in apps/$app/data"
+  appid=$(appid_of "$app") || die "no .desktop in apps/$app"
   phone "desktop-file-validate /usr/share/applications/$appid.desktop" \
     && info "desktop entry valid" \
     || warn "desktop entry does not validate"
@@ -184,13 +196,13 @@ wake_screen() {
     hyprctl dispatch '\''hl.dsp.dpms({ action = "enable" })'\'' >/dev/null 2>&1; true'
 }
 
-# The window selector for an app id: Hyprland calls it the class.
-sel_of() { echo "class:^($1)\$"; }
+# The window selector for window_of's answer: class:^(id)$ or title:^(Name)$.
+sel_of() { echo "${1%%|*}:^(${1#*|})\$"; }
 
-# Is there a window with this app id on the seat right now?
+# Is there a window like that on the seat right now?
 on_screen() {
   phone "$PHONE_ENV"'
-    hyprctl clients -j 2>/dev/null' | grep -q "\"class\": \"$1\""
+    hyprctl clients -j 2>/dev/null' | grep -q "\"${1%%|*}\": \"${1#*|}\""
 }
 
 close_app() {
@@ -205,7 +217,8 @@ LAST_APPID=""
 
 step_shot() {
   local app="$1" appid bin out
-  appid=$(appid_of "$app") || die "no .desktop in apps/$app/data"
+  appid_of "$app" >/dev/null || die "no .desktop in apps/$app"
+  appid=$(window_of "$app")
   bin=$(pkg_of "$app")
   out="${OUT:-$ROOT/apps/$app/docs/screenshots/device}"
 
@@ -286,7 +299,7 @@ step_log() {
 
 step_remove() {
   local app="$1" appid
-  appid=$(appid_of "$app") || true
+  appid=$(window_of "$app") || true
   [[ -n ${appid:-} ]] && close_app "$appid"
   wait_for_pacman
   phone "sudo pacman -R --noconfirm $(pkg_of "$app") 2>/dev/null && echo '    removed $(pkg_of "$app")' || echo '    $(pkg_of "$app") was not installed'"

@@ -2,7 +2,7 @@
 # Fetch Omarchy's themes, so the palette work can be checked without a phone.
 #
 #   ./scripts/fetch-themes.sh /tmp/omarchy-themes
-#   THEME=/tmp/omarchy-themes/tokyo-night/colors.toml ./scripts/screenshot.sh
+#   SHOTS=... scripts/app-shot.sh <app>   # with THEME=/tmp/omarchy-themes/tokyo-night/colors.toml in a shot line
 #
 # Pinned to the commit mobileomarchy vendors, so what is checked is what the
 # phone will have.

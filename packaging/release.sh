@@ -1,15 +1,19 @@
 #!/bin/bash
 # Build one app's release tarball from a tag.
 #
-#   packaging/release.sh habits 0.1.0
+#   packaging/release.sh habits 0.2.0
 #
 # This is the piece that makes a monorepo work with per-app PKGBUILDs. The
 # tarball a PKGBUILD pins by checksum has to contain one app and the shared
 # code it uses, and nothing else -- so it is assembled from two subtrees of the
 # same tag rather than being the whole repo:
 #
-#   git archive <tag>:apps/<app>   -> moarchy_<app>/, data/, tests/, PKGBUILD
-#   git archive <tag>:shared       -> moarchy_ui/
+#   git archive <tag>:apps/<app>   -> the app: Panel.qml, bin/, tests/, ...
+#   git archive <tag>:shared/kit   -> kit/, in place of the app's kit link
+#
+# (A tag from before the Quickshell rewrites -- a GTK app's 0.1.x -- gets
+# shared/, the Python moarchy_ui, instead. That branch is kept so an old
+# version can still be rebuilt from its tag.)
 #
 # The result is self-contained: no submodule, no runtime dependency between
 # apps, and each app keeps its own version. `git archive` of a subtree at a tag

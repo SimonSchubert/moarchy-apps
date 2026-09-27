@@ -3,14 +3,12 @@
 
 A calendar with nothing in it is a grid of numbers, and every screen here --
 the dots under a date, the day's list, the agenda, the row being edited -- is
-only itself once something is on it. The GTK apps solve that with a `demo.py`
-that writes their store by hand and a harness that runs it before it
-photographs anything; this is that file for a plugin rather than an app, same
-idea and same place on the disk.
+only itself once something is on it. So this writes the app's file by hand,
+and scripts/app-shot.sh runs it before each photograph.
 
-    MOARCHY_CALENDAR_DIR=/tmp/c plugins/org.moarchy.calendar/demo.py
+    MOARCHY_CALENDAR_DIR=/tmp/c apps/calendar/dev/demo.py
     MOARCHY_CALENDAR_DIR=/tmp/c MOARCHY_CALENDAR_TODAY=2026-09-15 \\
-        plugins/org.moarchy.calendar/run-local.sh
+        quickshell -p apps/calendar/shell.qml
 
 Everything is dated from `MOARCHY_CALENDAR_TODAY`, the same variable the app
 reads its day from, so the two halves agree about what today is. Without it a

@@ -68,9 +68,9 @@ def sources(line: str) -> list[str]:
 def resolve(app: Path, path: str) -> bool:
     """Is there a file here, once the build directory has been assembled?
 
-    `package.sh` copies the app's own tree, `shared/moarchy_ui`, and LICENSE
-    from the repository root into one directory and builds there, so a source
-    can legitimately come from any of the three.
+    `package.sh` and `release.sh` put the app's own tree (with shared/kit in
+    place of its kit link) and LICENSE from the repository root into one
+    directory and build there, so a source can come from either.
     """
     for base in (app, ROOT / "shared", ROOT):
         if any(base.glob(path)):

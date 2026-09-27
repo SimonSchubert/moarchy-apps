@@ -1,8 +1,7 @@
 #!/usr/bin/python3
 """Check what a Quickshell app in apps/ claims about itself against the disk.
 
-manifest-lint.py is this for the plugins in plugins/. An app here makes its
-claims in five places, and every one of them has been wrong once somewhere:
+An app here makes its claims in five places, and every one of them has been wrong once somewhere:
 
 * `manifest.json` names Panel.qml as the panel the shell loads.
 * `kit` is the shared kit, linked in -- a copy would drift from the others.

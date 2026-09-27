@@ -27,7 +27,9 @@ cd "$(dirname "$0")/.."
 
 NAME="${1:?usage: app-shot.sh <app> [out]}"
 DIR="apps/$NAME"
-[[ -f $DIR/Panel.qml ]] || { echo "no such app: $NAME" >&2; exit 1; }
+# A path rather than a name: shared/kit-gallery, which is not an app.
+if [[ $NAME == */* ]]; then DIR=${NAME%/}; NAME=$(basename "$DIR"); fi
+[[ -f $DIR/shell.qml ]] || { echo "no such app: $NAME" >&2; exit 1; }
 OUT="${2:-.shots/$NAME}"
 UP=$(tr '[:lower:]-' '[:upper:]_' <<<"$NAME")
 for tool in quickshell sway grim jq; do

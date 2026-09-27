@@ -159,14 +159,6 @@ beside it. That keeps the whole of its network behaviour a sentence: one
 request per town being looked at, and one for where the phone is while that is
 the town, each at most four times an hour, while the window is on the screen.
 
-`scripts/qml-shot.sh` arrived with it, and closes something
-`plugins/org.moarchy.launches/README.md` had been carrying as a known gap:
-there was no screenshot harness for plugins, because `scripts/screenshot.sh`
-photographs an X server with `import` and a Quickshell app is a Wayland client.
-It runs the plugin under headless sway — the compositor the phone runs — and
-takes the picture with `grim`. Same division of labour as the GTK harness:
-*what* to photograph is `plugins/<id>/shots.sh`.
-
 Calendar is the third of these with no app behind it, and the first whose
 argument is a number. The gaps list has no calendar row because the store
 already has one: `gnome-calendar` is in `extra`, catalogued, *featured*, and
@@ -205,10 +197,7 @@ is the part worth reading: nothing a user process can do will wake a suspended
 phone — `WakeSystem=true` is root's and so is `rtcwake` — so an alarm that came
 due while the phone was off rings when it comes back and says *4 minutes late*,
 and past an hour does not ring at all and says it went by instead. Ringing at
-ten for a seven o'clock alarm is not a late alarm, it is a confusing one. It is
-also the first app here to need something back from the shared kit:
-`shared/qs_ui/Icon.qml` now takes a name that is already a path, because
-Adwaita has an alarm clock and has neither a stopwatch nor an hourglass.
+ten for a seven o'clock alarm is not a late alarm, it is a confusing one.
 
 Text Editor is the fifth, and the phone's editor rather than an app beside
 one: it replaces `gnome-text-editor` on the phone, both as what
@@ -234,34 +223,29 @@ it draws is HTML, so no message can make the phone fetch a picture, and its
 checks run the helper against a real Dovecot, installed into the container for
 the run, rather than against a fake of one.
 
-The two share everything that is not the rules — the board is one cairo drawing
-area in both, for the same argument about sixty-four widgets, and the clock on
-the opponent is the same clock. What they do not share is code: two hundred
-lines of near-identical widget would be a third place for the palette to live,
-and the thing this repo exists to stop is the palette living in four places. The
-shared half is `shared/moarchy_ui`, and it stays the half that is genuinely the
-same.
+## One shape, and where it lives
 
-## One look, and where it lives
+Every app here is the same kind of thing: a Quickshell `Item` that the Omarchy
+shell keeps loaded as a panel plugin, and that `shell.qml` runs as its own
+process anywhere the shell is not. Its launcher, `moarchy-<name>`, asks the
+shell first (`omarchy-shell shell summon`) and starts its own copy only when
+the shell does not have it -- so one package serves the phone, an Omarchy
+desktop and any other Quickshell desktop, and inside the shell opening an app
+is showing a window that is already there rather than starting a process.
 
-Every plugin here draws the same three shapes, and none of them decides what
-they are. Content is in a box; the only loose text on a screen is the label
-above one. A box is a *fill* one step up a five-step ramp, not a border. A box
-inside a box takes the outer radius less the gap between them, so the corners
-stay concentric. There are no dividers anywhere: a hairline between two rows is
-a gap somebody drew instead of leaving, it is the first thing a phone screen
-loses in sunlight, and it is what made eleven apps read as spreadsheets.
+What they share is [`shared/kit`](shared/kit): the window and the host API,
+the theme -- the shell's own while inside it, Omarchy's theme files outside
+it, a plain light or dark with neither -- and the two layouts every app
+chooses between by its width, never by the device: below 720 px tabs at the
+bottom and pages that stack, above it a rail and panes side by side. A colour
+written into a view is a view that ignores the theme, so `scripts/app-lint.py`
+fails one; colours live in each app's Tokens, as the theme's fallbacks.
+[`shared/kit-gallery`](shared/kit-gallery) draws every widget on one screen,
+so a change to the kit is looked at rather than argued about.
 
-Those rules are three functions and a dozen constants in `shared/qs_ui`
-(`Theme.surface`, `Theme.tint`, `Metrics.inner`, and the radius and spacing
-scales), the nine components built on them, and
-`plugins/org.moarchy.ui.catalog`, which draws the system itself on its Boxes
-tab so a change to it is looked at rather than argued about. The kit's README
-is the reference; this paragraph is the claim it keeps.
-
-It is one look and not a house style for its own sake: a phone where the file
-manager, the calendar and the notes app agree about what a row is, is a phone
-with one thing to learn instead of eleven.
+Each app still reads and writes the file its GTK version wrote under
+`~/.local/share/moarchy-<name>`, so an upgrade finds its notes, games and
+scores where they were.
 
 ## Why one repo
 
@@ -275,47 +259,48 @@ The usual objection to a monorepo is that it forces one version number across
 unrelated apps. It does not. `git archive` takes a **subtree at a tag**:
 
 ```sh
-git archive --prefix=moarchy-habits-0.1.0/ habits-v0.1.0:apps/habits
+git archive --prefix=moarchy-habits-0.2.0/ habits-v0.2.0:apps/habits
 ```
 
 So each app keeps its own tag, its own version, its own PKGBUILD and its own
 pacman package. `packaging/release.sh` assembles the release tarball from two
-subtrees of one tag — the app, and the shared code it uses — which makes each
+subtrees of one tag — the app, and the kit it links — which makes each
 tarball self-contained: no submodule, no runtime dependency between apps, and a
 checksum that still names exact code.
 
 ## Layout
 
 ```
-shared/moarchy_ui/     the half of "theme" that is the same in every app
-shared/qs_ui/          the same half in QML, vendored into each plugin as ui/
-apps/<name>/           one app: its package, data, tests, demo, shots, PKGBUILD
-plugins/<id>/          one shell plugin: manifest, QML, tests, shots, installer
-packaging/release.sh   tag -> per-app tarball + sha256
+apps/<name>/           one app: Panel.qml and its views, bin/ (the launcher),
+                       tests/, dev/ (demo fixture, shot list), PKGBUILD, README
+apps/<name>/kit        a link to shared/kit
+shared/kit/            what every app has in common, and its tests
+shared/kit-gallery/    every kit widget on one screen
+packaging/release.sh   tag -> per-app tarball (the kit resolved) + sha256
 packaging/repo-add.sh  built packages -> a signed [moarchy-apps] pacman repo
 packaging/publish-pages.sh    that repo -> the gh-pages branch it is served from
-scripts/check.sh       lint, tests, and a real run at 360x720
-scripts/screenshot.sh  the photo harness; apps/<name>/shots.sh says what to shoot
+scripts/check.sh       every check: ruff, the lints, the Python helper tests,
+                       and app-check.sh
+scripts/app-check.sh   per app: app-lint, qmllint, its tests, a real quickshell
+                       run that fails on any QML warning
+scripts/app-shot.sh    the photo harness, under headless sway at 360x720 and
+                       1280x820; apps/<name>/dev/shots says what to shoot
 scripts/package.sh     build one app's package from the working tree
-scripts/text-input-check.sh   does the app raise the on-screen keyboard?
-scripts/qml-check.sh   a plugin's check: qmllint, its tests, a real quickshell
-scripts/qml-shot.sh    a plugin's photo harness, under the compositor the phone
-                       runs; plugins/<id>/shots.sh says what to shoot
-docker/Dockerfile.dev  the GNOME stack the phone has and a Mac does not
-docker/Dockerfile.qml  the Qt and Quickshell stack, for the two above
+scripts/device.sh      install and photograph an app's package on the phone
+scripts/install-plugin.sh     put an app into the phone's shell as a plugin
+docker/Dockerfile.qml  the Qt and Quickshell stack, with the fonts the apps
+                       draw in
 docs/publishing.md     the three channels every app ships in, and what is
                        in which of them today
 ```
 
-Every harness takes the app as its first argument. The only thing that differs
-between photographing a notes app and a habit tracker is *which* screens, so
-that list -- and only that list -- lives in the app, as `shots.sh`.
+`queens` and `puzzle-games` are packaging for somebody else's Flutter apps and
+are none of the above: their PKGBUILDs build from upstream.
 
-Shared code is **vendored into each package at build time**, not shipped as its
+The kit is **vendored into each package at build time**, not shipped as its
 own pacman package. moarchy-store reports what an app costs in packages and
-megabytes onto a stock image, and a second package for two hundred lines of
-palette arithmetic is a cost with nothing behind it. One source copy here, many
-self-contained packages there.
+megabytes onto a stock image, and a second package for the kit is a cost with
+nothing behind it. One source copy here, many self-contained packages there.
 
 ## The part that is not writing the app
 
@@ -366,8 +351,8 @@ retires the "AUR only" verdict for `moarchy-keep` too.
 
 It does not retire the AUR. The argument above is about the channel the *store*
 installs from, and the AUR was never aimed at the phone — it is where an Arch
-user looks for a GTK4 app drawn at 360px, which is a shape they have no other
-source for. Both, then, for every app: one PKGBUILD per app pinning one release
+user looks for an app that works on a 360px phone and a desktop both, which is
+a shape they have no other source for. Both, then, for every app: one PKGBUILD per app pinning one release
 tarball by checksum, so the two channels install the same bytes from the same
 tag and cannot drift. [`docs/publishing.md`](docs/publishing.md) says which apps
 have actually reached which.
@@ -388,42 +373,40 @@ trusted, syncs the database and installs `moarchy-chess` with
 
 ## Working on it
 
-```sh
-scripts/check.sh            # every app
-scripts/check.sh habits     # one
-```
-
-ruff, then the storage tests, then a real run on a virtual screen that fails on
-any GTK warning. The last one is the one that matters: a layout error is not an
-exception — the app starts, the window appears, and one widget is the wrong size,
-with a single line on stderr as the only sign. It is also how the first cut of
-Habits was caught calling a method that had been attached to the wrong class.
-
-There is no GTK on a Mac, so the UI checks want the container:
+The checks want the Qt and Quickshell the phone has, which a Mac does not, so
+they run in the container:
 
 ```sh
-docker build --platform linux/arm64 -f docker/Dockerfile.dev -t moarchy-apps-dev .
-docker run --rm --platform linux/arm64 -v "$PWD:/src" -w /src moarchy-apps-dev scripts/check.sh
+docker build --platform linux/arm64 -f docker/Dockerfile.qml -t moarchy-qml .
+docker run --rm -v "$PWD:/src" -w /src moarchy-qml scripts/check.sh          # everything
+docker run --rm -v "$PWD:/src" -w /src moarchy-qml scripts/check.sh habits   # one app
+docker run --rm -v "$PWD:/src" -w /src moarchy-qml scripts/app-shot.sh habits
 ```
 
-It runs the Arch Linux ARM GNOME stack natively on Apple Silicon, with
-`GSK_RENDERER=cairo` — which is what a Mali-400 falls back to as well, so what
-is drawn there is what the phone draws.
+The real run is the one that matters: `quickshell -p shell.qml` exits 0 with a
+ReferenceError in a tap handler, and the only sign is a line on stderr. The
+photographs are the other half, at a phone's size and a desktop's, light and
+dark: a layout that is wrong is not an error anywhere, and has to be looked at.
+
+On the phone (`PHONE=omarchy@<address>`):
+
+```sh
+scripts/package.sh habits && scripts/device.sh all habits   # the package
+scripts/install-plugin.sh habits                            # into the shell
+```
 
 **The container is also the authority on lint.** It carries a newer ruff than a
-Mac's Homebrew usually does, the two disagree in both directions — rules that
-did not exist in the older one, and `# noqa` directives the newer one strips as
-unused — and `check.sh` lints `shared`, `apps` and `scripts` for *every* app it
-is asked about. So one file the container's ruff dislikes fails the checks for
-every app in the repository, including apps nobody has touched. Run the lint
-where the checks run, and prefer code that neither version has an opinion about
-to a directive that satisfies only one of them.
+Mac's Homebrew usually does, and the two disagree in both directions. Run the
+lint where the checks run.
 
 ## Adding an app
 
-1. `apps/<name>/` with `moarchy_<name>/`, `data/`, `tests/`, `demo.py`,
-   `launcher`, `PKGBUILD`, `README.md`.
-2. Import the palette from `moarchy_ui.theme`; keep only what is yours.
+1. `apps/<name>/` in the shape the others have: `Panel.qml` an `App` from the
+   kit, `shell.qml` three lines, `bin/moarchy-<name>`, `manifest.json`
+   (`kinds: ["panel"]`), the `.desktop`, `icon.svg`, `tests/`, `dev/demo.py`
+   and `dev/shots`, a `PKGBUILD` with `sha256sums=('SKIP')`, `README.md`, and
+   `ln -s ../../shared/kit kit`. `apps/tictactoe` is the smallest to copy.
+2. Both layouts: look at it at 360x720 and at 1280x820 before calling it done.
 3. `scripts/check.sh <name>` green, including the real run.
 4. Tag `<name>-v<version>`, `packaging/release.sh <name> <version>`, put the
    printed sha256 in the PKGBUILD, upload the tarball as the release asset.

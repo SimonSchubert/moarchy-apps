@@ -1,16 +1,14 @@
 #!/usr/bin/env python3
 """Where the phone is, three more places, and a week of weather for each.
 
-The plugins in this repository that talk to a network have the same problem
-when somebody wants to look at them: the screen is only interesting once an
-answer has arrived, and an answer that arrives is different every time it does.
-The GTK apps solve it with a `demo.py` that writes their store by hand, and the
-screenshot harness runs it before it photographs anything. This is that file
-for a plugin rather than an app -- same idea, same place on the disk.
+An app here that talks to a network has the same problem when somebody wants
+to look at it: the screen is only interesting once an answer has arrived, and
+an answer that arrives is different every time it does. So this writes the
+app's files by hand, and scripts/app-shot.sh runs it before each photograph.
 
-    MOARCHY_WEATHER_DIR=/tmp/w plugins/org.moarchy.weather/demo.py
+    MOARCHY_WEATHER_DIR=/tmp/w apps/weather/dev/demo.py
     MOARCHY_WEATHER_DIR=/tmp/w MOARCHY_WEATHER_OFFLINE=1 \\
-        plugins/org.moarchy.weather/run-local.sh
+        quickshell -p apps/weather/shell.qml
 
 Nothing here is random and nothing is fetched. The temperatures are a cosine
 with its peak at three in the afternoon, the codes are a fixed list per place,

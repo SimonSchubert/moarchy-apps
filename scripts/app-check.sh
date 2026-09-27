@@ -1,7 +1,6 @@
 #!/bin/bash
 # Everything that can be checked about a Quickshell app in apps/ without a
-# phone. qml-check.sh is this for the plugins in plugins/, which are on their
-# way here.
+# phone. scripts/check.sh runs it, after the repo-wide lints.
 #
 #   scripts/app-check.sh              -- every app with a Panel.qml, and the kit
 #   scripts/app-check.sh vitals       -- just that one
@@ -33,6 +32,24 @@ if ! command -v quickshell >/dev/null; then
 fi
 
 run env QT_QPA_PLATFORM=offscreen qmltestrunner -input shared/kit/tests
+
+# The gallery draws every widget in the kit, so a kit change that breaks one
+# fails here before it fails in an app that happens to use it.
+printf '\n==> the kit gallery\n'
+gwork=$(mktemp -d)
+cp -RL shared/kit-gallery "$gwork/g"
+if ! qmllint -W 0 --unqualified=info "$gwork"/g/*.qml "$gwork"/g/kit/*.qml >"$gwork/lint.log" 2>&1; then
+  grep -E '^(Warning|Error)' "$gwork/lint.log"; status=1
+fi
+env HOME="$gwork/home" MOARCHY_QUIT_AFTER=4 QT_QPA_PLATFORM=offscreen NO_COLOR=1 \
+  timeout 30 quickshell --no-color -p "$gwork/g/shell.qml" >"$gwork/run.log" 2>&1
+if grep -q 'Configuration Loaded' "$gwork/run.log" && ! grep -E '^\s*(WARN|ERROR|FATAL)\b' "$gwork/run.log" \
+    | grep -vqE 'qt\.qpa|MESA|libEGL|zink|wl_display|window masks|qt\.core\.qobject\.connect'; then
+  echo "clean"
+else
+  sed 's/^/    /' "$gwork/run.log" | tail -8; status=1
+fi
+rm -rf "$gwork"
 
 for name in "${names[@]}"; do
   dir="apps/$name"

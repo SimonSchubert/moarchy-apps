@@ -21,9 +21,9 @@ wrote — as the evidence for how that ends.
 
 That is an argument for the signed repo being the channel the **store** installs
 from. It was never an argument against the AUR, because the AUR is not aimed at
-the phone: it is aimed at everybody else. These are GTK4/libadwaita apps drawn
-for 360px, which is a shape a laptop user has no other source for, and the AUR is
-where an Arch user looks first. Publishing there costs one `git push` per release
+the phone: it is aimed at everybody else. These are Quickshell apps that lay
+out for a 360px phone and for a desktop window both, which is a shape a laptop
+user has no other source for, and the AUR is where an Arch user looks first. Publishing there costs one `git push` per release
 of files this repository already has to contain.
 
 So the rule is **both, for every app**, and the two cannot drift — which is what
@@ -122,75 +122,38 @@ last one is not ceremony: `makepkg` runs `check()` for every AUR user, so a test
 needing a display would break the install for all of them. They skip the widget
 tests and run the rest, 60 to 179 of them per app.
 
-## The QML plugins are a fourth shape, and only one half of them can be published
+## One shape: a package that is also a plugin
 
-`plugins/` holds apps that are not processes. A shell plugin is QML the running
-`omarchy-shell` loads and keeps loaded, so summoning Keep or Launches is
-`visible = true` on a window that already exists rather than four seconds of
-starting Python and GTK. That is the whole reason they exist, and it is also
-why none of the three channels above fits them without an argument.
+Every app here is now the same shape (see [`shared/kit`](../shared/kit)): a
+package that installs the QML tree to `/usr/share/moarchy-<app>` and a
+launcher, `/usr/bin/moarchy-<app>`, that asks the running Omarchy shell for the
+plugin first (`omarchy-shell shell summon <id>`) and otherwise starts the same
+tree as its own Quickshell process. So the three channels above publish every
+app, and every package runs on any Quickshell desktop -- the GTK apps and the
+phone-only plugins that came before were one shape each, and each reached half
+of the places the other did.
 
-What a plugin needs is not what a package can promise. Quickshell, a Wayland
-compositor with layer shell, the plugin host's `manifest.json` contract and the
-`shell` object it injects, and an id listed in `~/.config/omarchy/shell.json`
-before anything loads it. The last one is user configuration: a package can
-ship files, it cannot enable itself.
+`depends` is `quickshell` and the JetBrains Mono Nerd Font the kit's icons are
+drawn in, plus whatever an app's helper needs (Python for Mail's IMAP helper,
+GStreamer and zbar for Food's scanner). `qt6-declarative` is not named,
+because `quickshell` already depends on it, and **`quickshell` is not
+AUR-only**: it is `extra/quickshell`, `Architecture: aarch64`, and `pacman -Sp
+quickshell` resolves its whole closure out of the repositories. Each PKGBUILD's
+`check()` runs the app's tests under `qmltestrunner` offscreen, which needs no
+display, so it runs for every AUR user as it does here.
 
-**The scan roots are the check to do first, and on Omarchy Mobile they answer
-no.** Upstream's shell has two: `$OMARCHY_PATH/shell/plugins` for first-party
-plugins, which is where Mobile installs its own UI, and
-`~/.config/omarchy/plugins` for everything else (`shell/services/PluginRegistry.qml`).
-There is no system-wide root for a third-party plugin, so a package has nowhere
-to put one that the shell will find and the package will own. Mobile's own
-plugins avoid the question by being first-party; a plugin from this repo is not,
-and `install-on-device.sh` copies it into the home directory instead, which is
-a copy `pacman` knows nothing about.
-
-The enable step is a second problem behind the first: the id in
-`~/.config/omarchy/shell.json`. Writing that file from a package is not the
-answer — it is per-user, and a user copy masks the packaged defaults. Until
-both are solved the standalone entry point below covers it, so this is a
-question of how fast the app opens, not whether it runs.
-
-The standalone half is publishable, and as of 2026-09-15 it exists.
-`shared/qs_ui` no longer imports anything from the shell, so an app built on it
-runs under a plain Quickshell: `plugins/<id>/shell.qml` is the same app as its
-own process, and `run-local.sh` vendors the kit and starts it. Three couplings
-had to go, and each was replaced with something that still resolves to the
-shell's own answer on the phone rather than an approximation of it:
-
-- `Style.font.body` → `Metrics.shellBody()`, which compiles `import qs.Commons`
-  as a string once at startup. An unresolved QML import fails the whole file at
-  load time, so a string is the only way to make one optional. Inside the shell
-  it returns the shell's body size, and text scaling still reaches the app.
-- `qs.Ui.TextField` → a plain `TextInput`. Text reaches it without the shell:
-  `moarchy-keyboard` binds `zwp_input_method_v2` and Qt speaks text-input-v3
-  for whatever holds focus. Focus does not raise the keyboard, though, so the
-  kit's `Osk` asks `sm.puri.OSK0` on a press, and on another desktop that call
-  finds nobody and does nothing.
-- `Util.alpha` → `Theme.alpha`, the same `Qt.rgba` call.
-
-So a QML app can be an AUR package: the QML tree plus `shared/qs_ui` vendored
-into it at build time, `depends=('quickshell' 'qt6-5compat' 'adwaita-icon-theme')`,
-a `.desktop` whose `Exec` is `quickshell -p`. `qt6-5compat` is named because
-`Icon.qml` tints through `Qt5Compat.GraphicalEffects`, and `qt6-declarative` is
-not, because `quickshell` already depends on it — `namcap` runs on every publish
-and a redundant dependency is what it is for.
-
-**`quickshell` is not AUR-only, and that changes what the package is worth.**
-It is `extra/quickshell 0.3.1-1`, `Architecture: aarch64`, and `pacman -Sp
-quickshell` resolves the whole closure — qt6-base, qt6-declarative, qt6-svg,
-qt6-wayland and the rest — out of the repositories with no AUR helper anywhere
-in it. Measured in a clean Arch Linux ARM container rather than assumed, which
-is the only reason the sentence that used to sit here was wrong: it was true
-when quickshell was young, and it stopped being true without anything in this
-repo noticing.
-
-What is left of the honest caveat is smaller and still worth saying: an Arch
-user who wants a launch tracker is installing a shell toolkit to get one, and
-that is a real cost even when `pacman` pays it in one transaction. The
-portability is worth having regardless, because it is what stops the kit from
-quietly becoming a thing only our shell can run.
+**What a package cannot do is put the app into the shell.** Upstream's shell
+scans two roots: `$OMARCHY_PATH/shell/plugins` for first-party plugins, which
+is where Mobile installs its own UI, and `~/.config/omarchy/plugins` for
+everything else (`shell/services/PluginRegistry.qml`). There is no system-wide
+root for a third-party plugin, so a package has nowhere to put one that the
+shell will find and the package will own, and enabling it is an id in the
+per-user `~/.config/omarchy/shell.json`, which a package must not write. So
+the packaged app opens as its own process, and `scripts/install-plugin.sh`
+copies an app into the home directory and enables it for the phone that wants
+it in the shell -- a copy `pacman` knows nothing about, which is why it is a
+developer's script and not a channel. A system scan root upstream would make
+the package enough on its own.
 
 ## The gaps that are structural, not just unfinished rows
 
@@ -229,10 +192,10 @@ Nothing below is new machinery; it is the order the existing scripts have to run
 in, which is the part that was never written down.
 
 ```sh
-# 1. green first, in the container -- ruff, tests, a real run at 360x720,
-#    the icon lint and the PKGBUILD lint that catches an install path
-#    naming a file nobody has.
-scripts/check.sh <app>
+# 1. green first, in the container -- ruff, the icon and PKGBUILD lints,
+#    app-lint, qmllint, the tests, and a real run that fails on any QML
+#    warning. Then look at app-shot.sh's photographs, phone and desktop.
+docker run --rm -v "$PWD:/src" -w /src moarchy-qml scripts/check.sh <app>
 
 # 2. tag, then build the tarball from the tag
 git tag <app>-v<version> && git push origin <app>-v<version>

@@ -36,11 +36,9 @@ ROOT = Path(__file__).resolve().parent.parent
 
 
 def main() -> int:
-    # plugins/*/icon.svg goes through the same QtSvg drawer as the app icons,
-    # so the clipPath rule below applies to it harder, not less -- a plugin's
-    # icon is the only artwork it ships. It was unchecked until the QML ports
-    # arrived, because this glob named apps/ alone.
-    icons = sorted([*ROOT.glob("apps/*/data/*.svg"), *ROOT.glob("plugins/*/icon.svg")])
+    # Every app's icon.svg, and any other artwork an app draws with QtSvg:
+    # the clipPath rule below applies to all of it.
+    icons = sorted({*ROOT.glob("apps/*/*.svg"), *ROOT.glob("apps/*/data/*.svg")})
     if not icons:
         print("no app icons found", file=sys.stderr)
         return 1
