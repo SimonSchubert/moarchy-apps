@@ -44,6 +44,10 @@ Item {
   property string title: ""
   // Under the title: a count, a date, where the numbers came from.
   property string subtitle: ""
+  // What the header says when it is not the app's name: the town a weather
+  // app is showing, the folder a file manager is in. The window, the launcher
+  // and Settings keep `title`.
+  property string heading: ""
 
   // The app's own folder: where manifest.json and icon.svg are. The kit is
   // vendored into it as kit/, so its parent is the app.
@@ -718,6 +722,7 @@ Item {
 
   function headTitle() {
     if (inSettings) return "Settings"
+    if (heading !== "") return heading
     if (!hasRail && tab === homeTab) return title
     for (var i = 0; i < tabs.length; i++) if (tabs[i].key === tab) return tabbed ? tabs[i].label : title
     return title
