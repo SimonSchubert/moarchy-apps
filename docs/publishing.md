@@ -50,6 +50,7 @@ As of 2026-09-14, and this table is the thing to re-check rather than trust:
 | minesweeper | `moarchy-minesweeper` | 0.1.0 released; 0.2.0, the Quickshell rewrite, in the tree and not tagged | yes | yes | **yes** — 0.1.0, the GTK app |
 | weather | `moarchy-weather` | 0.2.0, the first package — until then a shell plugin copied by hand; in the tree and not tagged | no | no | no |
 | clock | `moarchy-clock` | 0.2.0, the first package (a shell plugin until now), in the tree and not tagged | no | no | no |
+| editor | `moarchy-editor` | 0.2.0, the first package (a shell plugin until now), in the tree and not tagged | no | no | no |
 | mill | `moarchy-mill` | 0.1.0 | yes | yes | **yes** |
 | fiveletters | `moarchy-fiveletters` | 0.1.0 | yes | yes | **yes** |
 | breakout | `moarchy-breakout` | 0.1.0 | yes | yes | **yes** |

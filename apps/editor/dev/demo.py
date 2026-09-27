@@ -7,11 +7,13 @@ file in monospace with its lines wrapped, the box that says why a file is read
 only -- are only themselves once there are files. So this writes five, under a
 home/ of its own inside the data directory, and the state.json that lists them.
 
-    MOARCHY_EDITOR_DIR=/tmp/e plugins/org.moarchy.editor/demo.py
+    MOARCHY_EDITOR_DIR=/tmp/e apps/editor/dev/demo.py
 
-The screenshots point MOARCHY_EDITOR_HOME at that home/, so a row reads
-~/Documents rather than the scratch directory's full path. Nothing here is
-written anywhere but the directory it is given.
+Run by hand, the files go under that directory's home/, and pointing
+MOARCHY_EDITOR_HOME there makes a row read ~/Documents. scripts/app-shot.sh
+runs each shot in a throwaway $HOME, so dev/shots sets
+MOARCHY_EDITOR_FIXTURE_HOME=1 and the files go straight into it -- the one
+case where this writes outside the directory it is given, and only when asked.
 
 The fourth file has a no-break space in it, pasted the way one arrives from a
 web page. It is the fixture for the read-only box, and it is a real case: a
@@ -95,7 +97,11 @@ def main() -> None:
     if os.environ.get("MOARCHY_EDITOR_EMPTY"):
         return
 
-    home = directory / "home"
+    home = (
+        Path.home()
+        if os.environ.get("MOARCHY_EDITOR_FIXTURE_HOME")
+        else Path(os.environ.get("MOARCHY_EDITOR_HOME") or directory / "home")
+    )
     now = time.time()
     recent = []
     for relative, age, text in FILES:

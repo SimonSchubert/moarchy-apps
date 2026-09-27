@@ -1,0 +1,145 @@
+#!/bin/bash
+# Open a file in Text Editor -- and, with --wait, be the editor.
+#
+#   moarchy-editor                  the editor, on whatever it last had open
+#   moarchy-editor notes.md         that file
+#   moarchy-editor --wait FILE      that file, and do not exit until it is closed
+#
+# Three places it can open, best first:
+#
+#  1. The running Omarchy shell, when it has the plugin: `shell summon` answers
+#     "ok". The editor is then QML the shell already holds, so opening a file is
+#     an IPC call that returns at once.
+#  2. A Text Editor already running on its own: `quickshell ipc` reaches it.
+#  3. Otherwise a new Quickshell process, with the file in MOARCHY_PAYLOAD.
+#
+# Returning at once is right for a tap in Files and wrong for $EDITOR. `git
+# commit` runs the editor, and reads the message back the moment the editor
+# exits; an editor that exits at once is a commit with the template for a
+# message, or with none. --wait is what makes this usable there.
+#
+# How it waits, in 1 and 2: it names a marker file in the payload and watches
+# for it. The editor touches the marker when that file is closed, replaced by
+# another, or the window goes away -- the moments a separate editor process
+# would have exited. The loop is a bash `read -t` against a descriptor that
+# never has anything on it, so waiting forks nothing and burns nothing. Every
+# twenty seconds it asks whether the editor is still holding the marker, and
+# stops when the answer is no; three unanswered asks in a row -- an editor
+# that is not there at all -- stop it too.
+#
+# In 3 the process is the editor, and waiting is waiting for it: closing a
+# file opened this way closes the window, and closing the window ends it.
+set -uo pipefail
+
+ID=org.moarchy.editor
+APPDIR=${MOARCHY_EDITOR_APPDIR:-/usr/share/moarchy-editor}
+wait=false
+
+usage() {
+  echo "usage: moarchy-editor [--wait] [FILE]" >&2
+  exit 2
+}
+
+while (($#)); do
+  case $1 in
+  --wait | -w) wait=true; shift ;;
+  --) shift; break ;;
+  -h | --help) usage ;;
+  -*) echo "moarchy-editor: unknown option $1" >&2; usage ;;
+  *) break ;;
+  esac
+done
+(($# <= 1)) || echo "moarchy-editor: one file at a time -- opening $1" >&2
+
+# JSON by hand, because the one thing in it that is not ours is a path and a
+# path needs three escapes. A control character in a file name is refused
+# rather than escaped: it is almost always a mistake, and never worth a
+# dependency on jq.
+json_string() {
+  local s=$1
+  if [[ $s == *[$'\001'-$'\037']* ]]; then
+    echo "moarchy-editor: that file name has a control character in it" >&2
+    exit 1
+  fi
+  s=${s//\\/\\\\}
+  s=${s//\"/\\\"}
+  printf '"%s"' "$s"
+}
+
+# Absolute, because the editor's working directory is not this one. -m because
+# a file that does not exist yet is a file to create, not an error.
+path=""
+(($#)) && { path=$(realpath -m -- "$1") || exit 1; }
+
+marker=""
+if [[ $wait == true && -n $path ]]; then
+  dir=${XDG_RUNTIME_DIR:-/tmp}
+  marker=$(mktemp -u "$dir/moarchy-editor-XXXXXXXX") || exit 1
+  trap 'rm -f -- "$marker"' EXIT
+fi
+
+payload="{}"
+if [[ -n $path ]]; then
+  payload="{\"path\":$(json_string "$path")"
+  [[ -n $marker ]] && payload+=",\"wait\":$(json_string "$marker")"
+  payload+="}"
+fi
+
+# Where the editor was reached, and how to ask it whether it is still holding
+# the marker: "shell" or "own".
+via=""
+
+if command -v omarchy-shell >/dev/null 2>&1 \
+  && [[ "$(omarchy-shell shell summon "$ID" "$payload" 2>/dev/null)" == ok ]]; then
+  via=shell
+fi
+
+own() { quickshell ipc -p "$APPDIR/shell.qml" call editor "$@" 2>/dev/null; }
+
+# Only a real answer counts: with nothing running, `quickshell ipc` has
+# something to say too.
+running=""
+command -v quickshell >/dev/null 2>&1 && running=$(own state)
+if [[ -z $via && ( $running == open || $running == closed ) ]]; then
+  if [[ -z $path ]]; then own show >/dev/null
+  elif [[ -n $marker ]]; then own openWait "$path" "$marker" >/dev/null
+  else own openFile "$path" >/dev/null
+  fi
+  via=own
+fi
+
+if [[ -z $via ]]; then
+  command -v quickshell >/dev/null 2>&1 || {
+    echo "moarchy-editor: neither omarchy-shell nor quickshell is here" >&2
+    exit 1
+  }
+  if [[ $wait == true ]]; then
+    # The process is the editor: it ends when the file is closed.
+    MOARCHY_PAYLOAD=$payload quickshell -n -p "$APPDIR/shell.qml" >/dev/null 2>&1
+    exit 0
+  fi
+  MOARCHY_PAYLOAD=$payload exec quickshell -n -d -p "$APPDIR/shell.qml" >/dev/null 2>&1
+fi
+
+[[ -n $marker ]] || exit 0
+
+# A descriptor with nothing ever on it, so `read -t` is a sleep with no fork.
+exec {idle}<> <(:)
+
+ticks=0
+silent=0
+until [[ -e $marker ]]; do
+  read -r -t 0.5 -u "$idle" _ 2>/dev/null
+  ((++ticks % 40)) && continue
+  if [[ $via == shell ]]; then
+    answer=$(omarchy-shell shell call "$ID" waiting "$marker" 2>/dev/null)
+  else
+    answer=$(own waiting "$marker")
+  fi
+  case $answer in
+  yes) silent=0 ;;
+  no) [[ -e $marker ]] || echo "moarchy-editor: the editor let go of $path without saying so" >&2; break ;;
+  *) ((++silent >= 3)) && { echo "moarchy-editor: the editor stopped answering" >&2; break; } ;;
+  esac
+done
+exit 0

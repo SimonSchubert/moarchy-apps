@@ -1,0 +1,17 @@
+# What to photograph, for scripts/app-shot.sh. dev/demo.py writes five files
+# into the shot's own $HOME and the list of them.
+F=MOARCHY_EDITOR_FIXTURE_HOME=1
+
+shot phone $F
+shot phone-file $F MOARCHY_EDITOR_OPEN=recent
+shot phone-light $F LOOK=light MOARCHY_EDITOR_OPEN=recent:1
+shot phone-menu $F MOARCHY_EDITOR_OPEN=recent MOARCHY_EDITOR_MENU=1
+shot phone-unsaved $F MOARCHY_EDITOR_OPEN=recent "MOARCHY_EDITOR_TYPE=- sun cream" MOARCHY_EDITOR_DIALOG=unsaved
+shot phone-saveas $F MOARCHY_EDITOR_OPEN=new MOARCHY_EDITOR_DIALOG=saveas
+shot phone-readonly $F MOARCHY_EDITOR_OPEN=recent:3
+shot phone-empty MOARCHY_EDITOR_EMPTY=1
+shot phone-tokyo $F THEME=.themes/tokyo-night/colors.toml MOARCHY_EDITOR_OPEN=recent
+shot desktop $F SIZE=1280x820 MOARCHY_EDITOR_OPEN=recent
+shot desktop-light $F SIZE=1280x820 LOOK=light MOARCHY_EDITOR_OPEN=recent:1
+shot desktop-list $F SIZE=1280x820
+shot desktop-latte $F SIZE=1280x820 THEME=.themes/catppuccin-latte/colors.toml MOARCHY_EDITOR_OPEN=recent:3

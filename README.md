@@ -34,7 +34,7 @@ the aarch64 repos, the AUR or Flathub. This is where they get written.
 | [calendar](apps/calendar) | The month, the day under it, and what is next — in Quickshell, for the desktop and the phone | v0.2.0, unreleased |
 | [clock](apps/clock) | An alarm that rings late and says so, a stopwatch and a timer — in Quickshell, for the desktop and the phone | v0.2.0, unreleased |
 | [files](apps/files) | One folder at a time: copy, move, rename, and a delete that goes to the trash every other app reads — in Quickshell, for the desktop and the phone | v0.2.0, unreleased |
-| [editor](plugins/org.moarchy.editor) | *Shell plugin only:* one text file at a time, and an `$EDITOR` that waits | v0.1.0 |
+| [editor](apps/editor) | One text file at a time, and an `$EDITOR` that waits — in Quickshell, for the desktop and the phone | v0.2.0, unreleased |
 | [mail](plugins/org.moarchy.mail) | *Shell plugin only:* one account over IMAP and SMTP, no HTML drawn, and new mail noticed with the window closed | v0.1.0 |
 
 Food is the Open Food Facts row on that list: barcode to nutrition, and Linux
@@ -215,8 +215,9 @@ one: it replaces `gnome-text-editor` on the phone, both as what
 opens when a text file is tapped and as `$EDITOR`. The second is the part a
 plugin is bad at, because opening a file in something the shell already holds
 returns at once, and `git commit` reads its message back the moment the editor
-returns. `bin/moarchy-editor --wait` is the process that stays: it hands the
-plugin a marker path, and the plugin touches it when the file is closed. Its
+returns. `moarchy-editor --wait` is the process that stays: it hands the
+editor a marker path, and the editor touches it when the file is closed; with
+no shell to hand it to, it runs the editor itself and waits for that. Its
 README also lists the characters it will not write back — Qt's text control was
 measured turning a no-break space into a space and U+2028 into a newline, so a
 file with one in it opens read only and says why, rather than being changed

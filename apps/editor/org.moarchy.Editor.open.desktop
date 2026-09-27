@@ -1,0 +1,14 @@
+# What xdg-open runs for a text file. Hidden from the app menu, because the
+# menu's entry opens the editor on its list and this one needs a file.
+# moarchy-editor opens it in the shell when the plugin is there, and on its own
+# when it is not.
+[Desktop Entry]
+Type=Application
+Name=Text Editor
+Comment=Open this file in Text Editor
+Exec=moarchy-editor %f
+Icon=org.moarchy.Editor
+Terminal=false
+NoDisplay=true
+StartupNotify=false
+MimeType=text/plain;text/markdown;text/x-csrc;text/x-chdr;text/x-c++src;text/x-c++hdr;text/x-shellscript;application/x-shellscript;application/json;text/x-python;text/x-log;text/csv;application/toml;application/yaml;application/x-yaml;
