@@ -18,7 +18,7 @@ depends=('quickshell' 'ttf-jetbrains-mono-nerd' 'hicolor-icon-theme')
 # A release asset that packaging/release.sh builds from apps/transit at the
 # tag, not GitHub's generated archive of the whole repository.
 source=("$url/releases/download/transit-v$pkgver/$pkgname-$pkgver.tar.gz")
-sha256sums=('SKIP')
+sha256sums=('951192739f751cff94fe7467d76aab16b1bd2c304878d4d847154461c0e319c9')
 
 package() {
   cd "$pkgname-$pkgver"
