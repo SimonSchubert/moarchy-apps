@@ -5,22 +5,27 @@ kept on their own page, and a countdown that is honest about how well the
 time is actually known.
 
 <p align="center">
-  <img src="docs/screenshots/upcoming.png" width="22%" alt="The Upcoming page: Vega-C Sentinel-3C in twelve minutes, a Hold on a Falcon 9, a successful O3b from this morning">
-  <img src="docs/screenshots/starred.png" width="22%" alt="The Starred page: Electron, Progress and a Falcon, in the order they were starred rather than by NET">
-  <img src="docs/screenshots/search.png" width="22%" alt="The search box open with falcon typed in it, leaving two Falcon 9 flights">
-  <img src="docs/screenshots/detail.png" width="22%" alt="Sentinel-3C: Go, T-00:12:00, Vega-C, Arianespace, Guiana, weather">
+  <img src="docs/screenshots/phone.png" width="22%" alt="The Upcoming page: Sentinel-3C on a Vega-C in twelve minutes, a Hold on a Falcon 9, a successful O3b from this morning">
+  <img src="docs/screenshots/phone-starred.png" width="22%" alt="The Starred page: Electron, Progress and a Falcon, in the order they were starred rather than by NET">
+  <img src="docs/screenshots/phone-search.png" width="22%" alt="The search box with falcon typed in it, leaving two Falcon 9 flights">
+  <img src="docs/screenshots/phone-detail.png" width="22%" alt="Sentinel-3C: Go, T-00:12:00, Vega-C, Arianespace, Guiana, the weather rule">
+</p>
+<p align="center">
+  <img src="docs/screenshots/desktop.png" width="92%" alt="The same app in a desktop window: the tabs in a rail, the list, and Sentinel-3C open in a pane beside it">
 </p>
 
-<p align="center"><em>360×720, the size of a PinePhone's screen under
-mobileomarchy. The colours are not the app's own — they are the active Omarchy
-theme's, and <code>omarchy-theme-set</code> repaints the list while it is on the
-screen. The times in these pictures are invented: the shots are taken offline
-against <code>demo.py</code>, which is the only reason two of them agree.</em></p>
+<p align="center"><em>360×720, and a desktop window. One app: below 720 px it
+lays out as a phone app with the tabs at the bottom and a launch as a page;
+wider, the tabs are a rail and a launch opens beside the list. The colours are
+the active Omarchy theme's, and a theme switch repaints the list while it is on
+the screen. The times are invented: the shots are taken offline against
+<code>dev/demo.py</code> at a frozen now, which is the only reason two of them
+agree.</em></p>
 
-Built for [mobileomarchy](https://github.com/SimonSchubert/mobileomarchy), but
-nothing in it is specific to that: it is a GTK4/libadwaita app that makes one
-HTTPS request, and it runs on Phosh, Plasma Mobile, postmarketOS or an ordinary
-desktop.
+A Quickshell app. Inside the Omarchy shell it is a panel the shell keeps
+loaded, so opening it is showing a window rather than starting a process; on
+any other Quickshell desktop `moarchy-launches` runs it as its own. 0.1.0 was a
+GTK4/libadwaita app, and the stars and the cache are its files, in its shapes.
 
 ## This one is not on the list
 
@@ -49,7 +54,8 @@ already there.
 
 ## What it does
 
-Two pages, and the switcher is along the bottom where a thumb already is.
+Two pages. On a phone the switcher is along the bottom, where a thumb
+already is; on a desktop it is the rail, and `1` and `2`.
 
 **Upcoming** — the next twenty launches by NET:
 
@@ -61,7 +67,8 @@ Two pages, and the switcher is along the bottom where a thumb already is.
 - search by mission, vehicle, agency or pad, from the front — so `falcon`
   finds Falcon 9 rather than putting Surface Electric Fields above it
 - a tap opens the same launch: window, orbit, probability, weather, hold,
-  description. No second request, and no map
+  description. No second request, and no map. On a desktop it opens in a
+  pane beside the list, and the list keeps its place
 
 **Starred** — the same rows, for the launches you tapped a star on:
 
@@ -76,7 +83,7 @@ Two pages, and the switcher is along the bottom where a thumb already is.
 ## Where the numbers come from
 
 [Launch Library 2](https://thespacedevs.com/llapi) by The Space Devs, one
-`GET` of `/2.2.0/launch/upcoming/?limit=20` on a thread. That is the whole
+`GET` of `/2.2.0/launch/upcoming/?limit=20`, through `curl`. That is the whole
 of the network in this app, and every fact on screen comes out of that one
 answer.
 
@@ -96,10 +103,10 @@ answer.
   fails keeps the list, says `Not updating · 4 min ago` in the header, and
   backs off. The only screen that says nothing is the one that has never
   had anything to say.
-- **The clock stops when the window leaves the screen.** An app that keeps
-  pulling the pad after the phone is in a pocket is a battery bug and a
-  data bill wearing a feature's clothes, and on a phone the app is not
-  closed, it is hidden.
+- **The clock stops when the window closes.** The shell keeps the app
+  loaded, and an app that keeps pulling the pad after the phone is in a
+  pocket is a battery bug and a data bill wearing a feature's clothes.
+  Nothing ticks and nothing is asked while the window is shut.
 - **It opens on launches.** The last answer is cached, so a launch on a
   train with no signal shows the pad as of whenever it last had one, with
   its age in the header rather than a spinner.
@@ -129,11 +136,9 @@ A Go inside an hour is drawn in that green on the countdown too; a Go that
 has passed T-0 without flipping to Success is drawn in the red, as `T+`.
 TBD and TBC are the theme's yellow and a date.
 
-Nothing in this app is drawn with cairo. No rocket, no map, no patch, so
-every figure on screen is a label — which means it scales with the phone's
-font size, ellipsizes when a name is too long, and is read out by a screen
-reader. That is also why the package does not depend on `python-cairo` the
-way Vitals does.
+Nothing in this app is a picture. No rocket, no map, no patch, so every
+figure on screen is text — which means it takes the theme's font, elides when
+a name is too long, and is read out by a screen reader.
 
 ## What is deliberately not in it
 
@@ -153,37 +158,38 @@ way Vitals does.
 ## Working on it
 
 ```sh
-scripts/check.sh launches               # ruff, the tests, and a real run at 360x720
-scripts/screenshot.sh launches          # the pictures above
+quickshell -p apps/launches/shell.qml          # this machine, live
 
-# Does the search box raise the phone's keyboard? The probe has to be told how
-# to open something typable, and in this app that is the search bar:
-PROBE_ENV=MOARCHY_LAUNCHES_SEARCH= scripts/text-input-check.sh launches
+docker run --rm -v "$PWD:/src" -w /src moarchy-qml scripts/app-check.sh launches
+docker run --rm -v "$PWD:/src" -w /src moarchy-qml scripts/app-shot.sh launches
 ```
 
-No test here opens a socket, and neither does a check run. `launches.py` and
-`store.py` import no GTK at all, so parsing somebody else's JSON and formatting
-a countdown are tested on any machine with a Python; the window is handed a
-source object rather than making one, so the UI tests hand it a stand-in; and
-`demo.py` writes a cache seconds old, which is why the real run has nothing to
-fetch.
+`app-check.sh` is qmllint, the tests and a real run that fails on any QML
+warning; `app-shot.sh` photographs `dev/shots` at a phone's size and a
+desktop's. No test opens a socket, and neither does a check run.
+`Launches.js` and `Store.js` hold no QML, so parsing somebody else's JSON,
+reading what curl said about it, and formatting a countdown are tested against
+a fixture (`tests/`, the cases 0.1.0's Python tests had).
+
+On a desktop: `/` searches, the arrows and Enter move through the list and
+open a launch, `s` stars it, `r` refreshes, `1` and `2` switch pages.
 
 | variable | what it does |
 |---|---|
 | `MOARCHY_LAUNCHES_DIR` | where the stars and the cached launches live |
 | `MOARCHY_LAUNCHES_KEY` | a Launch Library token, sent as `Authorization: Token …` |
 | `MOARCHY_LAUNCHES_OFFLINE` | never touch the network; show what is cached |
-| `MOARCHY_LAUNCHES_NOW` | freeze 'now' so a countdown does not move |
+| `MOARCHY_LAUNCHES_NOW` | freeze 'now' (an ISO time, or epoch seconds) so a countdown does not move |
 | `MOARCHY_LAUNCHES_PAGE` | open on `upcoming`, `favourites` or `detail` |
-| `MOARCHY_LAUNCHES_OPEN` | which cached launch the detail page opens |
-| `MOARCHY_LAUNCHES_SEARCH` | open with the search box up, and this in it |
-| `MOARCHY_LAUNCHES_QUIT_AFTER` | quit after N seconds, for the headless checks |
+| `MOARCHY_LAUNCHES_OPEN` | which cached launch to open |
+| `MOARCHY_LAUNCHES_SEARCH` | open with this in the search box |
+| `MOARCHY_QUIT_AFTER` | quit after N seconds, for headless runs |
 
 ## Where to get it
 
-Not published yet. The package builds with `scripts/package.sh launches` and
-installs on a phone with `scripts/device.sh install launches`. AUR,
-`[moarchy-apps]` and the store catalogue wait.
+Not published yet. 0.1.0, the GTK app, never was; 0.2.0 is this, in the tree
+and not tagged. The AUR, `[moarchy-apps]` and the store catalogue wait for the
+tag.
 
 ## Licence
 

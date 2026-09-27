@@ -1,0 +1,15 @@
+# What to photograph, for scripts/app-shot.sh. Every shot is offline and at a
+# frozen now, the one dev/demo.py wrote its pad around, so the countdown in the
+# pictures is T-00:12:00 every time and no socket is opened.
+OFF=MOARCHY_LAUNCHES_OFFLINE=1
+NOW=MOARCHY_LAUNCHES_NOW=2026-09-14T18:00:00Z
+
+shot phone $OFF $NOW
+shot phone-light LOOK=light $OFF $NOW
+shot phone-starred $OFF $NOW MOARCHY_LAUNCHES_PAGE=favourites
+shot phone-search $OFF $NOW MOARCHY_LAUNCHES_SEARCH=falcon
+shot phone-detail $OFF $NOW MOARCHY_LAUNCHES_OPEN=vega-sentinel
+shot desktop SIZE=1280x820 $OFF $NOW MOARCHY_LAUNCHES_OPEN=vega-sentinel
+shot desktop-light SIZE=1280x820 LOOK=light $OFF $NOW MOARCHY_LAUNCHES_OPEN=falcon-ussf
+shot desktop-latte SIZE=1280x820 THEME=.themes/catppuccin-latte/colors.toml $OFF $NOW MOARCHY_LAUNCHES_PAGE=favourites
+shot desktop-tokyo SIZE=1280x820 THEME=.themes/tokyo-night/colors.toml $OFF $NOW

@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "id": "org.moarchy.launches",
+  "name": "Launches",
+  "version": "0.2.0",
+  "author": "Simon Schubert",
+  "license": "MIT",
+  "description": "The next twenty rocket launches from Launch Library 2, with countdowns that know how well the time is known, and the ones you star. Asks only while the window is open. Desktop and phone layouts.",
+  "homepage": "https://github.com/SimonSchubert/moarchy-apps/tree/main/apps/launches",
+  "repository": "https://github.com/SimonSchubert/moarchy-apps",
+  "keywords": ["launch", "rocket", "countdown", "space", "spacex", "nasa", "launch library"],
+  "icon": "icon.svg",
+  "kinds": ["panel"],
+  "keepLoaded": true,
+  "entryPoints": {
+    "panel": "Panel.qml"
+  }
+}
