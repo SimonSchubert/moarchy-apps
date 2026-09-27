@@ -1,6 +1,5 @@
 import QtQuick
 import Quickshell
-import qs.Commons
 import "Api.mjs" as Api
 import "Glyphs.js" as G
 
@@ -20,6 +19,8 @@ Item {
   property var shell: null
   property var manifest: null
   property bool opened: false
+  // True when shell.qml runs it as its own process, with no Omarchy shell.
+  property bool standalone: false
 
   // ------------------------------------------------------------ tokens
 
@@ -31,13 +32,17 @@ Item {
   // Text on a filled accent button: dark on a light accent, white otherwise.
   readonly property color onAccent: luminance(ui.accent) > 0.6 ? "#111111" : "#ffffff"
 
+  // Omarchy's theme inside its shell, a plain one under any other Quickshell.
+  HostTheme { id: theme }
+  Component.onCompleted: theme.probe(root)
+
   readonly property QtObject ui: QtObject {
-    readonly property bool dark: root.luminance(Color.menu.background) < 0.5
-    readonly property color bg: Color.menu.background
-    readonly property color text: Color.menu.text
-    readonly property color muted: Color.muted
-    readonly property color accent: Color.accent
-    readonly property color border: Color.menu.border
+    readonly property bool dark: root.luminance(theme.background) < 0.5
+    readonly property color bg: theme.background
+    readonly property color text: theme.text
+    readonly property color muted: theme.muted
+    readonly property color accent: theme.accent
+    readonly property color border: theme.border
     readonly property color surface: Qt.tint(bg, root.alpha(text, dark ? 0.06 : 0.04))
     readonly property color surfaceHigh: Qt.tint(bg, root.alpha(text, dark ? 0.12 : 0.08))
     // No hover on a touch screen: a finger leaves the last card it lifted
@@ -51,8 +56,8 @@ Item {
     readonly property color heart: "#ed2224"
     readonly property color star: "#f5b82e"
     readonly property color warn: "#f59e0b"
-    readonly property string font: Style.font.family
-    readonly property int radius: Math.max(6, Math.min(10, Style.cornerRadius))
+    readonly property string font: theme.fontFamily
+    readonly property int radius: Math.max(6, Math.min(10, theme.cornerRadius))
     readonly property int target: root.compact ? 44 : 38
     readonly property int chip: root.compact ? 34 : 32
     readonly property QtObject fs: QtObject {

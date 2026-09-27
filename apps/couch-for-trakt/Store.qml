@@ -74,6 +74,14 @@ Item {
 
   function clearSnapshot() { saveSnapshot({}) }
 
+  // A change still waiting out saveTimer is written now. For the standalone
+  // app, which ends its process when the window closes.
+  function flush() {
+    if (!saveTimer.running) return
+    saveTimer.stop()
+    saveTimer.triggered()
+  }
+
   Timer {
     id: saveTimer
     interval: 400

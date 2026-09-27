@@ -305,7 +305,7 @@ Item {
 
       // On a phone the shell keeps this entry itself, in its app drawer.
       SettingsSection {
-        visible: !root.app.compact
+        visible: !root.app.compact && root.app.launcher.active
         app: root.app
         width: body.width
         title: "App launcher"

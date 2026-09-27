@@ -1,14 +1,14 @@
 # Couch for Trakt
 
-A movie and TV tracker for Omarchy, built on [Trakt](https://trakt.tv): what
+A movie and TV tracker for Quickshell desktops, built on [Trakt](https://trakt.tv): what
 everyone is watching, what airs next, and your own watchlist and progress, in
 an app window that lays itself out for the desktop and for the phone.
 
 Couch is an independent app. It is not affiliated with or endorsed by Trakt.
 
-![Couch for Trakt on the desktop](preview.png)
+![Couch for Trakt on the desktop](docs/screenshots/desktop.png)
 
-<img src="preview-phone.png" alt="Couch for Trakt on a phone" width="300">
+<img src="docs/screenshots/phone.png" alt="Couch for Trakt on a phone" width="300">
 
 ## What it does
 
@@ -45,24 +45,22 @@ offline, with the lists it saw last. It fetches lists only while it is open.
 
 ## Install
 
+On Arch Linux or Arch Linux ARM, with a Wayland desktop, from the AUR:
+
 ```sh
-omarchy plugin add https://github.com/SimonSchubert/omarchy-couch.git --enable
+yay -S couch-for-trakt      # or any AUR helper
 ```
 
-To open it, bind a key in `~/.config/hypr/bindings.lua`:
+That installs Quickshell too if it is not there yet, and gives you a
+`couch-for-trakt` command and an app menu entry. The app opens in a window of
+its own; closing the window ends it. Under Omarchy it takes the Omarchy theme
+when its shell has the plugin installed, and opens inside that shell.
 
-```lua
-o.bind("SUPER + SHIFT + T", "Couch for Trakt", "omarchy-shell shell toggle io.github.simonschubert.couch")
+To open it with a key on Hyprland:
+
 ```
-
-Or run `omarchy-shell shell toggle io.github.simonschubert.couch` from
-anywhere.
-
-The first time it loads, Couch also adds itself to Omarchy's app menu, so you
-can search for it by name. It does this once, and only if no entry by that
-name exists yet. **Settings → App launcher** hides or shows the entry.
-
-On Omarchy Mobile it appears in the app drawer as its own app.
+bind = SUPER SHIFT, T, exec, couch-for-trakt
+```
 
 ## Signing in
 
@@ -78,35 +76,30 @@ on this computer.
 ## Remove
 
 ```sh
-omarchy plugin remove io.github.simonschubert.couch
+sudo pacman -Rns couch-for-trakt
 ```
 
-That removes the plugin itself. Some files stay behind:
-
-- your settings and your sign-in, in `~/.local/state/couch/`
-- the saved lists and pictures, in `~/.cache/couch/`
-- the app menu entry, in `~/.local/share/applications/`
-
-To remove those as well:
+Your settings and your sign-in stay in `~/.local/state/couch/`, and the saved
+lists and pictures in `~/.cache/couch/`. To remove those as well:
 
 ```sh
 rm -rf ~/.local/state/couch ~/.cache/couch
-rm -f ~/.local/share/applications/omarchy-plugin-io.github.simonschubert.couch.desktop
 ```
 
-If you added a keybinding, remove it from `~/.config/hypr/bindings.lua`.
+Signing out in Settings first also revokes the token with Trakt.
 
 ## Requirements
 
-Omarchy with its Quickshell shell, and network access to `api.trakt.tv` and
-Trakt's image host `media.trakt.tv`. The plugin installs no packages and
-changes no Omarchy configuration. It reads and writes only its own files,
-listed below.
+Quickshell (the package depends on it, along with the JetBrains Mono Nerd Font
+the icons are drawn in), and network access to `api.trakt.tv` and Trakt's
+image host `media.trakt.tv`. Omarchy is optional: without it the app runs as
+its own Quickshell window, in a plain light or dark palette that follows the
+desktop's preference. It reads and writes only its own files, listed below.
 
 ## Keys (desktop)
 
 Couch opens as a normal window, so Hyprland tiles, focuses and closes it like
-any other app. The keybinding above toggles it.
+any other app.
 
 | Key | Action |
 | --- | --- |
@@ -144,14 +137,12 @@ into **Settings → Trakt app**.
   - `~/.local/state/couch/prefs.json`: settings and the Trakt access and
     refresh tokens
   - `~/.cache/couch/`: the last lists, for opening offline, and the pictures
-  - `~/.local/share/applications/omarchy-plugin-io.github.simonschubert.couch.desktop`:
-    its app menu entry, created once and never over an existing file
 - **Your data.** Tokens are sent only to Trakt. Descriptions are shown as
   plain text. Links open in your browser, and only `https:` links are opened.
 
 ## Credits
 
 Movie and show data and images from [Trakt](https://trakt.tv), used through
-the Trakt API. Couch is not affiliated with or endorsed by Trakt.
+the Trakt API. Couch is not affiliated with or endorsed by Trakt, Omarchy or Quickshell.
 
 MIT licensed.

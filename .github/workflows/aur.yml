@@ -19,10 +19,11 @@ name: AUR
 # Puzzle#168 are still open. A new app of ours is published the day it is added;
 # a new one of theirs is not published by accident.
 #
-# crypto-market is the one of ours without the prefix. It is not a moarchy app:
-# it is a Quickshell app for any Arch desktop, and its name says what it is
-# rather than whose phone it was written on. It is named here, one by one,
-# so the rule for everything else stays the prefix.
+# crypto-market and couch-for-trakt are the ones of ours without the prefix.
+# They are not moarchy apps: they are Quickshell apps for any Arch desktop, and
+# their names say what they are rather than whose phone they were written on.
+# They are named here, one by one, so the rule for everything else stays the
+# prefix.
 #
 # WHAT RUNS. Only the apps whose PKGBUILD or .SRCINFO the push touched, so an
 # unrelated commit does not clone fourteen AUR repositories to push nothing.
@@ -66,7 +67,7 @@ jobs:
             app=${dir%/}; app=${app#apps/}
             [ -f "apps/$app/PKGBUILD" ] && [ -f "apps/$app/.SRCINFO" ] || continue
             base=$(awk -F' = ' '/^pkgbase = /{print $2; exit}' "apps/$app/.SRCINFO")
-            case "$base" in moarchy-*|crypto-market) publishable+=("$app") ;; esac
+            case "$base" in moarchy-*|crypto-market|couch-for-trakt) publishable+=("$app") ;; esac
           done
 
           selected=()
@@ -108,7 +109,7 @@ jobs:
           # saying out loud rather than skipping in silence.
           for app in "${selected[@]}"; do
             printf '%s\n' "${publishable[@]}" | grep -qx "$app" || {
-              echo "::error::$app is not publishable to the AUR (no PKGBUILD/.SRCINFO, or its pkgbase is not moarchy-* or crypto-market)"
+              echo "::error::$app is not publishable to the AUR (no PKGBUILD/.SRCINFO, or its pkgbase is neither moarchy-* nor named above)"
               exit 1; }
           done
 
