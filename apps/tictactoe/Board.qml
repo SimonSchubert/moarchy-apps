@@ -37,7 +37,7 @@ Item {
         y: root.side * 0.04
         width: root.rule
         height: root.side * 0.92
-        radius: width / 2
+        radius: root.app.ui.round(width)
         color: root.pencil
       }
     }
@@ -49,7 +49,7 @@ Item {
         x: root.side * 0.04
         height: root.rule
         width: root.side * 0.92
-        radius: height / 2
+        radius: root.app.ui.round(height)
         color: root.pencil
       }
     }
@@ -115,7 +115,7 @@ Item {
                 anchors.centerIn: parent
                 width: parent.width * 1.28
                 height: Math.max(3, parent.width * 0.18)
-                radius: height / 2
+                radius: root.app.ui.round(height)
                 color: root.app.ui.cross
                 rotation: modelData
               }
@@ -160,7 +160,7 @@ Item {
 
       width: length
       height: Math.max(4, root.square * 0.07)
-      radius: height / 2
+      radius: root.app.ui.round(height)
       x: (a.x + b.x) / 2 - width / 2
       y: (a.y + b.y) / 2 - height / 2
       rotation: Math.atan2(dy, dx) * 180 / Math.PI

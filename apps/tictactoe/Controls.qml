@@ -24,7 +24,7 @@ Column {
     color: controls.app.over ? controls.app.ui.accent : controls.app.ui.text
     font.family: controls.app.ui.font
     font.pixelSize: controls.app.ui.fs.lg
-    font.weight: Font.DemiBold
+    font.weight: Font.Bold
   }
   // The two buttons trade places: exactly one of them is ever the obvious
   // tap, which on a board where a game lasts fifteen seconds is what stops

@@ -28,10 +28,10 @@ Column {
         required property var modelData
         width: (root.width - 16) / 3
         height: 72
-        radius: root.app.ui.radius + 2
+        radius: root.app.ui.radius
         color: root.app.ui.surface
         border.width: 1
-        border.color: root.app.ui.divider
+        border.color: root.app.ui.line
         Column {
           anchors.centerIn: parent
           spacing: 2
@@ -50,6 +50,8 @@ Column {
             color: root.app.ui.muted
             font.family: root.app.ui.font
             font.pixelSize: root.app.ui.fs.xs
+            font.capitalization: Font.AllUppercase
+            font.letterSpacing: root.app.ui.tracking
           }
         }
       }
@@ -77,7 +79,7 @@ Column {
             color: root.app.ui.text
             font.family: root.app.ui.font
             font.pixelSize: root.app.ui.fs.md
-            font.weight: Font.DemiBold
+            font.weight: Font.Bold
           }
           Text {
             width: parent.width

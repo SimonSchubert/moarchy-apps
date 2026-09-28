@@ -308,7 +308,7 @@ App {
       color: root.ui.text
       font.family: root.ui.font
       font.pixelSize: root.ui.fs.md
-      font.weight: Font.DemiBold
+      font.weight: Font.Bold
     }
     Flow {
       width: parent.width
@@ -322,7 +322,7 @@ App {
       color: root.ui.text
       font.family: root.ui.font
       font.pixelSize: root.ui.fs.md
-      font.weight: Font.DemiBold
+      font.weight: Font.Bold
     }
     Flow {
       visible: newGame.mode === S.SOLO
@@ -353,7 +353,7 @@ App {
       color: root.ui.text
       font.family: root.ui.font
       font.pixelSize: root.ui.fs.md
-      font.weight: Font.DemiBold
+      font.weight: Font.Bold
     }
     Flow {
       width: parent.width
