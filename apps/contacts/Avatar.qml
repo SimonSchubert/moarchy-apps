@@ -14,7 +14,8 @@ Rectangle {
 
   width: size
   height: size
-  radius: size / 2
+  // A square tile, as Omarchy draws an app's icon.
+  radius: app.ui.radius
   color: app.alpha(hue, 0.18)
 
   Text {
@@ -23,6 +24,6 @@ Rectangle {
     color: root.hue
     font.family: root.app.ui.font
     font.pixelSize: Math.round(root.size * 0.42)
-    font.weight: Font.DemiBold
+    font.weight: Font.Bold
   }
 }

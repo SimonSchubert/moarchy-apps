@@ -20,7 +20,7 @@ Rectangle {
   radius: app.ui.radius
   color: selected ? app.ui.selected : mouse.pressed ? app.ui.pressed : mouse.containsMouse ? app.ui.hover : "transparent"
   border.width: current && !selected ? 1 : 0
-  border.color: app.ui.border
+  border.color: app.ui.line
   Accessible.role: Accessible.ListItem
   Accessible.name: name
 
@@ -46,7 +46,7 @@ Rectangle {
       color: root.app.ui.text
       font.family: root.app.ui.font
       font.pixelSize: root.app.ui.fs.md
-      font.weight: root.selected ? Font.DemiBold : Font.Normal
+      font.weight: root.selected ? Font.Bold : Font.Normal
       elide: Text.ElideRight
     }
     Text {

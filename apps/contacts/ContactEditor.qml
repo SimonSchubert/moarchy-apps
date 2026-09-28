@@ -80,8 +80,10 @@ Item {
       text: root.isNew ? "New contact" : "Contact"
       color: root.app.ui.muted
       font.family: root.app.ui.font
-      font.pixelSize: root.app.ui.fs.sm
-      font.weight: Font.DemiBold
+      font.pixelSize: root.app.ui.fs.xs
+      font.weight: Font.Bold
+      font.capitalization: Font.AllUppercase
+      font.letterSpacing: root.app.ui.tracking
     }
     Row {
       anchors.right: parent.right
@@ -188,8 +190,10 @@ Item {
           text: "Note"
           color: root.app.ui.text
           font.family: root.app.ui.font
-          font.pixelSize: root.app.ui.fs.md
-          font.weight: Font.DemiBold
+          font.pixelSize: root.app.ui.fs.xs
+          font.weight: Font.Bold
+          font.capitalization: Font.AllUppercase
+          font.letterSpacing: root.app.ui.tracking
         }
         TextArea {
           id: noteArea

@@ -88,7 +88,7 @@ Item {
           color: root.app.ui.accent
           font.family: root.app.ui.font
           font.pixelSize: root.app.ui.fs.sm
-          font.weight: Font.DemiBold
+          font.weight: Font.Bold
         }
       }
       Component {
