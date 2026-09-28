@@ -1,8 +1,8 @@
 name: AUR
 
-# Every app here ships to the AUR and to [market-apps], the repo the Omarchy
-# Mobile Market installs from -- docs/publishing.md says why both, and which
-# app has reached which. This file is the AUR half of that, for every app.
+# Every app here ships to the AUR, which is also what Omarchy Mobile's App
+# Finder installs from -- docs/publishing.md says how, and which app has
+# reached which. This file publishes it, for every app.
 #
 # It used to be one workflow for one app, "because publishing to the AUR is not
 # a thing to generalise on spec", with the matrix left to whoever wrote the third

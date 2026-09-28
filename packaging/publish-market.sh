@@ -1,6 +1,7 @@
 #!/bin/bash
-# Put built packages into [market-apps], the repo the Omarchy Mobile Market
-# installs from -- after the phone's PIN, through its market-pacman helper.
+# Put built packages into [market-apps], the prebuilt repo the Omarchy Mobile
+# Market installs from -- after the phone's PIN, through its market-pacman
+# helper. App Finder does not use it: it installs from the AUR.
 #
 #   scripts/package.sh habits                         # packages/moarchy-habits-*.pkg.tar.xz
 #   packaging/publish-market.sh packages/moarchy-habits-0.2.0-1-any.pkg.tar.xz
@@ -14,10 +15,10 @@
 # older version of that one package and its file, signs, and refuses to push
 # if anything but our own packages and the database would change.
 #
-# An app the Market should show, and not only offer, also needs an entry in
-# mobile-market-data's aur/recommended.json: App Finder lists the test run's
-# apps and the recommended ones, and a package the repo merely carries is
-# installable by name and found by nobody.
+# The Market lists only its test run's apps (aur/apps.json), so ours here are
+# installable by name and listed nowhere; they are kept in step because the
+# database is shared, and omarchy-market-test's publish.sh keeps the versions
+# mobile-market-data's aur/recommended.json names.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 

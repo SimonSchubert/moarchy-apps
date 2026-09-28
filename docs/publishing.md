@@ -1,74 +1,70 @@
 # Publishing
 
-Every app in this repository ships in **two** places, and a third decides
-whether a phone's user ever sees it:
+Every app in this repository ships to the AUR, and that is how a phone gets it
+too:
 
 | where | who it is for | what carries it |
 |---|---|---|
-| **the AUR** | anyone on Arch or Arch Linux ARM, on a desktop or a phone | `apps/<app>/PKGBUILD` + `.SRCINFO`, pushed by `.github/workflows/aur.yml` |
-| **`[market-apps]`** | Omarchy Mobile: the signed repo its Market installs from, after the phone's PIN | `scripts/package.sh` → `packaging/publish-market.sh` → this repo's `gh-pages` branch |
+| **the AUR** | anyone on Arch or Arch Linux ARM -- and Omarchy Mobile, whose App Finder installs from it | `apps/<app>/PKGBUILD` + `.SRCINFO`, pushed by `.github/workflows/aur.yml` |
 | **App Finder's recommendations** | the phone's user, who finds apps in App Finder rather than by name | an entry in [mobile-market-data](https://github.com/SimonSchubert/mobile-market-data)'s `aur/recommended.json`, with three screens and an icon |
+| **`[market-apps]`** | the Omarchy Mobile Market's prebuilt repo -- a copy, not the way in | `scripts/package.sh` → `packaging/publish-market.sh` → this repo's `gh-pages` branch |
 
-## Why two channels
+## How a phone gets an app
 
-The AUR is where an Arch user looks, and it is somebody else's server: it
-carries source, a PKGBUILD pinning a release tarball, and every user builds.
-A phone should not compile anything, and the Market's installer will only run
-`pacman -S` against its own signed repo -- `libexec/market-pacman` in
-omarchy-mobile-market refuses any package `[market-apps]` does not offer. So a
-phone gets the binary package from `[market-apps]`, installed through App
-Finder with the phone's PIN (polkit's `auth_admin_keep`, answered by the
-shell's own PIN pad), and nothing to configure: the Market's package adds the
-repo to `pacman.conf` and trusts its key.
+App Finder is the phone's way in. It lists the recommended apps first, with
+their screens turning in a carousel, then the AUR apps the market test run
+tried on a phone-sized screen, and installs any of them from the AUR: `yay`
+builds the package on the phone, and its root steps go through `pkexec` --
+the phone's PIN, answered by the shell's own PIN pad (`auth_admin_keep`, so
+once per install). Nothing to configure, no repo or key to add. So an app of
+ours reaches phones by being on the AUR at the version `recommended.json`
+names, and is seen by being in that file.
 
-The two cannot drift. There is one PKGBUILD per app, it pins a release tarball
-by sha256, the AUR gets that file verbatim, and `scripts/package.sh` builds the
-binary package from the same tree -- the same bytes, from the same tag.
+There is one PKGBUILD per app. It pins a release tarball by sha256, the AUR
+gets it verbatim, and whatever builds it -- an Arch desktop, a phone through
+App Finder -- builds the same bytes from the same tag.
 
-`[market-apps]` is shared: omarchy-mobile-market's test run publishes the AUR
-apps it built and tested into the same database, from
-`omarchy-market-test/aur/publish.sh`. That script rebuilds the database from
-scratch and keeps the packages `recommended.json` names, from this repo's
-`packages/`; `packaging/publish-market.sh` adds ours to the database as it is
-and refuses to push a change to anything that is not ours.
-
-A package in `[market-apps]` that App Finder does not list is installable by
-name and found by nobody. App Finder lists the test run's apps and the
-recommended ones, first, with their screens turning in a carousel; an app of
-ours becomes visible by getting an entry there.
+`[market-apps]` is the other store on the phone: the Omarchy Mobile Market
+(omarchy-mobile-market) installs prebuilt AUR apps from it with its
+`market-pacman` helper, also behind the PIN. It lists only the apps its test
+run built (`aur/apps.json`), so our packages there are installable by name and
+listed nowhere; they are kept in step anyway, with `publish-market.sh`, because
+the database is shared -- `omarchy-market-test/aur/publish.sh` rebuilds it from
+scratch and keeps the packages `recommended.json` names -- and a stale copy of
+ours is worse than none.
 
 ## What is where today
 
 As of 2026-09-28, and this table is the thing to re-check rather than trust:
 
-| app | package | version | AUR | `[market-apps]` | App Finder |
+| app | package | version | AUR | App Finder | `[market-apps]` |
 |---|---|---|---|---|---|
-| vitals | `moarchy-vitals` | 0.2.1 | yes | yes | recommended |
-| tictactoe | `moarchy-tictactoe` | 0.2.0 | yes | yes | recommended |
-| minesweeper | `moarchy-minesweeper` | 0.2.0 | yes | yes | recommended |
-| reversi | `moarchy-reversi` | 0.2.0 | yes | yes | recommended |
-| chess | `moarchy-chess` | 0.2.0 | yes | yes | recommended |
-| mill | `moarchy-mill` | 0.2.0 | yes | yes | recommended |
-| solitaire | `moarchy-solitaire` | 0.2.0 | yes | yes | recommended |
-| pegsolitaire | `moarchy-pegsolitaire` | 0.2.0 | yes | yes | recommended |
-| fiveletters | `moarchy-fiveletters` | 0.2.0 | yes | yes | recommended |
-| breakout | `moarchy-breakout` | 0.2.0 | yes | yes | recommended |
-| keep | `moarchy-keep` | 0.2.0 | yes | yes | not listed |
-| habits | `moarchy-habits` | 0.2.0 | yes | yes | not listed |
-| launches | `moarchy-launches` | 0.2.0 | yes | yes | not listed |
-| food | `moarchy-food` | 0.2.0 | yes | yes | not listed |
-| calculator | `moarchy-calculator` | 0.2.0 | yes | yes | not listed |
-| weather | `moarchy-weather` | 0.2.0 | yes | yes | not listed |
-| clock | `moarchy-clock` | 0.2.0 | yes | yes | not listed |
-| calendar | `moarchy-calendar` | 0.2.0 | yes | yes | not listed |
-| contacts | `moarchy-contacts` | 0.2.0 | yes | yes | not listed |
-| files | `moarchy-files` | 0.2.0 | yes | yes | not listed |
-| editor | `moarchy-editor` | 0.2.0 | yes | yes | not listed |
-| mail | `moarchy-mail` | 0.2.0 | yes | yes | not listed |
-| crypto-market | `crypto-market` | 1.1.1 | yes | no | recommended, not installable yet |
-| couch-for-trakt | `couch-for-trakt` | 1.1.0 | yes | no | recommended, not installable yet |
-| transit | `transit` | 1.1.0 | yes | no | recommended, not installable yet |
-| airwaves | `airwaves` | 1.0.0 | yes | no | recommended, not installable yet |
+| vitals | `moarchy-vitals` | 0.2.1 | yes | recommended | yes |
+| tictactoe | `moarchy-tictactoe` | 0.2.0 | yes | recommended | yes |
+| minesweeper | `moarchy-minesweeper` | 0.2.0 | yes | recommended | yes |
+| reversi | `moarchy-reversi` | 0.2.0 | yes | recommended | yes |
+| chess | `moarchy-chess` | 0.2.0 | yes | recommended | yes |
+| mill | `moarchy-mill` | 0.2.0 | yes | recommended | yes |
+| solitaire | `moarchy-solitaire` | 0.2.0 | yes | recommended | yes |
+| pegsolitaire | `moarchy-pegsolitaire` | 0.2.0 | yes | recommended | yes |
+| fiveletters | `moarchy-fiveletters` | 0.2.0 | yes | recommended | yes |
+| breakout | `moarchy-breakout` | 0.2.0 | yes | recommended | yes |
+| keep | `moarchy-keep` | 0.2.0 | yes | recommended | yes |
+| habits | `moarchy-habits` | 0.2.0 | yes | recommended | yes |
+| launches | `moarchy-launches` | 0.2.0 | yes | recommended | yes |
+| food | `moarchy-food` | 0.2.0 | yes | recommended | yes |
+| calculator | `moarchy-calculator` | 0.2.0 | yes | recommended | yes |
+| weather | `moarchy-weather` | 0.2.0 | yes | recommended | yes |
+| clock | `moarchy-clock` | 0.2.0 | yes | recommended | yes |
+| calendar | `moarchy-calendar` | 0.2.0 | yes | recommended | yes |
+| contacts | `moarchy-contacts` | 0.2.0 | yes | recommended | yes |
+| files | `moarchy-files` | 0.2.0 | yes | recommended | yes |
+| editor | `moarchy-editor` | 0.2.0 | yes | recommended | yes |
+| mail | `moarchy-mail` | 0.2.0 | yes | recommended | yes |
+| crypto-market | `crypto-market` | 1.1.1 | yes | recommended | no |
+| couch-for-trakt | `couch-for-trakt` | 1.1.0 | yes | recommended | no |
+| transit | `transit` | 1.1.0 | yes | recommended | no |
+| airwaves | `airwaves` | 1.0.0 | yes | recommended | no |
 | queens | `queens` | 1.0.8 | no -- upstream's name to claim | no | no |
 | puzzle-games | `puzzle-games` | 1.1.4 | no -- upstream's name to claim | no | no |
 
@@ -124,14 +120,14 @@ $EDITOR apps/<app>/PKGBUILD                 # sha256sums
 #    then the push. A new package base is created by its first push.
 git commit -am "Pin <app> <version> to its release asset, with its .SRCINFO" && git push
 
-# 6. the phone
+# 6. the Market's copy
 scripts/package.sh <app>                    # -> packages/moarchy-<app>-<version>-1-any.pkg.tar.xz
 packaging/publish-market.sh packages/moarchy-<app>-<version>-1-any.pkg.tar.xz
 ```
 
 Then, for an app App Finder should show: a new or updated entry in
 mobile-market-data's `aur/recommended.json` -- the same fields as an
-`aur/apps.json` entry, the version `[market-apps]` now carries, three screens
+`aur/apps.json` entry, the version now on the AUR, three screens
 at 540 px (`app-shot.sh` with `SIZE=540x1044 SCALE=1.5`, as WebP named by
 content hash) and a 144 px icon. Phones fetch it at most hourly.
 
@@ -143,9 +139,9 @@ A few things that fail late rather than loudly:
 - **A stale `.SRCINFO`** advertises the wrong dependencies to every AUR helper
   while the PKGBUILD quietly builds something else. `aur.yml` fails on it, which
   is also why a push of PKGBUILDs at `sha256sums=('SKIP')` publishes nothing.
-- **The version in `recommended.json`** has to be the one `[market-apps]`
-  carries: `omarchy-market-test/aur/publish.sh` keeps exactly that package, and
-  App Finder offers exactly that.
+- **The version in `recommended.json`** is the one App Finder shows, and the
+  one `omarchy-market-test/aur/publish.sh` keeps in `[market-apps]`: bump it
+  with the release.
 - **`[market-apps]`'s database is shared.** Never rebuild it from `packages/`
   with `repo-add --new`: that deletes the AUR apps. `publish-market.sh` refuses
   to push a diff that touches them.
@@ -157,5 +153,5 @@ For each app, in this order:
 - [ ] `scripts/check.sh <app>` green, the photographs looked at
 - [ ] tag pushed, `packaging/release.sh`, asset uploaded, checksum pinned
 - [ ] `.SRCINFO` regenerated, committed, pushed -- `aur.yml` green
+- [ ] `recommended.json` entry, screens and icon, at the new version
 - [ ] `scripts/package.sh`, `packaging/publish-market.sh`
-- [ ] `recommended.json` entry, screens and icon, if App Finder should show it

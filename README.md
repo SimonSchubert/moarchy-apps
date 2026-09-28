@@ -277,8 +277,8 @@ apps/<name>/kit        a link to shared/kit
 shared/kit/            what every app has in common, and its tests
 shared/kit-gallery/    every kit widget on one screen
 packaging/release.sh   tag -> per-app tarball (the kit resolved) + sha256
-packaging/publish-market.sh   built packages -> [market-apps], the signed repo
-                       the Omarchy Mobile Market installs from (gh-pages)
+packaging/publish-market.sh   built packages -> [market-apps], the Omarchy
+                       Mobile Market's prebuilt repo (gh-pages)
 scripts/check.sh       every check: ruff, the lints, the Python helper tests,
                        and app-check.sh
 scripts/app-check.sh   per app: app-lint, qmllint, its tests, a real quickshell
@@ -303,23 +303,22 @@ download and keep in step on every phone, with nothing behind it. One source cop
 
 ## The part that is not writing the app
 
-An app nobody can install is a hobby. Every app here ships in two places, and
-[`docs/publishing.md`](docs/publishing.md) is the table of which has reached
-which:
+An app nobody can install is a hobby. Every app here is on the **AUR** -- one
+PKGBUILD per app, pinning a release tarball by checksum, pushed by
+`.github/workflows/aur.yml` whenever an app's PKGBUILD changes -- and that is
+how a phone gets it as well: Omarchy Mobile's **App Finder** installs from the
+AUR, building with `yay` and asking for the phone's PIN for the root steps.
+Nothing to add to `pacman.conf`, no key to trust by hand.
 
-- **The AUR**, for anyone on Arch or Arch Linux ARM: one PKGBUILD per app,
-  pinning a release tarball by checksum, pushed by `.github/workflows/aur.yml`
-  whenever an app's PKGBUILD changes.
-- **`[market-apps]`**, for Omarchy Mobile: the signed repo the phone's Market
-  installs from. On the phone, an app is found in App Finder and installed
-  with the phone's PIN -- nothing to add to `pacman.conf`, no key to trust by
-  hand; the Market's own package does both. The binary packages are built
-  from the same tree as the AUR's tarballs, so both install the same bytes.
-
-What App Finder shows is a third, smaller thing: the recommended apps at the
-top of it, with their screens turning in a carousel, are an entry each in
+What App Finder shows first is its recommended apps, with their screens
+turning in a carousel: an entry each in
 [mobile-market-data](https://github.com/SimonSchubert/mobile-market-data)'s
-`aur/recommended.json`. The games and Vitals are there today.
+`aur/recommended.json`. All 22 apps here are in it.
+
+The phone's other store, the Omarchy Mobile Market, installs prebuilt packages
+from its own signed repo, `[market-apps]`, on this repo's `gh-pages`; ours are
+kept there too, with `packaging/publish-market.sh`.
+[`docs/publishing.md`](docs/publishing.md) has the table and the commands.
 
 ## Working on it
 
@@ -361,11 +360,11 @@ lint where the checks run.
 4. Tag `<name>-v<version>`, `packaging/release.sh <name> <version>`, put the
    printed sha256 in the PKGBUILD, upload the tarball as the release asset.
 5. Commit the pinned PKGBUILD and a regenerated `.SRCINFO`, and push:
-   `aur.yml` publishes it to the AUR.
-6. `scripts/package.sh <name>`, then `packaging/publish-market.sh` with the
-   package, for the phone.
-7. For App Finder to show it: an entry in mobile-market-data's
+   `aur.yml` publishes it to the AUR, which is what App Finder installs from.
+6. For App Finder to show it: an entry in mobile-market-data's
    `aur/recommended.json`, with three screens and an icon.
+7. `scripts/package.sh <name>`, then `packaging/publish-market.sh`, to keep the
+   Market's `[market-apps]` copy in step.
 
 [`docs/publishing.md`](docs/publishing.md) holds the table of which app has
 reached which channel, the exact commands, and what fails late.

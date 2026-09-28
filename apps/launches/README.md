@@ -187,16 +187,12 @@ open a launch, `s` stars it, `r` refreshes, `1` and `2` switch pages.
 
 ## Where to get it
 
-On Omarchy Mobile it is in `[market-apps]`, the signed repo the Market installs
-from with the phone's PIN -- but App Finder does not list it yet: it shows the
-recommended apps, and Launches is not one of them (`docs/publishing.md`). On any
-other Arch or Arch Linux ARM machine, from the AUR:
+On Omarchy Mobile: open App Finder, pick Launches and enter the phone's PIN --
+it installs from the AUR. On any other Arch or Arch Linux ARM machine:
 
 ```sh
 paru -S moarchy-launches
 ```
-
-`docs/publishing.md` says which channel has which version.
 
 ## Licence
 
