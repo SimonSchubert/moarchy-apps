@@ -22,7 +22,7 @@ optdepends=('mpv: the mpv button, for a video in its own window')
 # tag, with shared/kit in place of the kit link.
 source=("$url/releases/download/video-library-v$pkgver/$pkgname-$pkgver.tar.gz")
 # Pinned in the commit after the tag, as every app's here is.
-sha256sums=('SKIP')
+sha256sums=('9aced91b9086f431d6609f6ebb37869f67ea97667e9230c704c867acd6bb4138')
 
 check() {
   cd "$pkgname-$pkgver"
