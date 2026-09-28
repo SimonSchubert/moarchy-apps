@@ -35,32 +35,32 @@ not is `.SRCINFO`, and that is generated from the PKGBUILD rather than written.
 
 ## What is where today
 
-As of 2026-09-14, and this table is the thing to re-check rather than trust:
+As of 2026-09-28, and this table is the thing to re-check rather than trust:
 
 | app | package | version | AUR | `[moarchy-apps]` | catalogue |
 |---|---|---|---|---|---|
-| keep | `moarchy-keep` | 0.1.1 released; 0.2.0, the Quickshell rewrite, in the tree and not tagged | yes | yes | no — still `deferred` in `verdicts.toml` |
-| habits | `moarchy-habits` | 0.1.2 released; 0.2.0, the Quickshell rewrite, in the tree and not tagged | yes | yes | no |
-| vitals | `moarchy-vitals` | 0.2.0, the Quickshell rewrite; 0.2.1, on the kit, not tagged | yes | 0.1.0 still — the GTK app | **yes**, tested on `pinephone-a64` — 0.1.0, the GTK app |
-| chess | `moarchy-chess` | 0.1.0 released; 0.2.0, the Quickshell rewrite, in the tree and not tagged | yes | yes | **yes** — 0.1.0, the GTK app |
-| reversi | `moarchy-reversi` | 0.1.0 released; 0.2.0, the Quickshell rewrite, in the tree and not tagged | yes | yes | **yes** — 0.1.0, the GTK app |
-| tictactoe | `moarchy-tictactoe` | 0.1.0 released; 0.2.0, the Quickshell rewrite, in the tree and not tagged | yes | yes | **yes** — 0.1.0, the GTK app |
-| solitaire | `moarchy-solitaire` | 0.1.0 released; 0.2.0, the Quickshell rewrite, in the tree and not tagged | yes | yes | **yes** — 0.1.0, the GTK app |
-| pegsolitaire | `moarchy-pegsolitaire` | 0.1.0 released; 0.2.0, the Quickshell rewrite, in the tree and not tagged | yes | yes | **yes** — 0.1.0, the GTK app |
-| minesweeper | `moarchy-minesweeper` | 0.1.0 released; 0.2.0, the Quickshell rewrite, in the tree and not tagged | yes | yes | **yes** — 0.1.0, the GTK app |
-| weather | `moarchy-weather` | 0.2.0, the first package — until then a shell plugin copied by hand; in the tree and not tagged | no | no | no |
-| clock | `moarchy-clock` | 0.2.0, the first package (a shell plugin until now), in the tree and not tagged | no | no | no |
-| editor | `moarchy-editor` | 0.2.0, the first package (a shell plugin until now), in the tree and not tagged | no | no | no |
-| mill | `moarchy-mill` | 0.1.0 released; 0.2.0, the Quickshell rewrite, in the tree and not tagged | yes | yes | **yes** — 0.1.0, the GTK app |
-| fiveletters | `moarchy-fiveletters` | 0.1.0 released; 0.2.0, the Quickshell rewrite, in the tree and not tagged | yes | yes | **yes** — 0.1.0, the GTK app |
-| breakout | `moarchy-breakout` | 0.1.0 released; 0.2.0, the Quickshell rewrite, in the tree and not tagged | yes | yes | **yes** — 0.1.0, the GTK app |
-| launches | `moarchy-launches` | 0.2.0, the Quickshell rewrite, in the tree and not tagged; 0.1.0 was never released | no | no | no |
-| food | `moarchy-food` | 0.2.0, the Quickshell rewrite, in the tree and not tagged; 0.1.0 was never released | no | no | no |
-| files | `moarchy-files` | 0.2.0, its first package — 0.1.0 was a shell plugin only — in the tree and not tagged | no | no | no |
-| calculator | `moarchy-calculator` | 0.2.0, its first package — 0.1.0 was a shell plugin only — in the tree and not tagged | no | no | no |
-| contacts | `moarchy-contacts` | 0.2.0, its first package — 0.1.0 was a shell plugin only — in the tree and not tagged | no | no | no |
-| calendar | `moarchy-calendar` | 0.2.0, its first package — 0.1.0 was a shell plugin only — in the tree and not tagged | no | no | no |
-| mail | `moarchy-mail` | 0.2.0, its first package — 0.1.0 was a shell plugin only — in the tree and not tagged | no | no | no |
+| keep | `moarchy-keep` | 0.2.0, the Quickshell app | yes | yes, and in `[market-apps]` | moarchy-store's, retired with moarchy; App Finder's recommendations are the listing now |
+| habits | `moarchy-habits` | 0.2.0, the Quickshell app | yes | yes, and in `[market-apps]` | moarchy-store's, retired with moarchy; App Finder's recommendations are the listing now |
+| vitals | `moarchy-vitals` | 0.2.1, the Quickshell app | yes | yes, and in `[market-apps]` | moarchy-store's, retired with moarchy; App Finder's recommendations are the listing now |
+| chess | `moarchy-chess` | 0.2.0, the Quickshell app | yes | yes, and in `[market-apps]` | moarchy-store's, retired with moarchy; App Finder's recommendations are the listing now |
+| reversi | `moarchy-reversi` | 0.2.0, the Quickshell app | yes | yes, and in `[market-apps]` | moarchy-store's, retired with moarchy; App Finder's recommendations are the listing now |
+| tictactoe | `moarchy-tictactoe` | 0.2.0, the Quickshell app | yes | yes, and in `[market-apps]` | moarchy-store's, retired with moarchy; App Finder's recommendations are the listing now |
+| solitaire | `moarchy-solitaire` | 0.2.0, the Quickshell app | yes | yes, and in `[market-apps]` | moarchy-store's, retired with moarchy; App Finder's recommendations are the listing now |
+| pegsolitaire | `moarchy-pegsolitaire` | 0.2.0, the Quickshell app | yes | yes, and in `[market-apps]` | moarchy-store's, retired with moarchy; App Finder's recommendations are the listing now |
+| minesweeper | `moarchy-minesweeper` | 0.2.0, the Quickshell app | yes | yes, and in `[market-apps]` | moarchy-store's, retired with moarchy; App Finder's recommendations are the listing now |
+| weather | `moarchy-weather` | 0.2.0, the Quickshell app | yes | yes, and in `[market-apps]` | moarchy-store's, retired with moarchy; App Finder's recommendations are the listing now |
+| clock | `moarchy-clock` | 0.2.0, the Quickshell app | yes | yes, and in `[market-apps]` | moarchy-store's, retired with moarchy; App Finder's recommendations are the listing now |
+| editor | `moarchy-editor` | 0.2.0, the Quickshell app | yes | yes, and in `[market-apps]` | moarchy-store's, retired with moarchy; App Finder's recommendations are the listing now |
+| mill | `moarchy-mill` | 0.2.0, the Quickshell app | yes | yes, and in `[market-apps]` | moarchy-store's, retired with moarchy; App Finder's recommendations are the listing now |
+| fiveletters | `moarchy-fiveletters` | 0.2.0, the Quickshell app | yes | yes, and in `[market-apps]` | moarchy-store's, retired with moarchy; App Finder's recommendations are the listing now |
+| breakout | `moarchy-breakout` | 0.2.0, the Quickshell app | yes | yes, and in `[market-apps]` | moarchy-store's, retired with moarchy; App Finder's recommendations are the listing now |
+| launches | `moarchy-launches` | 0.2.0, the Quickshell app | yes | yes, and in `[market-apps]` | moarchy-store's, retired with moarchy; App Finder's recommendations are the listing now |
+| food | `moarchy-food` | 0.2.0, the Quickshell app | yes | yes, and in `[market-apps]` | moarchy-store's, retired with moarchy; App Finder's recommendations are the listing now |
+| files | `moarchy-files` | 0.2.0, the Quickshell app | yes | yes, and in `[market-apps]` | moarchy-store's, retired with moarchy; App Finder's recommendations are the listing now |
+| calculator | `moarchy-calculator` | 0.2.0, the Quickshell app | yes | yes, and in `[market-apps]` | moarchy-store's, retired with moarchy; App Finder's recommendations are the listing now |
+| contacts | `moarchy-contacts` | 0.2.0, the Quickshell app | yes | yes, and in `[market-apps]` | moarchy-store's, retired with moarchy; App Finder's recommendations are the listing now |
+| calendar | `moarchy-calendar` | 0.2.0, the Quickshell app | yes | yes, and in `[market-apps]` | moarchy-store's, retired with moarchy; App Finder's recommendations are the listing now |
+| mail | `moarchy-mail` | 0.2.0, the Quickshell app | yes | yes, and in `[market-apps]` | moarchy-store's, retired with moarchy; App Finder's recommendations are the listing now |
 | queens | `queens` | 1.0.8 | no — upstream's name to claim | no — it was in moarchy's `[moarchy]` | **yes** |
 | puzzle-games | `puzzle-games` | 1.1.4 | no — upstream's name to claim | no — it was in moarchy's `[moarchy]` | **yes** |
 | coins | `moarchy-coins` | 0.1.1 | to be deleted | to be dropped | to be dropped — replaced by `crypto-market`, see below |
