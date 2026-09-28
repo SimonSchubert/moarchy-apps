@@ -20,7 +20,7 @@ depends=('quickshell' 'curl' 'ttf-jetbrains-mono-nerd' 'hicolor-icon-theme')
 # whose compression has moved under pinned checksums before.
 source=("$url/releases/download/trivia-v$pkgver/$pkgname-$pkgver.tar.gz")
 # Pinned in the commit after the tag, as every app's here is.
-sha256sums=('SKIP')
+sha256sums=('34315009582a5e3506f10d7e3a2a730237ac161fa55a53d9f138bfa47647095c')
 
 check() {
   cd "$pkgname-$pkgver"

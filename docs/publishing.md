@@ -67,7 +67,7 @@ As of 2026-09-28, and this table is the thing to re-check rather than trust:
 | transit | `transit` | 1.2.0 | yes | recommended | no |
 | airwaves | `airwaves` | 1.1.0 | yes | recommended | no |
 | atlas | `moarchy-atlas` | 0.1.0 | yes | recommended | yes |
-| trivia | `moarchy-trivia` | 0.1.0 | no -- not released yet | no | no |
+| trivia | `moarchy-trivia` | 0.1.0 | yes | recommended | yes |
 | queens | `queens` | 1.0.8 | no -- upstream's name to claim | no | no |
 | puzzle-games | `puzzle-games` | 1.1.4 | no -- upstream's name to claim | no | no |
 
