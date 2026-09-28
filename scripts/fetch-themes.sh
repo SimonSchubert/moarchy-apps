@@ -4,17 +4,18 @@
 #   ./scripts/fetch-themes.sh /tmp/omarchy-themes
 #   SHOTS=... scripts/app-shot.sh <app>   # with THEME=/tmp/omarchy-themes/tokyo-night/colors.toml in a shot line
 #
-# Pinned to the commit mobileomarchy vendors, so what is checked is what the
-# phone will have.
+# Pinned to the Omarchy the phone ships (omarchy-mobile's manifest.toml, v4.0.4),
+# so what is checked is what the phone will have: every theme it offers.
 set -uo pipefail
 
 DEST="${1:-/tmp/omarchy-themes}"
-PIN="${OMARCHY_PIN:-346e69e1cec6c4e8924531874af6ba010a1bc99e}"
-BASE="https://raw.githubusercontent.com/basecamp/omarchy/$PIN/themes"
+PIN="${OMARCHY_PIN:-c668141e9c42b13c80c9ca4ea108e11708c5e8a5}"
+BASE="https://raw.githubusercontent.com/omacom/omarchy/$PIN/themes"
 
 THEMES=(
-  catppuccin catppuccin-latte everforest gruvbox kanagawa matte-black nord
-  osaka-jade rose-pine tokyo-night
+  catppuccin catppuccin-latte ethereal everforest flexoki-light gruvbox
+  hackerman kanagawa last-horizon lumon lupine matte-black miasma nord
+  osaka-jade retro-82 ristretto rose-pine solitude tokyo-night vantablack white
 )
 
 mkdir -p "$DEST"

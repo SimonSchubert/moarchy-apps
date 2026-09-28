@@ -128,9 +128,20 @@ packaging/publish-market.sh packages/moarchy-<app>-<version>-1-any.pkg.tar.xz
 
 Then, for an app App Finder should show: a new or updated entry in
 mobile-market-data's `aur/recommended.json` -- the same fields as an
-`aur/apps.json` entry, the version now on the AUR, three screens
-at 540 px (`app-shot.sh` with `SIZE=540x1044 SCALE=1.5`, as WebP named by
-content hash) and a 144 px icon. Phones fetch it at most hourly.
+`aur/apps.json` entry, the version now on the AUR, and a 144 px icon. Its
+screens are the app's own: the three lines named `store-*` in its
+`dev/shots`, which
+
+```sh
+MARKET_DATA=../mobile-market-data packaging/publish-store.sh <app>
+```
+
+shoots in every theme Omarchy ships (`app-shot.sh`'s `THEMES=` mode), as WebP
+named by content hash, into the entry's `themed` map -- App Finder shows a
+phone the three in its own theme -- and its `shots`, the Tokyo Night three, for
+any other. Then commit and push the data repo; phones fetch it at most hourly.
+The shots are the same bytes on every run, so an app that did not change adds
+nothing.
 
 A few things that fail late rather than loudly:
 

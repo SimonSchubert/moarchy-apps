@@ -21,6 +21,10 @@
 # colors.toml where omarchy-theme-set puts the live one and sets LOOK=theme.
 # Every other NAME=value is an environment variable for that run.
 #
+# THEMES=<dir of <theme>/colors.toml> shoots only the lines named store-*, once
+# per theme, into <out>/<theme>/ -- App Finder's screens, which
+# packaging/publish-store.sh publishes.
+#
 # apps/<name>/dev/demo.py, if there is one, writes a fixture into a scratch
 # MOARCHY_<APP>_DIR before each shot, so nothing here reads anybody's data.
 set -uo pipefail
@@ -77,7 +81,11 @@ shot() {
       *) env+=("$pair") ;;
     esac
   done
-  swaymsg output HEADLESS-1 resolution "$size" scale "$scale" >/dev/null
+  # SCALE is Qt's, not the output's: at an output scale the first frames come
+  # at 1 or at the scale as it happens, and what was drawn at 1 -- a glyph in
+  # the cache, a Canvas -- is sometimes still there in the picture.
+  swaymsg output HEADLESS-1 resolution "$size" scale 1 >/dev/null
+  [[ $scale != 1 ]] && env=("QT_SCALE_FACTOR=$scale" "${env[@]}")
 
   # A home per shot: its own theme, its own preferences, no leftovers.
   local home="$WORK/home-$name"
@@ -113,6 +121,34 @@ shot() {
   return 0
 }
 
+# THEMES=<dir of <theme>/colors.toml> is the store's mode: only the lines named
+# store-*, once in each theme, into <out>/<theme>/. App Finder shows a phone
+# the three drawn in its own theme.
+if [[ -n ${THEMES:-} ]]; then
+  themes=()
+  for t in "$THEMES"/*/colors.toml; do [[ -f $t ]] && themes+=("$(basename "$(dirname "$t")")"); done
+  [[ ${#themes[@]} -gt 0 ]] || { echo "no <theme>/colors.toml in $THEMES" >&2; exit 1; }
+  stored=0
+  eval "$(declare -f shot | sed '1s/^shot/one_shot/')"
+  shot() {
+    [[ $1 == store-* ]] || return 0
+    local name=$1 t; shift
+    # The first picture a fresh container takes is now and then a pixel off
+    # the same one taken later: one to throw away, before any that count.
+    if [[ $stored -eq 0 ]]; then
+      mkdir -p "$OUT/.warm" "$WORK/.warm"
+      one_shot ".warm/$name" "$@" "THEME=$THEMES/${themes[0]}/colors.toml" >/dev/null
+      rm -rf "$OUT/.warm"
+    fi
+    for t in "${themes[@]}"; do
+      mkdir -p "$OUT/$t" "$WORK/$t"
+      # Last, so it wins over a THEME= the line has of its own.
+      one_shot "$t/$name" "$@" "THEME=$THEMES/$t/colors.toml"
+    done
+    stored=$((stored + 1))
+  }
+fi
+
 # SHOTS=file for a one-off list, without touching the app's own.
 LIST="${SHOTS:-$DIR/dev/shots}"
 if [[ -f $LIST ]]; then
@@ -123,5 +159,8 @@ else
   shot phone-light LOOK=light
   shot desktop SIZE=1280x820
   shot desktop-light SIZE=1280x820 LOOK=light
+fi
+if [[ -n ${THEMES:-} && $stored -eq 0 ]]; then
+  echo "no store-* shots in $LIST" >&2; status=1
 fi
 exit $status
