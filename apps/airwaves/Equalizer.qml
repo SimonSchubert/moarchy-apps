@@ -2,7 +2,8 @@ import QtQuick
 
 // Three bars that bounce while a station plays, and lie still while it
 // connects or is stopped. They move only while somebody can see them: the
-// animation is bound to the window being up.
+// animation is bound to the window being up. Offline, for the shots, they
+// stand still mid-bounce, so two pictures of the same screen are the same.
 Row {
   id: root
   property var app
@@ -19,7 +20,7 @@ Row {
     delegate: Rectangle {
       id: bar
       required property var modelData
-      property real level: modelData.lo + 0.2
+      property real level: root.app.offline ? modelData.hi * 0.8 : modelData.lo + 0.2
       anchors.bottom: parent.bottom
       width: (root.size - root.spacing * 2) / 3
       height: Math.max(2, root.size * level)
@@ -27,7 +28,7 @@ Row {
       color: root.color
 
       SequentialAnimation on level {
-        running: root.running && root.visible && root.app.opened
+        running: root.running && root.visible && root.app.opened && !root.app.offline
         loops: Animation.Infinite
         NumberAnimation { to: bar.modelData.hi; duration: bar.modelData.d; easing.type: Easing.InOutSine }
         NumberAnimation { to: bar.modelData.lo; duration: bar.modelData.d; easing.type: Easing.InOutSine }

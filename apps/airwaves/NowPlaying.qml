@@ -156,7 +156,7 @@ Item {
                 visible: root.player.status === "playing"
                 color: root.app.ui.live
                 SequentialAnimation on opacity {
-                  running: root.player.status === "playing" && root.visible && root.app.opened
+                  running: root.player.status === "playing" && root.visible && root.app.opened && !root.app.offline
                   loops: Animation.Infinite
                   NumberAnimation { to: 0.3; duration: 900; easing.type: Easing.InOutSine }
                   NumberAnimation { to: 1; duration: 900; easing.type: Easing.InOutSine }

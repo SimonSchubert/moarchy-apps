@@ -23,6 +23,10 @@ import "Api.mjs" as Api
 Item {
   id: root
   property var app
+  // MOARCHY_AIRWAVES_OFFLINE: a play is shown and never heard. No mpv, no
+  // listen counted, nothing added to Recent -- a screenshot of the player
+  // with nothing reaching the network or the speakers.
+  property bool pretend: false
 
   property var station: null
   // "stopped", "connecting", "playing", "buffering", "failed"
@@ -69,6 +73,7 @@ Item {
     if (!same) song = ""
     retries = 0
     retryTimer.stop()
+    if (pretend) { loaded = true; return }
     load()
     app.api.click(s.id)
     app.store.pushRecent(s)
@@ -293,6 +298,7 @@ Item {
       }
     }
     // 127 is setpriv finding no mpv to hand over to.
+    // qmllint disable signal-handler-parameters
     onExited: function (exitCode, exitStatus) { if (exitCode === 127) root.noPlayer() }
   }
 

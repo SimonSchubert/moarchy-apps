@@ -38,7 +38,7 @@ Item {
     width: mouse.pressed ? 18 : 14
     height: width
     radius: width / 2
-    color: root.app.ui.dark ? "#ffffff" : root.tint
+    color: root.app.ui.dark ? root.app.ui.knob : root.tint
     border.width: root.app.ui.dark ? 0 : 2
     border.color: root.app.ui.bg
     Behavior on width { NumberAnimation { duration: 90 } }

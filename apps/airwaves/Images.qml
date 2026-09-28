@@ -29,6 +29,11 @@ Item {
   id: root
   property var app
   property string dir: ""
+  // MOARCHY_AIRWAVES_OFFLINE: nothing is fetched. MOARCHY_AIRWAVES_IMAGES: a
+  // folder of logos named by the md5 of their URL, as dev/capture.py saved
+  // them, in place of the network.
+  property bool offline: false
+  property string recordedDir: ""
   readonly property int slots: 800
   readonly property int parallel: 4
 
@@ -51,6 +56,7 @@ Item {
   function fileOf(slot, gen, url) { return root.dir + "/" + slot + "-" + (gen % 2) + "." + extension(url) }
 
   function source(url) {
+    if (offline) return url && recordedDir && app.store.prefs.logos !== false ? "file://" + recordedDir + "/" + Qt.md5(url) : ""
     // Nothing is fetched to disk before the cache folder has been made
     // private (Store.secured): the index lists what you looked at.
     if (!url || !loaded || !app.store.secured || app.store.prefs.logos === false) return ""
@@ -119,7 +125,9 @@ Item {
     var gen = (ix.gen[slot] || 0) + 1
     writeOk = true
     var w = writer.createObject(root, { path: fileOf(slot, gen, url) })
+    // qmllint disable missing-property
     w.setData(data)
+    // qmllint enable missing-property
     w.destroy()
     if (!writeOk) { failed[url] = true; return }
     var old = ix.owners[slot]

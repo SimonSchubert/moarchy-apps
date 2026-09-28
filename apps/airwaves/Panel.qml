@@ -27,22 +27,25 @@ Item {
   // ------------------------------------------------------------ tokens
 
   readonly property bool compact: stage.width < 720
-  property real clock: Date.now()
+  property real clock: pinnedNow || Date.now()
 
   function alpha(c, a) { return Qt.rgba(c.r, c.g, c.b, a) }
   function luminance(c) { return 0.2126 * c.r + 0.7152 * c.g + 0.0722 * c.b }
   // Text on a filled accent button: dark on a light accent, white otherwise.
-  readonly property color onAccent: luminance(ui.accent) > 0.6 ? "#111111" : "#ffffff"
+  readonly property color onAccent: luminance(tokens.accent) > 0.6 ? "#111111" : "#ffffff"
 
-  // Omarchy's theme inside its shell, a plain one under any other Quickshell.
+  // Omarchy's theme: its shell's, or its theme files when Airwaves runs on
+  // its own; a plain palette where there is neither.
   HostTheme {
     id: theme
-    appearance: storeObj.prefs.appearance || "system"
+    appearance: storeObj.prefs.appearance || "theme"
   }
+  readonly property alias hostTheme: theme
   readonly property bool inShell: theme.inShell
   Component.onCompleted: theme.probe(root)
 
   readonly property QtObject ui: QtObject {
+    id: tokens
     readonly property bool dark: root.luminance(theme.background) < 0.5
     readonly property color bg: theme.background
     readonly property color text: theme.text
@@ -62,11 +65,15 @@ Item {
     readonly property color down: dark ? "#f87171" : "#dc2626"
     readonly property color star: "#f5b82e"
     readonly property color warn: "#f59e0b"
+    // The card a logo sits on, whatever the theme: logos are drawn for white.
+    readonly property color logoCard: "#f7f7f9"
+    readonly property color knob: "#ffffff"
     readonly property string font: theme.fontFamily
     readonly property int radius: Math.max(6, Math.min(10, theme.cornerRadius))
     readonly property int target: root.compact ? 44 : 38
     readonly property int chip: root.compact ? 34 : 32
     readonly property QtObject fs: QtObject {
+      id: sizes
       readonly property int xs: 11
       readonly property int sm: 13
       readonly property int md: 14
@@ -239,6 +246,8 @@ Item {
   // ------------------------------------------------------------ host API
 
   function open(payloadJson) {
+    // A theme switch while the window was away may have replaced the file.
+    theme.reload()
     opened = true
     window.visible = true
     Qt.callLater(function () { keys.forceActiveFocus(); root.refresh(false) })
@@ -279,6 +288,7 @@ Item {
       // The last station, ready to play again, but not playing: sound
       // nobody asked for is the worst thing an app can do on opening.
       if (!playerObj.station && prefs.lastStation) playerObj.station = prefs.lastStation
+      root.harness()
       root.refresh(false)
     }
     onSnapshotLoaded: function (text) { apiObj.restoreText(text) }
@@ -287,17 +297,22 @@ Item {
   RadioBrowser {
     id: apiObj
     version: root.version
+    recorded: root.offline
+    fixtureFile: root.harnessDir ? root.harnessDir + "/fixture.json" : ""
   }
 
   Player {
     id: playerObj
     app: root
+    pretend: root.offline
   }
 
   Images {
     id: imagesObj
     app: root
     dir: storeObj.cacheDir + "/logos"
+    offline: root.offline
+    recordedDir: root.imagesDir
   }
 
   LauncherEntry {
@@ -330,7 +345,7 @@ Item {
     interval: 60000
     repeat: true
     running: root.opened
-    onTriggered: root.clock = Date.now()
+    onTriggered: root.clock = root.pinnedNow || Date.now()
   }
 
   // The sleep timer's countdown, while it is on screen.
@@ -338,7 +353,7 @@ Item {
     interval: 1000
     repeat: true
     running: root.opened && playerObj.sleepAt > 0 && root.page !== null && root.page.kind === "player"
-    onTriggered: root.clock = Date.now()
+    onTriggered: root.clock = root.pinnedNow || Date.now()
   }
 
   Timer {
@@ -351,7 +366,7 @@ Item {
   // Written when the app closes, not while it is in use: the stringify of a
   // few hundred kilobytes is a hitch nobody should feel mid-scroll.
   onOpenedChanged: {
-    if (opened) { clock = Date.now(); api.pickServer() }
+    if (opened) { clock = pinnedNow || Date.now(); api.pickServer() }
     else store.saveSnapshot(api.snapshot(["stations", "tags", "countries", "languages", "stats"], 16))
   }
 
@@ -359,6 +374,47 @@ Item {
   Connections {
     target: playerObj
     function onFailureChanged() { if (playerObj.failure && root.opened) root.toast(playerObj.failure) }
+  }
+
+  // ------------------------------------------------------------ harness
+
+  // For scripts/app-shot.sh, and inert when unset.
+  //
+  // MOARCHY_AIRWAVES_OFFLINE: no request, no logo download, no sound, and no
+  // word about being offline -- lists come from the fixture dev/demo.py put
+  // in MOARCHY_AIRWAVES_DIR, a play is shown and never heard, and animations
+  // stand still. MOARCHY_AIRWAVES_NOW: a frozen clock (ms), so the greeting
+  // and "5 min ago" say the same in two screenshots. MOARCHY_AIRWAVES_IMAGES:
+  // the logos dev/capture.py saved, in place of the stations' sites.
+  readonly property bool offline: (Quickshell.env("MOARCHY_AIRWAVES_OFFLINE") || "") !== ""
+  readonly property real pinnedNow: parseFloat(Quickshell.env("MOARCHY_AIRWAVES_NOW") || "0") || 0
+  readonly property string imagesDir: Quickshell.env("MOARCHY_AIRWAVES_IMAGES") || ""
+  readonly property string harnessDir: Quickshell.env("MOARCHY_AIRWAVES_DIR") || ""
+
+  // MOARCHY_AIRWAVES_PAGE: a tab (discover, browse, favorites, recent,
+  // search, settings), `list` for the stations of MOARCHY_AIRWAVES_TAG, or
+  // `player` for Now Playing. MOARCHY_AIRWAVES_SEARCH: what Search asks.
+  // MOARCHY_AIRWAVES_PLAYING: the last station, on air -- offline, only
+  // shown -- with MOARCHY_AIRWAVES_SONG as the song it says is on.
+  function harness() {
+    if (Quickshell.env("MOARCHY_AIRWAVES_PLAYING") && playerObj.station) {
+      playerObj.play(playerObj.station)
+      playerObj.song = Api.clean(Quickshell.env("MOARCHY_AIRWAVES_SONG") || "", 200)
+    }
+    var page = Quickshell.env("MOARCHY_AIRWAVES_PAGE") || ""
+    if (!page) return
+    if (tabs.concat(railExtras).some(function (x) { return x.key === page })) {
+      tab = page
+    } else if (page === "list") {
+      var tag = Api.clean(Quickshell.env("MOARCHY_AIRWAVES_TAG") || "jazz", 32).toLowerCase()
+      var label = tag
+      for (var i = 0; i < Api.GENRES.length; i++) if (Api.GENRES[i].tag === tag) label = Api.GENRES[i].label
+      openList({ facet: "tag", value: tag, label: label })
+    } else if (page === "player") {
+      openPlayer()
+    }
+    var q = Quickshell.env("MOARCHY_AIRWAVES_SEARCH") || ""
+    if (q) { searchView.query = q; searchView.asked = q.trim() }
   }
 
   // ------------------------------------------------------------ window
@@ -369,7 +425,7 @@ Item {
     id: window
     visible: false
     title: "Airwaves"
-    color: root.ui.bg
+    color: tokens.bg
     implicitWidth: 1240
     implicitHeight: 820
     minimumSize: Qt.size(360, 480)
@@ -386,7 +442,7 @@ Item {
       Rectangle {
         id: card
         anchors.fill: parent
-        color: root.ui.bg
+        color: tokens.bg
         clip: true
 
         // A plain Item and not a FocusScope: forceActiveFocus() on a scope
@@ -405,8 +461,10 @@ Item {
             if (k === Qt.Key_Escape || k === Qt.Key_Back) { root.back(); event.accepted = true; return }
             if (root.page && root.page.kind === "player" && pageLoader.item) {
               var np = pageLoader.item
+              // qmllint disable missing-property
               if (k === Qt.Key_Down || k === Qt.Key_PageDown) { np.scroll(k === Qt.Key_Down ? 80 : 400); event.accepted = true; return }
               if (k === Qt.Key_Up || k === Qt.Key_PageUp) { np.scroll(k === Qt.Key_Up ? -80 : -400); event.accepted = true; return }
+              // qmllint enable missing-property
             } else if (grid) {
               if (k === Qt.Key_Down) { event.accepted = grid.move(0, 1); return }
               if (k === Qt.Key_Up) { event.accepted = grid.move(0, -1); return }
@@ -439,7 +497,7 @@ Item {
             width: root.compact ? 0 : 216
             anchors.top: parent.top
             anchors.bottom: bar.visible ? bar.top : parent.bottom
-            color: root.ui.surface
+            color: tokens.surface
 
             Column {
               id: railColumn
@@ -458,16 +516,16 @@ Item {
                   anchors.verticalCenter: parent.verticalCenter
                   Text {
                     text: "Airwaves"
-                    color: root.ui.text
-                    font.family: root.ui.font
+                    color: tokens.text
+                    font.family: tokens.font
                     font.pixelSize: 19
                     font.weight: Font.Bold
                   }
                   Text {
                     text: "Radio, worldwide"
-                    color: root.ui.muted
-                    font.family: root.ui.font
-                    font.pixelSize: root.ui.fs.xs
+                    color: tokens.muted
+                    font.family: tokens.font
+                    font.pixelSize: sizes.xs
                   }
                 }
               }
@@ -482,19 +540,19 @@ Item {
                   readonly property bool current: root.tab === modelData.key
                   width: parent.width
                   height: 40
-                  radius: root.ui.radius
-                  color: current ? root.ui.accentSoft : railMouse.containsMouse ? root.ui.hover : "transparent"
+                  radius: tokens.radius
+                  color: current ? tokens.accentSoft : railMouse.containsMouse ? tokens.hover : "transparent"
                   Row {
                     anchors.verticalCenter: parent.verticalCenter
                     x: 8
                     spacing: 8
-                    Icon { app: root; text: railItem.modelData.glyph; size: 18; color: railItem.current ? root.ui.accent : root.ui.text }
+                    Icon { app: root; text: railItem.modelData.glyph; size: 18; color: railItem.current ? tokens.accent : tokens.text }
                     Text {
                       anchors.verticalCenter: parent.verticalCenter
                       text: railItem.modelData.label
-                      color: railItem.current ? root.ui.accent : root.ui.text
-                      font.family: root.ui.font
-                      font.pixelSize: root.ui.fs.md
+                      color: railItem.current ? tokens.accent : tokens.text
+                      font.family: tokens.font
+                      font.pixelSize: sizes.md
                       font.weight: railItem.current ? Font.DemiBold : Font.Normal
                     }
                   }
@@ -504,9 +562,9 @@ Item {
                     anchors.verticalCenter: parent.verticalCenter
                     visible: railItem.index < 4
                     text: railItem.index + 1
-                    color: root.ui.muted
-                    font.family: root.ui.font
-                    font.pixelSize: root.ui.fs.xs
+                    color: tokens.muted
+                    font.family: tokens.font
+                    font.pixelSize: sizes.xs
                   }
                   // A gap between the tabs and the extras.
                   Rectangle {
@@ -515,7 +573,7 @@ Item {
                     x: 8
                     width: parent.width - 16
                     height: 1
-                    color: root.ui.divider
+                    color: tokens.divider
                   }
                   MouseArea {
                     id: railMouse
@@ -541,9 +599,9 @@ Item {
               width: parent.width - 40
               wrapMode: Text.Wrap
               text: "Stations from the community directory at radio-browser.info"
-              color: root.alpha(root.ui.muted, 0.8)
-              font.family: root.ui.font
-              font.pixelSize: root.ui.fs.xs
+              color: root.alpha(tokens.muted, 0.8)
+              font.family: tokens.font
+              font.pixelSize: sizes.xs
               lineHeight: 1.2
             }
           }
@@ -585,8 +643,8 @@ Item {
                 Text {
                   anchors.verticalCenter: parent.verticalCenter
                   text: root.compact && root.tab === "discover" ? "Airwaves" : root.titleText()
-                  color: root.ui.text
-                  font.family: root.ui.font
+                  color: tokens.text
+                  font.family: tokens.font
                   font.pixelSize: root.compact ? 22 : 24
                   font.weight: Font.Bold
                 }
@@ -622,15 +680,15 @@ Item {
                 || (root.player.missing ? "Airwaves plays through mpv, which isn't installed · sudo pacman -S mpv" : "")
               height: visible ? (root.store.warning ? 44 : 30) : 0
               visible: message !== ""
-              color: root.store.warning || root.player.missing ? root.alpha(root.ui.down, 0.2) : root.ui.surfaceHigh
+              color: root.store.warning || root.player.missing ? root.alpha(tokens.down, 0.2) : tokens.surfaceHigh
               Text {
                 anchors.centerIn: parent
                 width: parent.width - 24
                 horizontalAlignment: Text.AlignHCenter
                 text: banner.message
-                color: root.ui.text
-                font.family: root.ui.font
-                font.pixelSize: root.ui.fs.xs
+                color: tokens.text
+                font.family: tokens.font
+                font.pixelSize: sizes.xs
                 wrapMode: Text.Wrap
                 maximumLineCount: 2
                 elide: Text.ElideRight
@@ -694,9 +752,9 @@ Item {
             anchors.bottom: parent.bottom
             width: parent.width
             height: visible ? 64 : 0
-            color: root.ui.surface
+            color: tokens.surface
 
-            Rectangle { width: parent.width; height: 1; color: root.ui.divider }
+            Rectangle { width: parent.width; height: 1; color: tokens.divider }
 
             Row {
               anchors.fill: parent
@@ -717,7 +775,7 @@ Item {
                     width: 60
                     height: 30
                     radius: 15
-                    color: navItem.current ? root.ui.accentSoft : navMouse.pressed ? root.ui.pressed : "transparent"
+                    color: navItem.current ? tokens.accentSoft : navMouse.pressed ? tokens.pressed : "transparent"
                   }
                   Icon {
                     app: root
@@ -726,15 +784,15 @@ Item {
                     height: 30
                     text: navItem.current && navItem.modelData.key === "favorites" ? G.star : navItem.modelData.glyph
                     size: 20
-                    color: navItem.current ? root.ui.accent : root.ui.muted
+                    color: navItem.current ? tokens.accent : tokens.muted
                   }
                   Text {
                     anchors.horizontalCenter: parent.horizontalCenter
                     y: 41
                     text: navItem.modelData.label
-                    color: navItem.current ? root.ui.text : root.ui.muted
-                    font.family: root.ui.font
-                    font.pixelSize: root.ui.fs.xs
+                    color: navItem.current ? tokens.text : tokens.muted
+                    font.family: tokens.font
+                    font.pixelSize: sizes.xs
                     font.weight: navItem.current ? Font.DemiBold : Font.Normal
                   }
                   MouseArea {
@@ -773,7 +831,7 @@ Item {
             width: Math.min(toastLabel.implicitWidth + 36, main.width - 32)
             height: 40
             radius: 20
-            color: root.ui.dark ? "#f2f2f2" : "#1f1f1f"
+            color: tokens.dark ? "#f2f2f2" : "#1f1f1f"
             opacity: root.toastText !== "" ? 1 : 0
             visible: opacity > 0
             Behavior on opacity { NumberAnimation { duration: 160 } }
@@ -782,9 +840,9 @@ Item {
               anchors.centerIn: parent
               width: Math.min(implicitWidth, parent.width - 24)
               text: root.toastText
-              color: root.ui.dark ? "#111111" : "#f5f5f5"
-              font.family: root.ui.font
-              font.pixelSize: root.ui.fs.sm
+              color: tokens.dark ? "#111111" : "#f5f5f5"
+              font.family: tokens.font
+              font.pixelSize: sizes.sm
               font.weight: Font.DemiBold
               elide: Text.ElideRight
             }

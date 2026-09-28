@@ -34,7 +34,12 @@ Item {
     browse: "tags",
     order: "clickcount",
     logos: true,
-    appearance: "system",
+    // "theme" follows Omarchy's where there is one (Settings offers it only
+    // then), and is the desktop's light or dark where there is not.
+    appearance: "theme",
+    // Set once Settings has been used to choose: "system" was the default
+    // before there was a theme to follow, and a default is not a choice.
+    appearancePicked: false,
     launcher: true,
     launcherAdded: false
   })
@@ -130,7 +135,9 @@ Item {
     p.muted = p.muted === true
     p.country = Api.cc(p.country)
     p.logos = p.logos !== false
-    p.appearance = ["system", "light", "dark"].indexOf(p.appearance) >= 0 ? p.appearance : "system"
+    p.appearance = ["theme", "system", "light", "dark"].indexOf(p.appearance) >= 0 ? p.appearance : "theme"
+    p.appearancePicked = p.appearancePicked === true
+    if (!p.appearancePicked && p.appearance === "system") p.appearance = "theme"
     return p
   }
 
@@ -218,6 +225,7 @@ Item {
 
   Process {
     id: lock
+    // qmllint disable signal-handler-parameters
     onExited: function (exitCode, exitStatus) {
       watchdog.stop()
       var j = root.job

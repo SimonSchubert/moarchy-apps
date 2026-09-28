@@ -1,4 +1,5 @@
 import QtQuick
+import Quickshell.Io
 import "Api.mjs" as Api
 
 // Every request to radio-browser.info goes through here: reads through a
@@ -20,6 +21,7 @@ Item {
   property bool serverPicked: false
 
   property int revision: 0
+  // Can't reach the directory: the banner says so.
   property bool offline: false
   readonly property string banner: offline ? "Can't reach radio-browser.info · showing saved lists" : ""
 
@@ -40,6 +42,33 @@ Item {
   property string version: "1.0"
 
   signal changed()
+
+  // MOARCHY_AIRWAVES_OFFLINE: no request leaves the app. A read is answered
+  // from `fixtureFile` -- what dev/capture.py recorded, by path -- through the
+  // same worker a real answer goes through, and a path it has no answer for
+  // is simply never answered: no error, no banner.
+  property bool recorded: false
+  property string fixtureFile: ""
+  property var fixture: null
+
+  FileView {
+    path: root.recorded ? root.fixtureFile : ""
+    printErrors: false
+    onLoaded: {
+      try { root.fixture = JSON.parse(text()) || ({}) } catch (e) { root.fixture = ({}) }
+      root.pump()
+    }
+    onLoadFailed: { root.fixture = ({}); root.pump() }
+  }
+
+  function answerRecorded(job) {
+    var data = fixture[job.path]
+    if (data === undefined) return
+    var p = parsing
+    p[job.path] = true
+    parsing = p
+    post({ op: "shape", path: job.path, kind: job.kind, text: JSON.stringify(data) })
+  }
 
   function touch() { Qt.callLater(root.bump) }
   function bump() { revision++; changed() }
@@ -116,6 +145,14 @@ Item {
   }
 
   function pump() {
+    if (recorded) {
+      if (fixture === null) return
+      var jobs = queue
+      queue = []
+      for (var j = 0; j < jobs.length; j++) answerRecorded(jobs[j])
+      touch()
+      return
+    }
     while (inflightCount < parallel && queue.length) {
       var t = Date.now()
       var wait = lastSent + gap - t
@@ -278,7 +315,7 @@ Item {
 
   // Once per run, before anything else: which mirror to talk to.
   function pickServer() {
-    if (serverPicked) return
+    if (serverPicked || recorded) return
     want(Api.serversPath(), "servers", 0, true)
   }
 
@@ -287,7 +324,7 @@ Item {
   // A listen, counted: what makes "popular" and "trending" mean something.
   // The answer is not needed.
   function click(id) {
-    if (!Api.uuid(id)) return
+    if (!Api.uuid(id) || recorded) return
     request(server + Api.clickPath(id), false, function () {})
   }
 
@@ -295,6 +332,7 @@ Item {
   // which, in words. done(ok, message)
   function vote(id, done) {
     if (!Api.uuid(id)) return
+    if (recorded) { done(false, "This copy is running offline"); return }
     request(server + Api.votePath(id), false, function (status, text) {
       var j = null
       try { j = JSON.parse(text) } catch (e) { j = null }

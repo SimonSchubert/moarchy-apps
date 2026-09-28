@@ -44,7 +44,7 @@ Item {
   Rectangle {
     anchors.fill: parent
     radius: root.radius
-    color: "#f7f7f9"
+    color: root.app.ui.logoCard
     opacity: img.opacity
     visible: root.ready
     border.width: root.app.ui.dark ? 0 : 1
@@ -56,8 +56,11 @@ Item {
     anchors.fill: parent
     anchors.margins: Math.round(Math.min(root.width, root.height) * 0.12)
     visible: root.ready
-    source: root.station && root.station.favicon && root.app.images
-      ? (root.app.images.revision, root.app.images.source(root.station.favicon)) : ""
+    source: {
+      if (!root.station || !root.station.favicon || !root.app.images) return ""
+      root.app.images.revision
+      return root.app.images.source(root.station.favicon)
+    }
     asynchronous: true
     cache: true
     smooth: true
@@ -72,7 +75,10 @@ Item {
       when: root.ready
       PropertyChanges { img.opacity: 1 }
     }
+    // Offline, for the shots, a logo is simply there: a fade caught at a
+    // different frame in two runs is two different pictures.
     transitions: Transition {
+      enabled: !root.app.offline
       NumberAnimation { property: "opacity"; duration: 180; easing.type: Easing.OutCubic }
     }
     onStatusChanged: if (status === Image.Error && String(source).indexOf("file:") === 0 && root.app.images)

@@ -147,17 +147,30 @@ Item {
         app: root.app
         width: body.width
         title: "Appearance"
-        note: "System follows your desktop's light or dark preference."
-        Row {
+        note: root.app.hostTheme.hasTheme
+          ? "Omarchy's theme follows the one you set, and changes when it does. System follows your desktop's light or dark preference."
+          : "System follows your desktop's light or dark preference."
+        Flow {
+          width: parent.width
           spacing: 6
           Repeater {
-            model: [{ k: "system", l: "System" }, { k: "light", l: "Light" }, { k: "dark", l: "Dark" }]
+            // Omarchy's theme only where there is one to follow.
+            model: (root.app.hostTheme.hasTheme ? [{ k: "theme", l: "Omarchy theme" }] : [])
+              .concat([{ k: "system", l: "System" }, { k: "light", l: "Light" }, { k: "dark", l: "Dark" }])
             delegate: Chip {
               required property var modelData
               app: root.app
               text: modelData.l
-              selected: root.app.store.prefs.appearance === modelData.k
-              onClicked: root.app.store.set("appearance", modelData.k)
+              // "theme" with no theme to follow is the desktop's preference.
+              selected: {
+                var a = root.app.store.prefs.appearance || "theme"
+                if (a === "theme" && !root.app.hostTheme.hasTheme) a = "system"
+                return a === modelData.k
+              }
+              onClicked: {
+                root.app.store.set("appearance", modelData.k)
+                root.app.store.set("appearancePicked", true)
+              }
             }
           }
         }

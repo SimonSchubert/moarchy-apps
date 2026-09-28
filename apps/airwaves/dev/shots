@@ -1,0 +1,20 @@
+# What to photograph, for scripts/app-shot.sh. Every shot is offline, on the
+# answers dev/capture.py recorded and at the moment it recorded them, with the
+# logos it saved in dev/.images (run capture.py first, or every station wears
+# its initials, which is also what it wears with logos turned off).
+#
+# The first three are the store's: a phone's 360 px at its density.
+FX=apps/airwaves/dev/fixture.json
+NOW=MOARCHY_AIRWAVES_NOW=$(jq .NOW "$FX")
+IMAGES=MOARCHY_AIRWAVES_IMAGES=$PWD/apps/airwaves/dev/.images
+PLAYING=MOARCHY_AIRWAVES_PLAYING=1
+SONG="MOARCHY_AIRWAVES_SONG=Henry Mancini – Peter Gunn"
+STORE="SIZE=540x1044 SCALE=1.5"
+
+shot store-discover $STORE $NOW $IMAGES $PLAYING "$SONG"
+shot store-jazz $STORE $NOW $IMAGES $PLAYING "$SONG" MOARCHY_AIRWAVES_PAGE=list MOARCHY_AIRWAVES_TAG=jazz
+shot store-playing $STORE $NOW $IMAGES $PLAYING "$SONG" MOARCHY_AIRWAVES_PAGE=player
+shot phone-favorites $NOW $IMAGES $PLAYING "$SONG" MOARCHY_AIRWAVES_PAGE=favorites
+shot phone-light LOOK=light $NOW $IMAGES MOARCHY_AIRWAVES_PAGE=recent
+shot desktop SIZE=1280x820 $NOW $IMAGES $PLAYING "$SONG"
+shot desktop-playing SIZE=1280x820 LOOK=light $NOW $IMAGES $PLAYING "$SONG" MOARCHY_AIRWAVES_PAGE=player

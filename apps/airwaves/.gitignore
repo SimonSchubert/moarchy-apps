@@ -1,1 +1,4 @@
 .DS_Store
+# Logos dev/capture.py saved for the shots: other people's pictures,
+# which are not ours to commit.
+dev/.images/
