@@ -18,3 +18,10 @@ shot phone-tokyo THEME=.themes/tokyo-night/colors.toml $OFF MOARCHY_FOOD_PAGE=hi
 shot desktop SIZE=1280x820 $OFF $SEES
 shot desktop-light SIZE=1280x820 LOOK=light $OFF MOARCHY_FOOD_PAGE=history MOARCHY_FOOD_CODE=8000500037560
 shot desktop-latte SIZE=1280x820 THEME=.themes/catppuccin-latte/colors.toml $OFF $IDLE MOARCHY_FOOD_PAGE=product
+
+# The store's three, for App Finder: a product, the history, and the scanner.
+# scripts/app-shot.sh's themed mode shoots these once per Omarchy theme.
+STORE="SIZE=540x1044 SCALE=1.5"
+shot store-1-product $STORE $OFF MOARCHY_FOOD_PAGE=product
+shot store-2-history $STORE $OFF MOARCHY_FOOD_PAGE=history
+shot store-3-scan $STORE $OFF $IDLE

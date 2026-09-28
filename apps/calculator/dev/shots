@@ -6,3 +6,11 @@ shot phone-tokyo THEME=.themes/tokyo-night/colors.toml "MOARCHY_CALCULATOR_TYPED
 shot desktop SIZE=1280x820 "MOARCHY_CALCULATOR_TYPED=1234.5+20%"
 shot desktop-light SIZE=1280x820 LOOK=light "MOARCHY_CALCULATOR_TYPED=(12+3)*4"
 shot desktop-latte SIZE=1280x820 THEME=.themes/catppuccin-latte/colors.toml "MOARCHY_CALCULATOR_TYPED=0.1+0.2"
+
+# The store's three, for App Finder: a sum with a percentage, the tape, and a
+# sum with brackets. scripts/app-shot.sh's themed mode shoots these once per
+# Omarchy theme.
+STORE="SIZE=540x1044 SCALE=1.5"
+shot store-1-percent $STORE "MOARCHY_CALCULATOR_TYPED=1234.5+20%"
+shot store-2-tape $STORE MOARCHY_CALCULATOR_PAGE=tape
+shot store-3-brackets $STORE "MOARCHY_CALCULATOR_TYPED=(12+3)*4"

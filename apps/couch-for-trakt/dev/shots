@@ -24,11 +24,8 @@ shot desktop SIZE=1280x820 $RUN MOARCHY_COUCH_FOR_TRAKT_TYPE=show
 shot desktop-movie SIZE=1280x820 $RUN $MOVIE
 shot desktop-calendar SIZE=1280x820 THEME=.themes/catppuccin-latte/colors.toml $RUN MOARCHY_COUCH_FOR_TRAKT_PAGE=calendar
 
-# The store's three, at a phone's 360 px on its density: the 1.5 is Qt's
-# rather than the output's (SCALE=1.5), which draws the same picture but
-# whose first frames come at 1 or 1.5 as it happens, and a glyph drawn at
-# either stays in the cache.
-STORE="SIZE=540x1044 QT_SCALE_FACTOR=1.5 THEME=.themes/tokyo-night/colors.toml"
+# The store's three, at a phone's 360 px on its density.
+STORE="SIZE=540x1044 SCALE=1.5 THEME=.themes/tokyo-night/colors.toml"
 shot store-1-discover $STORE $RUN
 shot store-2-show $STORE $RUN $SHOW
 shot store-3-upnext $STORE $RUN MOARCHY_COUCH_FOR_TRAKT_PAGE=upnext

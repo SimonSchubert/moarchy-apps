@@ -10,3 +10,11 @@ shot desktop SIZE=1280x820
 shot desktop-light SIZE=1280x820 LOOK=light MOARCHY_MILL_PICK=1
 shot desktop-tokyo SIZE=1280x820 THEME=.themes/tokyo-night/colors.toml DEMO=take
 shot desktop-latte SIZE=1280x820 THEME=.themes/catppuccin-latte/colors.toml DEMO=won
+
+# The store's three, for App Finder: a game in progress, a mill to take from,
+# and a won game. scripts/app-shot.sh's themed mode shoots these once per
+# Omarchy theme.
+STORE="SIZE=540x1044 SCALE=1.5"
+shot store-1-game $STORE
+shot store-2-take $STORE DEMO=take
+shot store-3-won $STORE DEMO=won

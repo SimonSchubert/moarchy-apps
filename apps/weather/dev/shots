@@ -13,3 +13,11 @@ shot phone-tokyo "$NOW" THEME=.themes/tokyo-night/colors.toml
 shot desktop SIZE=1280x820 "$NOW"
 shot desktop-light SIZE=1280x820 "$NOW" LOOK=light
 shot desktop-latte SIZE=1280x820 "$NOW" THEME=.themes/catppuccin-latte/colors.toml
+
+# The store's three, for App Finder: the forecast, the places, and the forecast
+# in Fahrenheit. scripts/app-shot.sh's themed mode shoots these once per
+# Omarchy theme.
+STORE="SIZE=540x1044 SCALE=1.5"
+shot store-1-forecast $STORE "$NOW"
+shot store-2-places $STORE "$NOW" MOARCHY_WEATHER_PAGE=places
+shot store-3-imperial $STORE "$NOW" MOARCHY_WEATHER_UNITS=imperial

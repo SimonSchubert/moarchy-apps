@@ -12,3 +12,10 @@ shot phone-tokyo THEME=.themes/tokyo-night/colors.toml MOARCHY_BREAKOUT_SERVED=1
 shot desktop SIZE=1280x820 MOARCHY_BREAKOUT_SERVED=1
 shot desktop-light SIZE=1280x820 LOOK=light DEMO=late MOARCHY_BREAKOUT_SERVED=1
 shot desktop-latte SIZE=1280x820 THEME=.themes/catppuccin-latte/colors.toml
+
+# The store's three, for App Finder: a rally, a late wall and the record.
+# scripts/app-shot.sh's themed mode shoots these once per Omarchy theme.
+STORE="SIZE=540x1044 SCALE=1.5"
+shot store-1-rally $STORE MOARCHY_BREAKOUT_SERVED=1
+shot store-2-late $STORE DEMO=late MOARCHY_BREAKOUT_SERVED=1
+shot store-3-record $STORE MOARCHY_BREAKOUT_PAGE=record

@@ -15,3 +15,10 @@ shot desktop $F SIZE=1280x820 MOARCHY_EDITOR_OPEN=recent
 shot desktop-light $F SIZE=1280x820 LOOK=light MOARCHY_EDITOR_OPEN=recent:1
 shot desktop-list $F SIZE=1280x820
 shot desktop-latte $F SIZE=1280x820 THEME=.themes/catppuccin-latte/colors.toml MOARCHY_EDITOR_OPEN=recent:3
+
+# The store's three, for App Finder: a file open, the recent list, and the
+# menu. scripts/app-shot.sh's themed mode shoots these once per Omarchy theme.
+STORE="SIZE=540x1044 SCALE=1.5"
+shot store-1-file $STORE $F MOARCHY_EDITOR_OPEN=recent
+shot store-2-recent $STORE $F
+shot store-3-menu $STORE $F MOARCHY_EDITOR_OPEN=recent MOARCHY_EDITOR_MENU=1

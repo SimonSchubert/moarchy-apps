@@ -17,3 +17,10 @@ shot desktop SIZE=1280x820 $HOME_ $NOW MOARCHY_FILES_PATH=$FIX/Downloads MOARCHY
 shot desktop-light SIZE=1280x820 LOOK=light $HOME_ $NOW
 shot desktop-latte SIZE=1280x820 THEME=.themes/catppuccin-latte/colors.toml $HOME_ $NOW MOARCHY_FILES_PATH=$FIX/Pictures/Camera MOARCHY_FILES_PICK=IMG_11.jpg
 shot desktop-tokyo SIZE=1280x820 THEME=.themes/tokyo-night/colors.toml $HOME_ $NOW MOARCHY_FILES_PATH=$FIX/Documents MOARCHY_FILES_HOLDING=notes.md
+
+# The store's three, for App Finder: home, the camera's pictures, and places.
+# scripts/app-shot.sh's themed mode shoots these once per Omarchy theme.
+STORE="SIZE=540x1044 SCALE=1.5"
+shot store-1-home $STORE $HOME_ $NOW
+shot store-2-camera $STORE $HOME_ $NOW MOARCHY_FILES_PATH=$FIX/Pictures/Camera
+shot store-3-places $STORE $HOME_ $NOW MOARCHY_FILES_PAGE=places

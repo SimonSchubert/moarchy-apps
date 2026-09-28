@@ -22,3 +22,10 @@ shot desktop-keypad $NOW SIZE=1280x820 MOARCHY_CLOCK_PAGE=keypad MOARCHY_CLOCK_T
   shot desktop-latte-stopwatch $NOW SIZE=1280x820 MOARCHY_CLOCK_PAGE=stopwatch THEME=.themes/catppuccin-latte/colors.toml
 [[ -f .themes/tokyo-night/colors.toml ]] && \
   shot phone-tokyo $NOW THEME=.themes/tokyo-night/colors.toml
+
+# The store's three, for App Finder: the alarms, the stopwatch, and the timer.
+# scripts/app-shot.sh's themed mode shoots these once per Omarchy theme.
+STORE="SIZE=540x1044 SCALE=1.5"
+shot store-1-alarms $STORE $NOW
+shot store-2-stopwatch $STORE $NOW MOARCHY_CLOCK_PAGE=stopwatch
+shot store-3-timer $STORE $NOW MOARCHY_CLOCK_PAGE=timer

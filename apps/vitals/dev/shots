@@ -1,0 +1,23 @@
+# What to photograph, for scripts/app-shot.sh. dev/demo.py writes a recorded
+# PinePhone's /proc, frame by frame, into the shot's data folder, and the app
+# reads it there: a system monitor photographed against a container is a flat
+# line and five processes. The reel plays through in about three seconds, then
+# holds, so every shot waits four.
+SETTLE=${SETTLE:-4}
+
+shot phone
+shot phone-light LOOK=light
+shot phone-processor MOARCHY_VITALS_PAGE=processor
+shot phone-tasks MOARCHY_VITALS_PAGE=tasks
+shot phone-network LOOK=light MOARCHY_VITALS_PAGE=network
+shot desktop SIZE=1280x820
+shot desktop-tasks SIZE=1280x820 LOOK=light MOARCHY_VITALS_PAGE=tasks MOARCHY_VITALS_PICK=firefox
+shot phone-tokyo THEME=.themes/tokyo-night/colors.toml
+shot desktop-latte SIZE=1280x820 THEME=.themes/catppuccin-latte/colors.toml
+
+# The store's three, for App Finder: the overview, the tasks, and the processor.
+# scripts/app-shot.sh's themed mode shoots these once per Omarchy theme.
+STORE="SIZE=540x1044 SCALE=1.5"
+shot store-1-overview $STORE
+shot store-2-tasks $STORE MOARCHY_VITALS_PAGE=tasks
+shot store-3-processor $STORE MOARCHY_VITALS_PAGE=processor

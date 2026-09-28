@@ -8,3 +8,10 @@ shot desktop SIZE=1280x820 MOARCHY_CONTACTS_EDIT="Ada Okonkwo"
 shot desktop-light SIZE=1280x820 LOOK=light
 shot desktop-latte SIZE=1280x820 THEME=.themes/catppuccin-latte/colors.toml MOARCHY_CONTACTS_EDIT="Hannah Lindqvist"
 shot phone-tokyo THEME=.themes/tokyo-night/colors.toml
+
+# The store's three, for App Finder: the book, a contact open, and a search.
+# scripts/app-shot.sh's themed mode shoots these once per Omarchy theme.
+STORE="SIZE=540x1044 SCALE=1.5"
+shot store-1-book $STORE
+shot store-2-contact $STORE MOARCHY_CONTACTS_EDIT="Ada Okonkwo"
+shot store-3-search $STORE MOARCHY_CONTACTS_SEARCH=doctor

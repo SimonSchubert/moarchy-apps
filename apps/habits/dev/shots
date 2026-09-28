@@ -10,3 +10,11 @@ shot desktop SIZE=1280x820 $T MOARCHY_HABITS_OPEN=Read
 shot desktop-light SIZE=1280x820 LOOK=light $T MOARCHY_HABITS_OPEN=Water
 shot desktop-achievements SIZE=1280x820 $T MOARCHY_HABITS_PAGE=achievements
 shot desktop-latte SIZE=1280x820 THEME=.themes/catppuccin-latte/colors.toml $T
+
+# The store's three, for App Finder: today, a habit's streak and history, and
+# the achievements. scripts/app-shot.sh's themed mode shoots these once per
+# Omarchy theme.
+STORE="SIZE=540x1044 SCALE=1.5"
+shot store-1-today $STORE $T
+shot store-2-detail $STORE $T MOARCHY_HABITS_OPEN=Read
+shot store-3-achievements $STORE $T MOARCHY_HABITS_PAGE=achievements

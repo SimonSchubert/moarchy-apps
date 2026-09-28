@@ -1,10 +1,22 @@
 # What to photograph, for scripts/app-shot.sh.
-shot phone
-shot phone-light LOOK=light
-shot phone-record MOARCHY_TICTACTOE_PAGE=record
-shot phone-newgame MOARCHY_TICTACTOE_NEW=1
-shot desktop SIZE=1280x820
-shot desktop-light SIZE=1280x820 LOOK=light
-shot desktop-latte SIZE=1280x820 THEME=.themes/catppuccin-latte/colors.toml
-shot phone-won DEMO=won
-shot desktop-won SIZE=1280x820 DEMO=won
+# GL, not the software renderer app-shot.sh picks for everyone: that one
+# clips the faded pieces' layer at a scale of 1.5. The rest keeps GL's
+# pictures the same from run to run.
+GL="QT_QUICK_BACKEND=rhi QML_DISABLE_DISTANCEFIELD=1 QSG_ATLAS_SIZE_LIMIT=1 QSG_RENDER_LOOP=basic"
+shot phone $GL
+shot phone-light $GL LOOK=light
+shot phone-record $GL MOARCHY_TICTACTOE_PAGE=record
+shot phone-newgame $GL MOARCHY_TICTACTOE_NEW=1
+shot desktop $GL SIZE=1280x820
+shot desktop-light $GL SIZE=1280x820 LOOK=light
+shot desktop-latte $GL SIZE=1280x820 THEME=.themes/catppuccin-latte/colors.toml
+shot phone-won $GL DEMO=won
+shot desktop-won $GL SIZE=1280x820 DEMO=won
+
+# The store's three, for App Finder: a game in progress, a won one and the
+# record. scripts/app-shot.sh's themed mode shoots these once per Omarchy
+# theme.
+STORE="SIZE=540x1044 SCALE=1.5"
+shot store-1-game $GL $STORE
+shot store-2-won $GL $STORE DEMO=won
+shot store-3-record $GL $STORE MOARCHY_TICTACTOE_PAGE=record

@@ -19,3 +19,10 @@ shot desktop-channel SIZE=1280x820 LOOK=light $NOW $THUMBS MOARCHY_VIDEO_LIBRARY
 shot desktop-search SIZE=1280x820 $NOW $THUMBS MOARCHY_VIDEO_LIBRARY_PAGE=search MOARCHY_VIDEO_LIBRARY_SEARCH=linux MOARCHY_VIDEO_LIBRARY_KIND=channels
 shot desktop-library SIZE=1280x820 THEME=.themes/catppuccin-latte/colors.toml $NOW $THUMBS MOARCHY_VIDEO_LIBRARY_PAGE=library
 shot desktop-tokyo SIZE=1280x820 THEME=.themes/tokyo-night/colors.toml $NOW $THUMBS MOARCHY_VIDEO_LIBRARY_PAGE=following
+
+# The store's three, for App Finder: the featured videos, a video open, and its
+# channel. scripts/app-shot.sh's themed mode shoots these once per Omarchy theme.
+STORE="SIZE=540x1044 SCALE=1.5"
+shot store-1-featured $STORE $NOW $THUMBS
+shot store-2-video $STORE $NOW $THUMBS MOARCHY_VIDEO_LIBRARY_CAT=tech MOARCHY_VIDEO_LIBRARY_PAGE=video MOARCHY_VIDEO_LIBRARY_OPEN=$VIDEO
+shot store-3-channel $STORE $NOW $THUMBS MOARCHY_VIDEO_LIBRARY_CAT=tech MOARCHY_VIDEO_LIBRARY_PAGE=channel MOARCHY_VIDEO_LIBRARY_OPEN=$VIDEO

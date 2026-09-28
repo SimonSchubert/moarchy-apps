@@ -13,3 +13,11 @@ shot desktop SIZE=1280x820 $OFF $NOW MOARCHY_LAUNCHES_OPEN=vega-sentinel
 shot desktop-light SIZE=1280x820 LOOK=light $OFF $NOW MOARCHY_LAUNCHES_OPEN=falcon-ussf
 shot desktop-latte SIZE=1280x820 THEME=.themes/catppuccin-latte/colors.toml $OFF $NOW MOARCHY_LAUNCHES_PAGE=favourites
 shot desktop-tokyo SIZE=1280x820 THEME=.themes/tokyo-night/colors.toml $OFF $NOW
+
+# The store's three, for App Finder: the upcoming launches, one launch, and the
+# starred. scripts/app-shot.sh's themed mode shoots these once per Omarchy
+# theme.
+STORE="SIZE=540x1044 SCALE=1.5"
+shot store-1-upcoming $STORE $OFF $NOW
+shot store-2-detail $STORE $OFF $NOW MOARCHY_LAUNCHES_OPEN=vega-sentinel
+shot store-3-starred $STORE $OFF $NOW MOARCHY_LAUNCHES_PAGE=favourites

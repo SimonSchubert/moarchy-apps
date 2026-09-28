@@ -10,3 +10,11 @@ shot desktop SIZE=1280x820
 shot desktop-light SIZE=1280x820 LOOK=light
 shot desktop-hint SIZE=1280x820 MOARCHY_PEGSOLITAIRE_HINT=1 THEME=.themes/catppuccin-latte/colors.toml
 shot desktop-stuck SIZE=1280x820 DEMO=stuck
+
+# The store's three, for App Finder: a board in progress, a hint and the
+# figures. scripts/app-shot.sh's themed mode shoots these once per Omarchy
+# theme.
+STORE="SIZE=540x1044 SCALE=1.5"
+shot store-1-game $STORE
+shot store-2-hint $STORE MOARCHY_PEGSOLITAIRE_HINT=1
+shot store-3-figures $STORE MOARCHY_PEGSOLITAIRE_FIGURES=1

@@ -10,3 +10,11 @@ shot desktop SIZE=1280x820
 shot desktop-light SIZE=1280x820 LOOK=light MOARCHY_CHESS_SELECT=auto
 shot desktop-tokyo SIZE=1280x820 THEME=.themes/tokyo-night/colors.toml
 shot desktop-mate SIZE=1280x820 DEMO=mate THEME=.themes/catppuccin-latte/colors.toml
+
+# The store's three, for App Finder: a game in progress, a piece held with its
+# moves, and a mate. scripts/app-shot.sh's themed mode shoots these once per
+# Omarchy theme.
+STORE="SIZE=540x1044 SCALE=1.5"
+shot store-1-game $STORE
+shot store-2-held $STORE MOARCHY_CHESS_SELECT=auto
+shot store-3-mate $STORE DEMO=mate
