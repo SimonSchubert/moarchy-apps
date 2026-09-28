@@ -12,10 +12,10 @@ Rectangle {
   signal escaped()
 
   implicitHeight: app.compact ? 42 : 36
-  radius: height / 2
-  color: app.ui.bg
+  radius: app.ui.radius
+  color: app.ui.surface
   border.width: 1
-  border.color: input.activeFocus ? app.ui.accent : app.ui.border
+  border.color: input.activeFocus ? app.ui.accent : app.ui.line
 
   Icon {
     id: lens

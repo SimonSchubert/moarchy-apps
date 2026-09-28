@@ -87,12 +87,13 @@ QtObject {
     : useFile ? Qt.rgba(text.r, text.g, text.b, 0.25) : plain.border
   // Omarchy's own family is the fontconfig alias `monospace`, which is what
   // the shell resolves too. Bound to Style.font.family inside the shell, so
-  // `omarchy font set` reaches the app live.
+  // `omarchy font set` reaches the app live. Monospace outside it as well:
+  // the type is most of what makes a screen look like Omarchy.
   // qmllint disable missing-property
   readonly property string fontFamily: !forced && inShell ? shell.fontFamily
-    : useFile ? "monospace" : Qt.application.font.family
+    : "monospace"
   // qmllint enable missing-property
-  readonly property int cornerRadius: Theme.radius(!forced && inShell ? shell.cornerRadius : 10)
+  readonly property int cornerRadius: Theme.radius(!forced && inShell ? shell.cornerRadius : 0)
 
   // The theme's hues by name -- red, green, yellow, blue, magenta, cyan,
   // orange -- or "" where it has none. Read from the file inside the shell as

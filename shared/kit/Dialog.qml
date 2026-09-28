@@ -69,10 +69,10 @@ Item {
     height: col.implicitHeight + 44
     anchors.horizontalCenter: parent.horizontalCenter
     y: atBottom ? parent.height - height : (parent.height - height) / 2
-    radius: root.app.ui.radius + 6
+    radius: root.app.ui.radius
     color: root.app.ui.bg
     border.width: 1
-    border.color: root.app.ui.border
+    border.color: root.app.ui.line
     MouseArea { anchors.fill: parent }
 
     Column {
@@ -85,10 +85,10 @@ Item {
         visible: root.title !== ""
         width: parent.width
         wrapMode: Text.Wrap
-        text: root.title
+        text: "# " + root.title
         color: root.app.ui.text
         font.family: root.app.ui.font
-        font.pixelSize: root.app.ui.fs.lg + 2
+        font.pixelSize: root.app.ui.fs.lg
         font.weight: Font.Bold
       }
       Text {

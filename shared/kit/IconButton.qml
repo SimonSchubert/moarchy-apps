@@ -1,6 +1,7 @@
 import QtQuick
 
-// A glyph you can press. 40 px square at least: a finger, not a cursor.
+// A glyph you can press, in a square that lights up. A target's size at
+// least: a finger, not a cursor.
 Item {
   id: root
   property var app
@@ -19,7 +20,7 @@ Item {
   Rectangle {
     anchors.fill: parent
     anchors.margins: 2
-    radius: width / 2
+    radius: root.app.ui.radius
     color: root.active ? root.app.ui.accentSoft : mouse.pressed ? root.app.ui.pressed
       : mouse.containsMouse ? root.app.ui.hover : "transparent"
   }

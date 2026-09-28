@@ -42,7 +42,7 @@ Rectangle {
     color: root.app.ui.accent
   }
 
-  Badge {
+  StatusBadge {
     id: badge
     app: root.app
     item: root.item

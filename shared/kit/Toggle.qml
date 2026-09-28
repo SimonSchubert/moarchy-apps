@@ -45,16 +45,16 @@ Item {
     id: track
     anchors.right: parent.right
     anchors.verticalCenter: parent.verticalCenter
-    width: 44
-    height: 24
-    radius: 12
+    width: 42
+    height: 22
+    radius: root.app.ui.round(height)
     color: root.checked ? root.app.ui.accent : root.app.ui.well
     border.width: root.checked ? 0 : 1
-    border.color: root.app.ui.border
+    border.color: root.app.ui.line
     Rectangle {
-      width: 18
-      height: 18
-      radius: 9
+      width: 16
+      height: 16
+      radius: root.app.ui.round(height)
       y: 3
       x: root.checked ? parent.width - width - 3 : 3
       color: root.checked ? root.app.ui.inkOnAccent : root.app.ui.muted

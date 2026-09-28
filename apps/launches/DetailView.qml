@@ -82,7 +82,7 @@ Item {
       Row {
         width: parent.width - (root.paged ? 0 : 100)
         spacing: 14
-        Badge {
+        StatusBadge {
           anchors.verticalCenter: parent.verticalCenter
           app: root.app
           item: root.item

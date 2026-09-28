@@ -19,11 +19,11 @@ Rectangle {
   signal clicked()
 
   implicitHeight: body.y + body.implicitHeight + pad
-  radius: app.ui.radius + 4
+  radius: app.ui.radius
   color: clickable && mouse.pressed ? Qt.tint(app.ui.surface, app.ui.pressed)
     : clickable && mouse.containsMouse ? Qt.tint(app.ui.surface, app.ui.hover) : app.ui.surface
   border.width: 1
-  border.color: app.ui.divider
+  border.color: app.ui.line
 
   // Under the body, so a row inside the card that can be pressed is pressed
   // rather than the card.
@@ -59,8 +59,10 @@ Rectangle {
       text: root.title
       color: root.app.ui.muted
       font.family: root.app.ui.font
-      font.pixelSize: root.app.ui.fs.sm
-      font.weight: Font.DemiBold
+      font.pixelSize: root.app.ui.fs.xs
+      font.weight: Font.Bold
+      font.capitalization: Font.AllUppercase
+      font.letterSpacing: root.app.ui.tracking
       elide: Text.ElideRight
     }
   }
@@ -73,7 +75,7 @@ Rectangle {
     text: root.trailing
     color: root.trailingColor
     font.family: root.app.ui.font
-    font.pixelSize: root.app.ui.fs.sm
+    font.pixelSize: root.app.ui.fs.xs
     font.features: ({ "tnum": 1 })
   }
 

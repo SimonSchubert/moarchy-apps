@@ -9,11 +9,11 @@ Column {
   spacing: 8
 
   Text {
-    text: section.title
+    text: "# " + section.title
     color: section.app.ui.text
     font.family: section.app.ui.font
     font.pixelSize: section.app.ui.fs.md
-    font.weight: Font.DemiBold
+    font.weight: Font.Bold
   }
   Text {
     visible: section.note !== ""

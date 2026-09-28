@@ -35,10 +35,10 @@ Flickable {
     Rectangle {
       width: parent.width
       height: hero.implicitHeight + 40
-      radius: root.app.ui.radius + 4
+      radius: root.app.ui.radius
       color: root.app.ui.surface
       border.width: 1
-      border.color: root.app.ui.divider
+      border.color: root.app.ui.line
 
       Row {
         id: hero
@@ -60,11 +60,13 @@ Flickable {
           width: parent.width - (heroMark.visible ? 72 : 0)
           spacing: 3
           Text {
-            text: root.app.title + (root.app.version ? " " + root.app.version : "")
-            color: root.app.ui.text
+            text: root.app.title + (root.app.version ? "  v" + root.app.version : "")
+            color: root.app.ui.accent
             font.family: root.app.ui.font
-            font.pixelSize: root.app.ui.fs.lg + 2
+            font.pixelSize: root.app.ui.fs.lg
             font.weight: Font.Bold
+            font.capitalization: Font.AllUppercase
+            font.letterSpacing: root.app.ui.tracking
           }
           Text {
             visible: root.blurb !== ""

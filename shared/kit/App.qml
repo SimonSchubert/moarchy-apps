@@ -372,57 +372,160 @@ Item {
             if (event.text === "," && root.settings) { root.setTab("settings"); event.accepted = true }
           }
 
+          // ---------------------------------------------------- header
+          // One bar across the whole window, as Omarchy draws its own:
+          // ":: APP / PAGE" in capitals, what it is about in small type after
+          // it, and the app's actions at the right.
+          Rectangle {
+            id: head
+            visible: root.header
+            anchors.top: parent.top
+            width: parent.width
+            height: visible ? (root.compact ? 48 : 52) : 0
+            color: root.ui.bg
+
+            IconButton {
+              id: headBack
+              x: 2
+              anchors.verticalCenter: parent.verticalCenter
+              // Settings is a page wherever there is no rail to leave it by.
+              visible: root.inSettings && !root.hasRail
+              width: visible ? implicitWidth : 0
+              app: root
+              glyph: KG.back
+              label: "Back"
+              onClicked: root.back()
+            }
+            Row {
+              id: crumbs
+              anchors.left: headBack.visible ? headBack.right : parent.left
+              anchors.leftMargin: headBack.visible ? 2 : (root.compact ? 14 : 20)
+              anchors.right: headActions.left
+              anchors.rightMargin: 10
+              anchors.verticalCenter: parent.verticalCenter
+              spacing: 8
+              clip: true
+              Loader {
+                active: root.mark !== null && !headBack.visible
+                visible: active
+                anchors.verticalCenter: parent.verticalCenter
+                width: 20
+                height: 20
+                sourceComponent: root.mark
+              }
+              Text {
+                id: appName
+                anchors.verticalCenter: parent.verticalCenter
+                text: ":: " + root.title
+                color: root.ui.accent
+                font.family: root.ui.font
+                font.pixelSize: root.ui.fs.md
+                font.weight: Font.Bold
+                font.capitalization: Font.AllUppercase
+                font.letterSpacing: root.ui.tracking
+              }
+              Text {
+                anchors.verticalCenter: parent.verticalCenter
+                visible: crumb.visible
+                text: "/"
+                color: root.ui.muted
+                font.family: root.ui.font
+                font.pixelSize: root.ui.fs.md
+              }
+              Text {
+                id: crumb
+                anchors.verticalCenter: parent.verticalCenter
+                visible: text !== ""
+                width: Math.min(implicitWidth, crumbs.width - appName.width - 76)
+                text: root.crumbText()
+                color: root.ui.text
+                font.family: root.ui.font
+                font.pixelSize: root.ui.fs.md
+                font.capitalization: Font.AllUppercase
+                font.letterSpacing: root.ui.tracking
+                elide: Text.ElideRight
+              }
+              Text {
+                anchors.verticalCenter: parent.verticalCenter
+                readonly property real room: crumbs.width - appName.width - (crumb.visible ? crumb.width + 24 : 0) - (root.mark ? 28 : 0) - 8
+                visible: !root.inSettings && root.subtitle !== "" && room > 60
+                width: Math.max(0, room)
+                text: root.subtitle
+                color: root.ui.muted
+                font.family: root.ui.font
+                font.pixelSize: root.ui.fs.xs
+                elide: Text.ElideRight
+              }
+            }
+            Row {
+              id: headActions
+              anchors.right: parent.right
+              anchors.rightMargin: root.compact ? 4 : 12
+              anchors.verticalCenter: parent.verticalCenter
+              spacing: 2
+              Loader {
+                active: root.actions !== null && !root.inSettings
+                visible: active
+                anchors.verticalCenter: parent.verticalCenter
+                sourceComponent: root.actions
+              }
+              IconButton {
+                visible: !root.hasRail && root.settings !== null && !root.inSettings
+                anchors.verticalCenter: parent.verticalCenter
+                app: root
+                glyph: KG.settings
+                label: "Settings"
+                onClicked: root.setTab("settings")
+              }
+            }
+            Rectangle {
+              anchors.bottom: parent.bottom
+              width: parent.width
+              height: 1
+              color: root.ui.line
+            }
+          }
+
           // ---------------------------------------------------- rail
           Rectangle {
             id: rail
             // Only for an app with pages to choose between. One with a single
             // screen -- a game -- keeps the width, and its Settings is a gear.
             visible: root.hasRail
-            width: visible ? 216 : 0
-            anchors.top: parent.top
+            width: visible ? 220 : 0
+            anchors.top: head.bottom
             anchors.bottom: parent.bottom
-            color: root.ui.surface
+            color: root.ui.bg
+
+            Rectangle {
+              anchors.right: parent.right
+              height: parent.height
+              width: 1
+              color: root.ui.line
+            }
 
             Column {
               anchors.fill: parent
-              anchors.topMargin: 18
-              anchors.leftMargin: 12
-              anchors.rightMargin: 12
+              anchors.topMargin: 12
+              anchors.leftMargin: 10
+              anchors.rightMargin: 11
               spacing: 2
 
-              Row {
-                x: 6
-                height: 44
-                spacing: 10
-                Loader {
-                  active: root.mark !== null
-                  visible: active
-                  anchors.verticalCenter: parent.verticalCenter
-                  width: 30
-                  height: 30
-                  sourceComponent: root.mark
-                }
-                Column {
-                  anchors.verticalCenter: parent.verticalCenter
-                  Text {
-                    text: root.title
-                    color: root.ui.text
-                    font.family: root.ui.font
-                    font.pixelSize: 19
-                    font.weight: Font.Bold
-                  }
-                  Text {
-                    visible: root.caption !== ""
-                    text: root.caption
-                    color: root.ui.muted
-                    font.family: root.ui.font
-                    font.pixelSize: root.ui.fs.xs
-                    width: 150
-                    elide: Text.ElideRight
-                  }
-                }
+              // What the app is, as Omarchy labels a group: small capitals.
+              Text {
+                visible: root.caption !== ""
+                x: 10
+                width: parent.width - 20
+                height: visible ? 28 : 0
+                verticalAlignment: Text.AlignVCenter
+                text: root.caption
+                color: root.ui.muted
+                font.family: root.ui.font
+                font.pixelSize: root.ui.fs.xs
+                font.capitalization: Font.AllUppercase
+                font.letterSpacing: root.ui.tracking
+                elide: Text.ElideRight
               }
-              Item { width: 1; height: 14 }
 
               Repeater {
                 model: (root.tabbed ? root.tabs : [])
@@ -434,23 +537,23 @@ Item {
                   readonly property bool current: root.tab === modelData.key
                   readonly property bool last: modelData.key === "settings" && root.tabbed
                   width: parent.width
-                  height: 40
+                  height: 38
                   radius: root.ui.radius
-                  color: current ? root.ui.accentSoft : railMouse.containsMouse ? root.ui.hover : "transparent"
+                  color: current ? root.ui.surfaceHigh : railMouse.containsMouse ? root.ui.hover : "transparent"
                   Accessible.role: Accessible.PageTab
                   Accessible.name: modelData.label
                   Row {
                     anchors.verticalCenter: parent.verticalCenter
-                    x: 8
-                    spacing: 8
-                    Icon { app: root; text: railItem.modelData.glyph || ""; size: 18; color: railItem.current ? root.ui.accent : root.ui.text }
+                    x: 10
+                    spacing: 10
+                    Icon { app: root; text: railItem.modelData.glyph || ""; size: 16; color: railItem.current ? root.ui.accent : root.ui.muted }
                     Text {
                       anchors.verticalCenter: parent.verticalCenter
                       text: railItem.modelData.label
                       color: railItem.current ? root.ui.accent : root.ui.text
                       font.family: root.ui.font
                       font.pixelSize: root.ui.fs.md
-                      font.weight: railItem.current ? Font.DemiBold : Font.Normal
+                      font.weight: railItem.current ? Font.Bold : Font.Normal
                     }
                   }
                   Text {
@@ -466,10 +569,9 @@ Item {
                   Rectangle {
                     visible: railItem.last
                     y: -6
-                    x: 8
-                    width: parent.width - 16
+                    width: parent.width
                     height: 1
-                    color: root.ui.divider
+                    color: root.ui.line
                   }
                   MouseArea {
                     id: railMouse
@@ -483,7 +585,7 @@ Item {
             }
 
             Loader {
-              active: root.railFooter !== null && rail.height >= 520
+              active: root.railFooter !== null && rail.height >= 460
               anchors.bottom: parent.bottom
               anchors.bottomMargin: 16
               x: 20
@@ -493,99 +595,18 @@ Item {
           }
 
           // ---------------------------------------------------- main
-          // Everything right of the rail (all of it, on a phone).
+          // Everything under the header and right of the rail.
           Item {
             id: main
             anchors.left: rail.visible ? rail.right : parent.left
             anchors.right: parent.right
-            anchors.top: parent.top
+            anchors.top: head.bottom
             anchors.bottom: nav.visible ? nav.top : parent.bottom
             anchors.bottomMargin: nav.visible ? 0 : root.bottomInset
 
             Item {
-              id: head
-              visible: root.header
-              width: parent.width
-              height: visible ? (root.compact ? 60 : 68) : 0
-
-              IconButton {
-                id: headBack
-                x: 4
-                anchors.verticalCenter: parent.verticalCenter
-                // Settings is a page wherever there is no rail to leave it by.
-                visible: root.inSettings && !root.hasRail
-                width: visible ? implicitWidth : 0
-                app: root
-                glyph: KG.back
-                label: "Back"
-                onClicked: root.back()
-              }
-              Row {
-                anchors.left: headBack.visible ? headBack.right : parent.left
-                anchors.leftMargin: headBack.visible ? 4 : (root.compact ? 16 : 26)
-                anchors.right: headActions.left
-                anchors.rightMargin: 8
-                anchors.verticalCenter: parent.verticalCenter
-                spacing: 10
-                // The app's mark where the rail is not showing it.
-                readonly property bool marked: root.mark !== null && !root.hasRail && root.tab === root.homeTab && !root.inSettings
-                Loader {
-                  active: parent.marked
-                  visible: active
-                  anchors.verticalCenter: parent.verticalCenter
-                  width: 30
-                  height: 30
-                  sourceComponent: root.mark
-                }
-                Column {
-                  anchors.verticalCenter: parent.verticalCenter
-                  width: parent.width - (parent.marked ? 40 : 0)
-                  Text {
-                    width: parent.width
-                    text: root.headTitle()
-                    color: root.ui.text
-                    font.family: root.ui.font
-                    font.pixelSize: root.compact ? 21 : 24
-                    font.weight: Font.Bold
-                    elide: Text.ElideRight
-                  }
-                  Text {
-                    width: parent.width
-                    visible: !root.inSettings && root.subtitle !== ""
-                    text: root.subtitle
-                    color: root.ui.muted
-                    font.family: root.ui.font
-                    font.pixelSize: root.ui.fs.xs
-                    elide: Text.ElideRight
-                  }
-                }
-              }
-              Row {
-                id: headActions
-                anchors.right: parent.right
-                anchors.rightMargin: root.compact ? 4 : 16
-                anchors.verticalCenter: parent.verticalCenter
-                spacing: 2
-                Loader {
-                  active: root.actions !== null && !root.inSettings
-                  visible: active
-                  anchors.verticalCenter: parent.verticalCenter
-                  sourceComponent: root.actions
-                }
-                IconButton {
-                  visible: !root.hasRail && root.settings !== null && !root.inSettings
-                  anchors.verticalCenter: parent.verticalCenter
-                  app: root
-                  glyph: KG.settings
-                  label: "Settings"
-                  onClicked: root.setTab("settings")
-                }
-              }
-            }
-
-            Item {
               id: views
-              anchors.top: head.bottom
+              anchors.top: parent.top
               anchors.left: parent.left
               anchors.right: parent.right
               anchors.bottom: parent.bottom
@@ -599,15 +620,15 @@ Item {
             }
           }
 
-          // A page over the whole of the main side, header included. The
-          // page draws its own header (PageHeader) with a way back.
+          // A page over the main side; on a phone over the header too. The
+          // page draws its own bar (PageHeader) with a way back.
           Loader {
             id: pageLoader
             z: 3
             active: root.topPage !== null && root.page !== null
             anchors.left: main.left
             anchors.right: main.right
-            anchors.top: parent.top
+            anchors.top: root.compact ? parent.top : head.bottom
             anchors.bottom: parent.bottom
             anchors.bottomMargin: root.bottomInset
             sourceComponent: Rectangle {
@@ -625,51 +646,56 @@ Item {
             visible: root.compact && root.tabbed && root.topPage === null && !root.inSettings
             anchors.bottom: parent.bottom
             width: parent.width
-            height: visible ? 64 + root.bottomInset : 0
-            color: root.ui.surface
+            height: visible ? 58 + root.bottomInset : 0
+            color: root.ui.bg
+
+            Rectangle { width: parent.width; height: 1; color: root.ui.line }
 
             Row {
+              y: 1
               width: parent.width
-              height: 64
+              height: 57
               Repeater {
                 model: root.tabs
-                delegate: Item {
+                delegate: Rectangle {
                   id: navItem
                   required property var modelData
                   readonly property bool current: root.tab === modelData.key
                   width: nav.width / root.tabs.length
-                  height: 64
+                  height: 57
+                  color: current ? root.ui.surfaceHigh : navMouse.pressed ? root.ui.pressed : "transparent"
                   Accessible.role: Accessible.PageTab
                   Accessible.name: modelData.label
 
+                  // The page you are on, marked the way a rail marks it.
                   Rectangle {
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    y: 8
-                    width: 56
-                    height: 30
-                    radius: 15
-                    color: navItem.current ? root.ui.accentSoft : navMouse.pressed ? root.ui.pressed : "transparent"
+                    visible: navItem.current
+                    width: parent.width
+                    height: 2
+                    color: root.ui.accent
                   }
                   Icon {
                     app: root
                     anchors.horizontalCenter: parent.horizontalCenter
-                    y: 8
-                    height: 30
+                    y: 9
+                    height: 24
                     text: navItem.modelData.glyph || ""
-                    size: 20
+                    size: 18
                     color: navItem.current ? root.ui.accent : root.ui.muted
                   }
                   Text {
                     anchors.horizontalCenter: parent.horizontalCenter
-                    y: 41
+                    y: 36
                     width: parent.width - 4
                     horizontalAlignment: Text.AlignHCenter
                     elide: Text.ElideRight
                     text: navItem.modelData.label
-                    color: navItem.current ? root.ui.text : root.ui.muted
+                    color: navItem.current ? root.ui.accent : root.ui.muted
                     font.family: root.ui.font
-                    font.pixelSize: root.ui.fs.xs
-                    font.weight: navItem.current ? Font.DemiBold : Font.Normal
+                    font.pixelSize: 10
+                    font.weight: navItem.current ? Font.Bold : Font.Normal
+                    font.capitalization: Font.AllUppercase
+                    font.letterSpacing: 0.8
                   }
                   MouseArea {
                     id: navMouse
@@ -695,9 +721,11 @@ Item {
             anchors.bottom: main.bottom
             anchors.bottomMargin: 16
             width: Math.min(toastRow.implicitWidth + 36, main.width - 32)
-            height: root.toastAction ? 44 : 40
-            radius: height / 2
-            color: root.ui.text
+            height: root.toastAction ? 42 : 38
+            radius: root.ui.radius
+            color: root.ui.surfaceHigh
+            border.width: 1
+            border.color: root.ui.line
             opacity: root.toastText !== "" ? 1 : 0
             visible: opacity > 0
             Behavior on opacity { NumberAnimation { duration: 160 } }
@@ -710,10 +738,9 @@ Item {
                 anchors.verticalCenter: parent.verticalCenter
                 width: Math.min(implicitWidth, main.width - 80 - (toastButton.visible ? toastButton.width + 16 : 0))
                 text: root.toastText
-                color: root.ui.bg
+                color: root.ui.text
                 font.family: root.ui.font
                 font.pixelSize: root.ui.fs.sm
-                font.weight: Font.DemiBold
                 elide: Text.ElideRight
               }
               Text {
@@ -721,10 +748,12 @@ Item {
                 visible: root.toastAction !== ""
                 anchors.verticalCenter: parent.verticalCenter
                 text: root.toastAction
-                color: Qt.tint(root.ui.bg, root.alpha(root.ui.accent, 0.8))
+                color: root.ui.accent
                 font.family: root.ui.font
                 font.pixelSize: root.ui.fs.sm
                 font.weight: Font.Bold
+                font.capitalization: Font.AllUppercase
+                font.letterSpacing: root.ui.tracking
                 MouseArea {
                   anchors.fill: parent
                   anchors.margins: -12
@@ -739,11 +768,15 @@ Item {
     }
   }
 
-  function headTitle() {
+  // What follows the app's name in the header: the page, or the app's own
+  // heading (a town, a folder), or nothing on a one-screen app.
+  function crumbText() {
     if (inSettings) return "Settings"
     if (heading !== "") return heading
-    if (!hasRail && tab === homeTab) return title
-    for (var i = 0; i < tabs.length; i++) if (tabs[i].key === tab) return tabbed ? tabs[i].label : title
-    return title
+    if (!tabbed) return ""
+    for (var i = 0; i < tabs.length; i++) if (tabs[i].key === tab) return tabs[i].label
+    return ""
   }
+  // Kept for apps that name the page themselves.
+  function headTitle() { return crumbText() || title }
 }

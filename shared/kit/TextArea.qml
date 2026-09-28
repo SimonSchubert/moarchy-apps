@@ -16,9 +16,9 @@ Rectangle {
 
   implicitHeight: 160
   radius: plain ? 0 : app.ui.radius
-  color: plain ? "transparent" : app.ui.bg
-  border.width: plain ? 0 : (edit.activeFocus ? 2 : 1)
-  border.color: edit.activeFocus ? app.ui.accent : app.ui.border
+  color: plain ? "transparent" : app.ui.surface
+  border.width: plain ? 0 : 1
+  border.color: edit.activeFocus ? app.ui.accent : app.ui.line
 
   Flickable {
     id: flick

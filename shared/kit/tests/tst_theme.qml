@@ -55,8 +55,8 @@ TestCase {
     verify(!Theme.isDark("#fafafa"))
     compare(Theme.onColor("#fafafa"), "#111111")
     compare(Theme.onColor("#2563eb"), "#ffffff")
-    compare(Theme.fallback(true).background, "#1e1e2e")
-    compare(Theme.fallback(false).background, "#fafafa")
+    compare(Theme.fallback(true).background, "#1a1b26")
+    compare(Theme.fallback(false).background, "#e1e2e7")
   }
 
   function test_a_muted_that_is_a_border_colour_does_not_read() {
@@ -71,10 +71,10 @@ TestCase {
     verify(!Theme.alike("#808080", "#ff0000"))
   }
 
-  function test_radius_is_clamped_and_zero_means_not_yet_known() {
-    compare(Theme.radius(0), 10)
-    compare(Theme.radius(undefined), 10)
-    compare(Theme.radius(3), 6)
+  function test_square_unless_the_theme_rounds_and_then_clamped() {
+    compare(Theme.radius(0), 0)
+    compare(Theme.radius(undefined), 0)
+    compare(Theme.radius(1), 2)
     compare(Theme.radius(8), 8)
     compare(Theme.radius(30), 12)
   }

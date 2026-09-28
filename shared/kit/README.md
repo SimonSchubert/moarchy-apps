@@ -56,6 +56,21 @@ App {
 - **Standalone.** Opens itself, quits when closed after `store.flush()`,
   and quits after `MOARCHY_QUIT_AFTER` seconds for a headless run.
 
+## The look
+
+Omarchy's: square boxes drawn with a one-pixel line, the theme's monospace
+face everywhere, small capitals for labels and buttons, and a header bar that
+reads `:: APP / PAGE`. The rules an app keeps to so it matches:
+
+- `radius: app.ui.radius` for a box -- 0 unless the theme rounds its windows.
+  `app.ui.round(h)` for what would be a pill (a tag, a marker). A disc that
+  is a thing -- a nought, a peg, a counter -- is `width / 2` and stays one.
+- `border.color: app.ui.line` for the edge of any box.
+- A label over a group: `font.capitalization: Font.AllUppercase`,
+  `font.letterSpacing: app.ui.tracking`, `fs.xs`, muted. A heading in the
+  page: `SectionTitle` ("# Title (note)"). A status or a count: `Badge`.
+- Weight is Bold or Normal; a monospace face has no useful DemiBold.
+
 ## Theme
 
 `HostTheme` reads, best first: the shell's own `qs.Commons` (compiled from a

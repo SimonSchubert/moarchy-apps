@@ -46,12 +46,13 @@ function parseMenu(raw) {
 
 function hex(v) { return typeof v === "string" && /^#[0-9A-Fa-f]{6}$/.test(v) ? v : "" }
 
-// The plain palettes, for a machine with no Omarchy theme. Blue rather than a
-// warm accent: an accent is a selection or a value on a graph, and a red or
-// orange one reads as a warning at a glance.
+// The plain palettes, for a machine with no Omarchy theme: Omarchy's own
+// default, Tokyo Night, and its light sibling. Blue rather than a warm
+// accent: an accent is a selection or a value on a graph, and a red or orange
+// one reads as a warning at a glance.
 var FALLBACK = {
-  dark: { background: "#1e1e2e", text: "#e6e6ef", muted: "#9a9aae", accent: "#60a5fa", border: "#3a3a4e" },
-  light: { background: "#fafafa", text: "#1f1f28", muted: "#6b6b78", accent: "#2563eb", border: "#d8d8e0" }
+  dark: { background: "#1a1b26", text: "#c0caf5", muted: "#787c99", accent: "#7aa2f7", border: "#2f3349" },
+  light: { background: "#e1e2e7", text: "#3760bf", muted: "#6172b0", accent: "#2e7de9", border: "#c4c8da" }
 }
 
 function fallback(dark) { return dark ? FALLBACK.dark : FALLBACK.light }
@@ -111,11 +112,12 @@ function alike(a, b) {
   return Math.min(d, 360 - d) < 45
 }
 
-// The corner radius a box is drawn with: the shell's, clamped to what a
-// 360 px screen can carry. Hyprland's rounding is 0 until it answers, and a
-// square theme is a choice, so 0 stays 0 only when it was asked for.
+// The corner radius a box is drawn with: the shell's, which is Hyprland's
+// window rounding, and Omarchy's is none. Square is the look, so anything
+// unknown is square too, and a rounded theme is clamped to what a 360 px
+// screen can carry.
 function radius(shellRadius) {
   var r = Number(shellRadius)
-  if (!isFinite(r) || r <= 0) return 10
-  return Math.max(6, Math.min(12, Math.round(r)))
+  if (!isFinite(r) || r <= 0) return 0
+  return Math.max(2, Math.min(12, Math.round(r)))
 }

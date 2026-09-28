@@ -1,7 +1,8 @@
 import QtQuick
 
-// A labelled action. `primary` fills it with the accent; otherwise it is an
-// outlined pill like a chip.
+// A labelled action: a square box with its words in capitals, as Omarchy's
+// own buttons are. `primary` fills it with the accent; otherwise it is a
+// raised fill, and `active` is a toggle that is on.
 Rectangle {
   id: root
   property var app
@@ -12,39 +13,42 @@ Rectangle {
   property color tint: app.ui.accent
   signal clicked()
 
-  implicitHeight: app.compact ? 42 : 38
-  implicitWidth: row.implicitWidth + (text ? 32 : 20)
-  radius: height / 2
-  opacity: enabled ? 1 : 0.5
-  color: primary ? (mouse.pressed ? Qt.darker(tint, 1.15) : tint)
-    : active ? app.ui.alpha(tint, mouse.pressed ? 0.26 : 0.18)
-    : mouse.pressed ? app.ui.pressed : mouse.containsMouse ? app.ui.hover : app.ui.surface
-  border.width: primary ? 0 : 1
-  border.color: active ? tint : app.ui.border
+  implicitHeight: app.compact ? 40 : 34
+  implicitWidth: row.implicitWidth + (text ? 28 : 18)
+  radius: app.ui.radius
+  opacity: enabled ? 1 : 0.45
+  color: primary ? (mouse.pressed ? Qt.darker(tint, 1.15) : mouse.containsMouse ? Qt.lighter(tint, 1.08) : tint)
+    : active ? app.ui.alpha(tint, mouse.pressed ? 0.3 : 0.2)
+    : mouse.pressed ? Qt.tint(app.ui.surfaceHigh, app.ui.pressed) : mouse.containsMouse ? Qt.tint(app.ui.surfaceHigh, app.ui.hover) : app.ui.surfaceHigh
+  border.width: active ? 1 : 0
+  border.color: tint
   Accessible.role: Accessible.Button
   Accessible.name: text
 
   Row {
     id: row
     anchors.centerIn: parent
-    spacing: 6
+    spacing: 7
     Icon {
       visible: root.glyph !== ""
       anchors.verticalCenter: parent.verticalCenter
       app: root.app
       text: root.glyph
-      size: 17
-      width: 20
-      color: root.primary ? root.app.ui.inkOnAccent : root.active ? root.tint : root.app.ui.text
+      size: 15
+      width: 18
+      color: label.color
     }
     Text {
+      id: label
       visible: root.text !== ""
       anchors.verticalCenter: parent.verticalCenter
       text: root.text
       color: root.primary ? root.app.ui.inkOnAccent : root.active ? root.tint : root.app.ui.text
       font.family: root.app.ui.font
       font.pixelSize: root.app.ui.fs.sm
-      font.weight: Font.DemiBold
+      font.weight: Font.Bold
+      font.capitalization: Font.AllUppercase
+      font.letterSpacing: root.app.ui.tracking
     }
   }
 
