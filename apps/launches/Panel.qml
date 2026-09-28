@@ -459,10 +459,10 @@ App {
       anchors.bottom: parent.bottom
       anchors.rightMargin: root.ui.gutter
       anchors.bottomMargin: root.ui.gutter
-      radius: root.ui.radius + 4
+      radius: root.ui.radius
       color: root.ui.surface
       border.width: 1
-      border.color: root.ui.divider
+      border.color: root.ui.line
 
       readonly property var shown: root.selectedId ? L.find(root.launches, root.selectedId) : null
 

@@ -137,6 +137,8 @@ Item {
               color: root.app.ui.muted
               font.family: root.app.ui.font
               font.pixelSize: root.app.ui.fs.xs
+              font.capitalization: Font.AllUppercase
+              font.letterSpacing: root.app.ui.tracking
             }
             Text {
               width: parent.width
@@ -145,7 +147,7 @@ Item {
               color: root.app.ui.text
               font.family: root.app.ui.font
               font.pixelSize: root.app.ui.fs.md
-              font.weight: Font.DemiBold
+              font.weight: Font.Bold
             }
           }
         }

@@ -38,7 +38,7 @@ Rectangle {
     width: 3
     height: parent.height - 16
     anchors.verticalCenter: parent.verticalCenter
-    radius: 1.5
+    radius: 0
     color: root.app.ui.accent
   }
 
@@ -64,7 +64,7 @@ Rectangle {
       color: root.app.ui.text
       font.family: root.app.ui.font
       font.pixelSize: root.app.ui.fs.md + 1
-      font.weight: Font.DemiBold
+      font.weight: Font.Bold
       elide: Text.ElideRight
     }
     Text {
@@ -96,7 +96,7 @@ Rectangle {
     color: root.app.ui.tone(L.tone(root.item, root.now))
     font.family: root.app.ui.font
     font.pixelSize: root.app.ui.fs.md + 1
-    font.weight: Font.DemiBold
+    font.weight: Font.Bold
     font.features: ({ "tnum": 1 })
   }
 
