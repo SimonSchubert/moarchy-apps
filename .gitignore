@@ -14,3 +14,4 @@ dist/
 # Pictures dev/capture.py saved for the shots: other people's thumbnails,
 # which are not ours to commit.
 apps/video-library/dev/.thumbs/
+apps/books/dev/.covers/

@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "id": "org.moarchy.books",
+  "name": "Books",
+  "version": "0.1.0",
+  "author": "Simon Schubert",
+  "license": "MIT",
+  "description": "Open Library's catalogue and a reading list of your own: what its readers are opening this week, the most-read books in fifteen subjects, search by title, author or ISBN, a page for every book and author, and your shelves -- want to read, reading with the page you are on, read with your stars -- against a goal for the year. No account. Desktop and phone layouts.",
+  "homepage": "https://github.com/SimonSchubert/moarchy-apps/tree/main/apps/books",
+  "repository": "https://github.com/SimonSchubert/moarchy-apps",
+  "keywords": ["books", "reading", "open library", "isbn", "authors", "reading list", "goodreads"],
+  "icon": "icon.svg",
+  "kinds": ["panel"],
+  "keepLoaded": true,
+  "entryPoints": {
+    "panel": "Panel.qml"
+  }
+}

@@ -1,0 +1,33 @@
+# What to photograph, for scripts/app-shot.sh. Every shot is offline, on the
+# answers dev/capture.py recorded and at the moment it recorded them, with the
+# covers it saved in dev/.covers (run capture.py first, or every book is bound
+# in plain cloth, which is also what they are with no signal).
+FX=apps/books/dev/fixture.json
+NOW=MOARCHY_BOOKS_NOW=$(jq .NOW "$FX")
+COVERS=MOARCHY_BOOKS_COVERS=$PWD/apps/books/dev/.covers
+BOOK=MOARCHY_BOOKS_OPEN=OL893414W
+AUTHOR=MOARCHY_BOOKS_OPEN=OL79034A
+
+shot phone $NOW $COVERS
+shot phone-light LOOK=light $NOW $COVERS
+shot phone-book $NOW $COVERS MOARCHY_BOOKS_PAGE=book $BOOK
+shot phone-book-light LOOK=light $NOW $COVERS MOARCHY_BOOKS_PAGE=book $BOOK
+shot phone-library $NOW $COVERS MOARCHY_BOOKS_PAGE=library
+shot phone-read $NOW $COVERS MOARCHY_BOOKS_PAGE=library MOARCHY_BOOKS_SHELF=read
+shot phone-search $NOW $COVERS MOARCHY_BOOKS_PAGE=search "MOARCHY_BOOKS_SEARCH=le guin"
+shot phone-authors $NOW $COVERS MOARCHY_BOOKS_PAGE=search MOARCHY_BOOKS_SEARCH=tolkien MOARCHY_BOOKS_KIND=authors
+shot phone-author $NOW $COVERS MOARCHY_BOOKS_PAGE=author $AUTHOR
+shot phone-shelf $NOW $COVERS MOARCHY_BOOKS_PAGE=shelf MOARCHY_BOOKS_OPEN=subject:science_fiction
+shot phone-start $NOW $COVERS MOARCHY_BOOKS_PAGE=search
+shot desktop SIZE=1280x820 $NOW $COVERS
+shot desktop-book SIZE=1280x820 $NOW $COVERS MOARCHY_BOOKS_PAGE=book $BOOK
+shot desktop-author SIZE=1280x820 LOOK=light $NOW $COVERS MOARCHY_BOOKS_PAGE=author $AUTHOR
+shot desktop-library SIZE=1280x820 THEME=.themes/catppuccin-latte/colors.toml $NOW $COVERS MOARCHY_BOOKS_PAGE=library MOARCHY_BOOKS_SHELF=read
+shot desktop-search SIZE=1280x820 THEME=.themes/tokyo-night/colors.toml $NOW $COVERS MOARCHY_BOOKS_PAGE=search "MOARCHY_BOOKS_SEARCH=le guin"
+
+# The store's three, for App Finder: Discover, a book, and your shelves.
+# scripts/app-shot.sh's themed mode shoots these once per Omarchy theme.
+STORE="SIZE=540x1044 SCALE=1.5"
+shot store-1-discover $STORE $NOW $COVERS
+shot store-2-book $STORE $NOW $COVERS MOARCHY_BOOKS_PAGE=book $BOOK
+shot store-3-library $STORE $NOW $COVERS MOARCHY_BOOKS_PAGE=library

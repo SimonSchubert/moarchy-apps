@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=Books
+GenericName=Reading List
+Comment=Discover books on Open Library and keep track of what you read
+Exec=moarchy-books %u
+Icon=org.moarchy.Books
+Terminal=false
+Categories=Education;Literature;
+Keywords=books;reading;library;open library;isbn;author;novel;goodreads;want to read;
+StartupNotify=false

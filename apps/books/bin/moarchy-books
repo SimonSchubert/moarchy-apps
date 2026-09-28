@@ -1,0 +1,29 @@
+#!/bin/sh
+# Open Books: in the running Omarchy shell when it has the plugin, as its own
+# Quickshell process when it does not.
+#
+#   moarchy-books                                         Discover
+#   moarchy-books https://openlibrary.org/works/OL45804W  that book
+#   moarchy-books 9780441013593                           the book with that ISBN
+#
+# `omarchy-shell shell summon` answers "ok" only when the shell is running and
+# has the plugin installed and enabled. Anything else -- no Omarchy, the shell
+# down, the plugin not added -- starts the copy this package installed.
+set -eu
+
+ID=org.moarchy.books
+APPDIR=${MOARCHY_BOOKS_APPDIR:-/usr/share/moarchy-books}
+
+PAYLOAD='{}'
+if [ $# -gt 0 ] && [ -n "$1" ]; then
+  uri=$(printf '%s' "$1" | sed 's/\\/\\\\/g; s/"/\\"/g')
+  PAYLOAD="{\"uri\":\"$uri\"}"
+fi
+
+if command -v omarchy-shell >/dev/null 2>&1; then
+  if [ "$(omarchy-shell shell summon "$ID" "$PAYLOAD" 2>/dev/null)" = ok ]; then
+    exit 0
+  fi
+fi
+
+MOARCHY_PAYLOAD=$PAYLOAD exec quickshell -n -p "$APPDIR/shell.qml"

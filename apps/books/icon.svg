@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Four books stood on a shelf, the last one leaning on its neighbour.
+
+     Drawn as the object rather than as a button, as the other icons here are:
+     the drawer is a grid of things, a handset, a rocket, a shelf of screens,
+     so a row of books belongs there. -->
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+  <rect x="14" y="30" width="20" height="78" rx="2" fill="#c01c28"/>
+  <rect x="14" y="40" width="20" height="4" fill="#f6d32d"/>
+  <rect x="14" y="94" width="20" height="4" fill="#f6d32d"/>
+  <rect x="36" y="20" width="24" height="88" rx="2" fill="#1c71d8"/>
+  <rect x="42" y="34" width="12" height="22" rx="1" fill="#99c1f1"/>
+  <rect x="62" y="36" width="18" height="72" rx="2" fill="#26a269"/>
+  <rect x="62" y="46" width="18" height="3" fill="#f6f5f4"/>
+  <rect x="62" y="96" width="18" height="3" fill="#f6f5f4"/>
+  <path d="M84 104 103 30l17 4.6-19 73.4z" fill="#e5a50a"/>
+  <path d="M91 88l9.6-35 5.6 1.5-9.4 35z" fill="#f8e45c"/>
+  <rect x="8" y="108" width="112" height="8" rx="2" fill="#986a44"/>
+  <rect x="8" y="108" width="112" height="3" rx="1" fill="#b5835a"/>
+</svg>
