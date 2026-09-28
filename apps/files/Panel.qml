@@ -750,10 +750,10 @@ App {
     anchors.bottom: parent.bottom
     anchors.leftMargin: root.compact ? 0 : 16
     anchors.bottomMargin: 16
-    radius: root.ui.radius + 4
+    radius: root.ui.radius
     color: root.ui.surface
     border.width: 1
-    border.color: root.ui.divider
+    border.color: root.ui.line
     Text {
       id: sideTitle
       x: 18
@@ -761,8 +761,10 @@ App {
       text: "Places"
       color: root.ui.muted
       font.family: root.ui.font
-      font.pixelSize: root.ui.fs.sm
-      font.weight: Font.DemiBold
+      font.pixelSize: root.ui.fs.xs
+      font.weight: Font.Bold
+      font.capitalization: Font.AllUppercase
+      font.letterSpacing: root.ui.tracking
     }
     PlacesList {
       anchors.top: sideTitle.bottom
@@ -831,7 +833,7 @@ App {
         visible: root.holding !== null
         width: parent.width
         height: 52
-        radius: root.ui.radius + 2
+        radius: root.ui.radius
         color: root.ui.accentSoft
         border.width: 1
         border.color: root.ui.alpha(root.ui.accent, 0.4)
@@ -903,7 +905,7 @@ App {
             color: root.sort === modelData.key ? root.ui.text : root.ui.muted
             font.family: root.ui.font
             font.pixelSize: root.ui.fs.xs
-            font.weight: root.sort === modelData.key ? Font.DemiBold : Font.Normal
+            font.weight: root.sort === modelData.key ? Font.Bold : Font.Normal
             MouseArea {
               anchors.fill: parent
               cursorShape: Qt.PointingHandCursor

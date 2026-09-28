@@ -61,7 +61,7 @@ Flickable {
             color: place.here && !root.app.compact ? root.app.ui.accent : root.app.ui.text
             font.family: root.app.ui.font
             font.pixelSize: root.app.ui.fs.md
-            font.weight: place.here && !root.app.compact ? Font.DemiBold : Font.Normal
+            font.weight: place.here && !root.app.compact ? Font.Bold : Font.Normal
             elide: Text.ElideRight
           }
           Text {
@@ -84,7 +84,7 @@ Flickable {
             visible: !!place.modelData.volume
             width: parent.width
             height: 5
-            radius: 2.5
+            radius: root.app.ui.round(height)
             color: root.app.ui.well
             Rectangle {
               width: Math.max(parent.height, parent.width * place.used)

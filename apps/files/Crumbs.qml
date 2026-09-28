@@ -9,10 +9,10 @@ Rectangle {
   signal go(string path)
 
   implicitHeight: app.compact ? 38 : 34
-  radius: height / 2
+  radius: app.ui.radius
   color: app.ui.surface
   border.width: 1
-  border.color: app.ui.divider
+  border.color: app.ui.line
 
   Flickable {
     id: flick
@@ -49,7 +49,7 @@ Rectangle {
             height: row.height - 8
             anchors.verticalCenter: parent.verticalCenter
             width: label.implicitWidth + 16
-            radius: height / 2
+            radius: root.app.ui.radius
             color: crumbMouse.pressed ? root.app.ui.pressed : crumbMouse.containsMouse && !crumb.last ? root.app.ui.hover : "transparent"
             Text {
               id: label
@@ -60,7 +60,7 @@ Rectangle {
               color: crumb.last ? root.app.ui.text : root.app.ui.muted
               font.family: root.app.ui.font
               font.pixelSize: root.app.ui.fs.sm
-              font.weight: crumb.last ? Font.DemiBold : Font.Normal
+              font.weight: crumb.last ? Font.Bold : Font.Normal
             }
             MouseArea {
               id: crumbMouse

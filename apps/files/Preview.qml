@@ -18,9 +18,9 @@ Rectangle {
   signal close()
 
   color: app.ui.surface
-  radius: app.ui.radius + 4
+  radius: app.ui.radius
   border.width: 1
-  border.color: app.ui.divider
+  border.color: app.ui.line
 
   readonly property string kind: {
     if (!entry) return ""
@@ -68,7 +68,7 @@ Rectangle {
       color: root.app.ui.text
       font.family: root.app.ui.font
       font.pixelSize: root.app.ui.fs.lg
-      font.weight: Font.DemiBold
+      font.weight: Font.Bold
     }
     Column {
       width: parent.width
@@ -89,6 +89,8 @@ Rectangle {
             color: root.app.ui.muted
             font.family: root.app.ui.font
             font.pixelSize: root.app.ui.fs.xs
+            font.capitalization: Font.AllUppercase
+            font.letterSpacing: root.app.ui.tracking
           }
           Text {
             width: parent.width

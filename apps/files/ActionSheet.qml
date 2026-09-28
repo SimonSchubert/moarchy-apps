@@ -45,10 +45,10 @@ Item {
     height: col.implicitHeight + 24 + (atBottom ? root.app.bottomInset : 0)
     anchors.horizontalCenter: parent.horizontalCenter
     y: atBottom ? parent.height - height : (parent.height - height) / 2
-    radius: root.app.ui.radius + 6
+    radius: root.app.ui.radius
     color: root.app.ui.bg
     border.width: 1
-    border.color: root.app.ui.border
+    border.color: root.app.ui.line
     MouseArea { anchors.fill: parent }
 
     Column {
@@ -65,8 +65,10 @@ Item {
         text: root.title
         color: root.app.ui.muted
         font.family: root.app.ui.font
-        font.pixelSize: root.app.ui.fs.sm
-        font.weight: Font.DemiBold
+        font.pixelSize: root.app.ui.fs.xs
+        font.weight: Font.Bold
+        font.capitalization: Font.AllUppercase
+        font.letterSpacing: root.app.ui.tracking
         elide: Text.ElideMiddle
       }
       Column {
@@ -102,7 +104,7 @@ Item {
             color: item.modelData.destructive ? root.app.ui.bad : item.modelData.current ? root.app.ui.accent : root.app.ui.text
             font.family: root.app.ui.font
             font.pixelSize: root.app.ui.fs.md
-            font.weight: item.modelData.current ? Font.DemiBold : Font.Normal
+            font.weight: item.modelData.current ? Font.Bold : Font.Normal
           }
           MouseArea {
             id: mouse
