@@ -24,10 +24,10 @@ Column {
         required property var modelData
         width: (root.width - 24) / 4
         height: 72
-        radius: root.app.ui.radius + 2
+        radius: root.app.ui.radius
         color: root.app.ui.surface
         border.width: 1
-        border.color: root.app.ui.divider
+        border.color: root.app.ui.line
         Column {
           anchors.centerIn: parent
           spacing: 2
@@ -46,6 +46,8 @@ Column {
             color: root.app.ui.muted
             font.family: root.app.ui.font
             font.pixelSize: root.app.ui.fs.xs
+            font.capitalization: Font.AllUppercase
+            font.letterSpacing: root.app.ui.tracking
           }
         }
       }
@@ -71,7 +73,7 @@ Column {
           color: root.app.ui.muted
           font.family: root.app.ui.font
           font.pixelSize: root.app.ui.fs.sm
-          font.weight: Font.DemiBold
+          font.weight: Font.Bold
         }
         // A bar with nothing in it still gets a sliver, so the chart reads as
         // six rows rather than however many have been used.
@@ -79,7 +81,7 @@ Column {
           readonly property real room: parent.width - 24
           width: Math.max(28, root.most ? room * bar.modelData / root.most : 0)
           height: 24
-          radius: root.app.ui.radius / 2
+          radius: root.app.ui.radius
           color: bar.modelData ? root.app.ui.correct : root.app.ui.well
           Text {
             anchors.right: parent.right
@@ -89,7 +91,7 @@ Column {
             color: bar.modelData ? root.app.ui.inkOnCorrect : root.app.ui.muted
             font.family: root.app.ui.font
             font.pixelSize: root.app.ui.fs.sm
-            font.weight: Font.DemiBold
+            font.weight: Font.Bold
             font.features: ({ "tnum": 1 })
           }
         }

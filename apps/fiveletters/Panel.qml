@@ -353,7 +353,7 @@ App {
       color: root.over ? root.ui.accent : root.ui.muted
       font.family: root.ui.font
       font.pixelSize: root.ui.fs.md
-      font.weight: root.over ? Font.DemiBold : Font.Normal
+      font.weight: root.over ? Font.Bold : Font.Normal
     }
     // A finished day, on a phone: what there is to do next.
     Row {

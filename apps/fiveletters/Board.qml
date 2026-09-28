@@ -104,9 +104,9 @@ Item {
 
               Rectangle {
                 anchors.fill: parent
-                radius: root.tile * 0.14
+                radius: root.app.ui.radius
                 color: cell.filled ? cell.fill : "transparent"
-                border.width: cell.filled ? 0 : 2
+                border.width: cell.filled ? 0 : (cell.letter !== "" ? 2 : 1)
                 border.color: cell.letter !== "" ? root.app.ui.typedEdge : root.app.ui.edge
               }
               Text {

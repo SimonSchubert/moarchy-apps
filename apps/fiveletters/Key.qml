@@ -27,7 +27,7 @@ Rectangle {
       : key.mark === G.ABSENT ? key.app.ui.keyAbsentText : key.app.ui.text
     font.family: key.app.ui.font
     font.pixelSize: key.wide ? key.app.ui.fs.xs : key.app.ui.fs.lg
-    font.weight: Font.DemiBold
+    font.weight: Font.Bold
     font.letterSpacing: key.wide ? 0.6 : 0
   }
   MouseArea {
