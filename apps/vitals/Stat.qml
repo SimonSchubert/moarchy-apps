@@ -15,6 +15,8 @@ Rectangle {
   implicitHeight: col.implicitHeight + 22
   radius: app.ui.radius
   color: app.ui.well
+  border.width: 1
+  border.color: app.ui.line
 
   Column {
     id: col
@@ -41,6 +43,8 @@ Rectangle {
         color: root.app.ui.muted
         font.family: root.app.ui.font
         font.pixelSize: root.app.ui.fs.xs
+        font.capitalization: Font.AllUppercase
+        font.letterSpacing: root.app.ui.tracking
         elide: Text.ElideRight
       }
     }
@@ -50,7 +54,7 @@ Rectangle {
       color: root.valueColor
       font.family: root.app.ui.font
       font.pixelSize: root.app.ui.fs.lg
-      font.weight: Font.DemiBold
+      font.weight: Font.Bold
       font.features: ({ "tnum": 1 })
       elide: Text.ElideRight
     }

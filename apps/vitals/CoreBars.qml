@@ -27,7 +27,7 @@ Item {
         required property var modelData
         width: (root.width - (root.cores.length - 1) * strip.spacing) / Math.max(1, root.cores.length)
         height: root.height
-        radius: Math.min(4, width / 2)
+        radius: Math.min(root.app.ui.radius, width / 2)
         color: root.app.ui.well
         Rectangle {
           anchors.bottom: parent.bottom

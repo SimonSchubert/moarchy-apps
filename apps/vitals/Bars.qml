@@ -57,7 +57,7 @@ Item {
           anchors.bottom: parent.bottom
           width: parent.width
           height: parent.has ? Math.max(2, parent.height * parent.value) : 2
-          radius: Math.min(2, width / 2)
+          radius: Math.min(2, width / 2, root.app.ui.radius)
           color: root.load ? root.app.loadColor(parent.value) : root.color
           opacity: parent.has ? 1 : 0.25
         }

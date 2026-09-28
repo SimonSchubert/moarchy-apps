@@ -12,7 +12,7 @@ Rectangle {
   property color extraColor: app.alpha(fill, 0.35)
 
   implicitHeight: 10
-  radius: height / 2
+  radius: root.app.ui.round(height)
   color: app.ui.well
   clip: true
 
@@ -20,14 +20,14 @@ Rectangle {
     x: 0
     height: parent.height
     width: Math.min(parent.width, parent.width * Math.max(0, Math.min(1, root.value + root.extra)))
-    radius: height / 2
+    radius: root.app.ui.round(height)
     color: root.extraColor
     visible: root.extra > 0
   }
   Rectangle {
     height: parent.height
     width: root.value > 0 ? Math.max(parent.height, parent.width * Math.max(0, Math.min(1, root.value))) : 0
-    radius: height / 2
+    radius: root.app.ui.round(height)
     color: root.fill
   }
 }

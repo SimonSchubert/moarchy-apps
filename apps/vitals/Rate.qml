@@ -16,9 +16,11 @@ Row {
   Rectangle {
     width: 32
     height: 32
-    radius: 16
+    radius: root.app.ui.radius
     anchors.verticalCenter: parent.verticalCenter
     color: root.app.alpha(root.color, 0.16)
+    border.width: 1
+    border.color: root.app.alpha(root.color, 0.45)
     Icon {
       anchors.centerIn: parent
       app: root.app
@@ -36,7 +38,7 @@ Row {
       color: root.app.ui.text
       font.family: root.app.ui.font
       font.pixelSize: root.app.ui.fs.lg
-      font.weight: Font.DemiBold
+      font.weight: Font.Bold
       font.features: ({ "tnum": 1 })
       elide: Text.ElideRight
     }

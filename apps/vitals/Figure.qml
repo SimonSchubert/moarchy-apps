@@ -63,7 +63,7 @@ Item {
       color: root.sideColor
       font.family: root.app.ui.font
       font.pixelSize: root.app.ui.fs.lg
-      font.weight: Font.DemiBold
+      font.weight: Font.Bold
       font.features: ({ "tnum": 1 })
     }
   }

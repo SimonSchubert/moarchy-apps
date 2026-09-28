@@ -68,7 +68,7 @@ Rectangle {
       color: root.quiet ? root.app.ui.muted : root.app.ui.text
       font.family: root.app.ui.font
       font.pixelSize: root.app.ui.fs.md
-      font.weight: Font.DemiBold
+      font.weight: Font.Bold
       elide: Text.ElideRight
     }
     Text {
@@ -93,7 +93,7 @@ Rectangle {
     color: root.figure === "cpu" ? root.app.loadColor(root.item.cpu || 0) : root.app.ui.text
     font.family: root.app.ui.font
     font.pixelSize: root.app.ui.fs.md
-    font.weight: Font.DemiBold
+    font.weight: Font.Bold
     font.features: ({ "tnum": 1 })
   }
 
@@ -116,7 +116,7 @@ Rectangle {
         color: root.app.loadColor(root.item.cpu || 0)
         font.family: root.app.ui.font
         font.pixelSize: root.app.ui.fs.md
-        font.weight: Font.DemiBold
+        font.weight: Font.Bold
         font.features: ({ "tnum": 1 })
       }
       Meter {

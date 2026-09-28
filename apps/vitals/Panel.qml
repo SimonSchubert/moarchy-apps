@@ -135,7 +135,7 @@ App {
               color: root.ui.text
               font.family: root.ui.font
               font.pixelSize: root.ui.fs.xs
-              font.weight: Font.DemiBold
+              font.weight: Font.Bold
               font.features: ({ "tnum": 1 })
             }
           }

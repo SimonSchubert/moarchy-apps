@@ -47,7 +47,7 @@ Item {
           y: parent.half - height
           width: parent.width
           height: parent.has ? Math.max(1, parent.half * parent.d) : 1
-          radius: Math.min(2, width / 2)
+          radius: Math.min(2, width / 2, root.app.ui.radius)
           color: root.downColor
           opacity: parent.has ? 1 : 0.25
         }
@@ -55,7 +55,7 @@ Item {
           y: parent.half + 1
           width: parent.width
           height: parent.has ? Math.max(1, parent.half * parent.u) : 1
-          radius: Math.min(2, width / 2)
+          radius: Math.min(2, width / 2, root.app.ui.radius)
           color: root.upColor
           opacity: parent.has ? 1 : 0.25
         }

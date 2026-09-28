@@ -61,7 +61,7 @@ Item {
           delegate: Row {
             required property var modelData
             spacing: 6
-            Rectangle { width: 10; height: 10; radius: 5; color: modelData.color; anchors.verticalCenter: parent.verticalCenter }
+            Rectangle { width: 10; height: 10; radius: root.app.ui.round(10); color: modelData.color; anchors.verticalCenter: parent.verticalCenter }
             Text {
               text: modelData.label
               color: root.app.ui.muted

@@ -225,7 +225,7 @@ Item {
             height: 44
             color: factMouse.pressed ? root.app.ui.pressed : factMouse.containsMouse && link ? root.app.ui.hover : "transparent"
             radius: root.app.ui.radius
-            Rectangle { anchors.bottom: parent.bottom; width: parent.width; height: 1; color: root.app.ui.divider }
+            Rectangle { anchors.bottom: parent.bottom; width: parent.width; height: 1; color: root.app.ui.line }
             Text {
               x: 4
               anchors.verticalCenter: parent.verticalCenter
@@ -307,8 +307,10 @@ Item {
           text: "Processes"
           color: root.app.ui.muted
           font.family: root.app.ui.font
-          font.pixelSize: root.app.ui.fs.sm
-          font.weight: Font.DemiBold
+          font.pixelSize: root.app.ui.fs.xs
+          font.weight: Font.Bold
+          font.capitalization: Font.AllUppercase
+          font.letterSpacing: root.app.ui.tracking
           bottomPadding: 6
         }
         Repeater {

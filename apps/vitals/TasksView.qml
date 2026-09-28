@@ -105,7 +105,7 @@ Item {
         spacing: 6
         Chip { app: root.app; text: "Apps"; glyph: G.app; selected: root.mode === "apps"; onClicked: root.app.store.set("taskMode", "apps") }
         Chip { app: root.app; text: "All"; glyph: G.tree; selected: root.mode === "all"; onClicked: root.app.store.set("taskMode", "all") }
-        Rectangle { width: 1; height: root.app.ui.chip - 10; anchors.verticalCenter: parent.verticalCenter; color: root.app.ui.divider }
+        Rectangle { width: 1; height: root.app.ui.chip - 10; anchors.verticalCenter: parent.verticalCenter; color: root.app.ui.line }
         Repeater {
           model: [
             { key: "cpu", label: root.app.compact ? "CPU" : "Processor" },
@@ -150,7 +150,9 @@ Item {
         color: root.sort === "name" ? root.app.ui.text : root.app.ui.muted
         font.family: root.app.ui.font
         font.pixelSize: root.app.ui.fs.xs
-        font.weight: Font.DemiBold
+        font.weight: Font.Bold
+        font.capitalization: Font.AllUppercase
+        font.letterSpacing: root.app.ui.tracking
         MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor; onClicked: root.app.store.set("taskSort", "name") }
       }
       Row {
@@ -172,7 +174,9 @@ Item {
             color: root.sort === modelData.key ? root.app.ui.text : root.app.ui.muted
             font.family: root.app.ui.font
             font.pixelSize: root.app.ui.fs.xs
-            font.weight: Font.DemiBold
+            font.weight: Font.Bold
+            font.capitalization: Font.AllUppercase
+            font.letterSpacing: root.app.ui.tracking
             MouseArea {
               anchors.fill: parent
               enabled: modelData.key !== ""
@@ -182,7 +186,7 @@ Item {
           }
         }
       }
-      Rectangle { anchors.bottom: parent.bottom; width: parent.width; height: 1; color: root.app.ui.divider }
+      Rectangle { anchors.bottom: parent.bottom; width: parent.width; height: 1; color: root.app.ui.line }
     }
 
     ListView {
@@ -243,7 +247,7 @@ Item {
     anchors.right: parent.right
     width: visible ? Math.min(420, Math.max(340, parent.width * 0.38)) : 0
     color: root.app.ui.surface
-    Rectangle { width: 1; height: parent.height; color: root.app.ui.divider }
+    Rectangle { width: 1; height: parent.height; color: root.app.ui.line }
 
     DetailView {
       anchors.fill: parent
