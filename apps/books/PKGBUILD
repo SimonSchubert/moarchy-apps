@@ -19,7 +19,7 @@ depends=('quickshell' 'curl' 'ttf-jetbrains-mono-nerd' 'hicolor-icon-theme')
 # tag, with shared/kit in place of the kit link.
 source=("$url/releases/download/books-v$pkgver/$pkgname-$pkgver.tar.gz")
 # Pinned in the commit after the tag, as every app's here is.
-sha256sums=('SKIP')
+sha256sums=('6e67abb80559fb7d4096bf7e232ab015712487c02ef9f0a2501aff1519070ec7')
 
 check() {
   cd "$pkgname-$pkgver"
