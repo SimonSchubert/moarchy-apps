@@ -96,8 +96,10 @@ Item {
       y: x
       width: (root.half + root.gap * 0.5) * 2
       height: width
-      radius: root.gap * 0.5
+      radius: Math.min(root.app.ui.radius, root.gap * 0.5)
       color: root.app.ui.wood
+      border.width: 1
+      border.color: root.app.ui.line
     }
 
     // The three squares.
@@ -255,7 +257,7 @@ Item {
       visible: mill.length > 0 && share > 0
       height: Math.max(root.gap * 0.09, 2.5)
       width: full * share
-      radius: height / 2
+      radius: root.app.ui.round(height)
       x: a.x
       y: a.y - height / 2
       transformOrigin: Item.Left

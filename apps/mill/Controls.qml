@@ -23,7 +23,7 @@ Column {
     color: controls.app.over ? controls.app.ui.accent : controls.app.ui.text
     font.family: controls.app.ui.font
     font.pixelSize: controls.app.ui.fs.lg
-    font.weight: Font.DemiBold
+    font.weight: Font.Bold
   }
   // Undo stops at the end of a game: the result is in the record by then.
   // New game is the suggested tap once there is nothing left to play.

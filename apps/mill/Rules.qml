@@ -24,7 +24,7 @@ Card {
         color: root.app.ui.text
         font.family: root.app.ui.font
         font.pixelSize: root.app.ui.fs.sm
-        font.weight: Font.DemiBold
+        font.weight: Font.Bold
       }
       Text {
         width: parent.width - 62
