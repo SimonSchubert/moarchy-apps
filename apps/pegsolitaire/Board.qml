@@ -63,9 +63,9 @@ Item {
     width: root.side
     height: root.side
 
-    // The plank.
+    // The plank: square, as everything in the app is, unless the theme rounds.
     readonly property real pad: root.cell * 0.06
-    readonly property real corner: root.cell * 0.34
+    readonly property real corner: root.app.ui.radius > 0 ? root.cell * 0.34 : 0
     Rectangle {
       x: root.cell * 2 + board.pad
       y: board.pad

@@ -19,7 +19,7 @@ Column {
     visible: root.app.over
     width: parent.width
     height: bannerCol.implicitHeight + 24
-    radius: root.app.ui.radius + 2
+    radius: root.app.ui.radius
     color: root.app.ui.accentSoft
     border.width: 1
     border.color: root.app.ui.accent
@@ -36,7 +36,7 @@ Column {
         color: root.app.ui.text
         font.family: root.app.ui.font
         font.pixelSize: root.app.ui.fs.md
-        font.weight: Font.DemiBold
+        font.weight: Font.Bold
       }
       Button {
         app: root.app
