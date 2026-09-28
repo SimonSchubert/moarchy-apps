@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- A question over four answers, one of them right.
+
+     The question is a card with a question mark drawn as a stroke rather than
+     set in a font: the phone's drawer renders with QtSvg, which has whatever
+     fonts the phone has, and a glyph that falls back is a box.
+
+     The right answer carries a tick as well as the green, as it does in the
+     app, so it reads without the colour. -->
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+  <rect x="12" y="8" width="104" height="60" rx="11" fill="#3584e4"/>
+  <path d="M52 30a12 12 0 1 1 18.5 10.1c-4.2 2.7-6.5 4.9-6.5 9.4" fill="none" stroke="#ffffff" stroke-width="7.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="64" cy="59" r="4.6" fill="#ffffff"/>
+
+  <rect x="12" y="76" width="50" height="20" rx="6" fill="#77767b"/>
+  <rect x="66" y="76" width="50" height="20" rx="6" fill="#26a269"/>
+  <rect x="12" y="100" width="50" height="20" rx="6" fill="#77767b"/>
+  <rect x="66" y="100" width="50" height="20" rx="6" fill="#77767b"/>
+  <path d="M83 86l5 5 11-11" fill="none" stroke="#ffffff" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

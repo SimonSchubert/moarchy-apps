@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=Trivia
+GenericName=Quiz Game
+Comment=Multiple-choice quizzes by category and difficulty, from Open Trivia DB
+Exec=moarchy-trivia
+Icon=org.moarchy.Trivia
+Terminal=false
+Categories=Game;
+Keywords=trivia;quiz;questions;pub quiz;general knowledge;game;
+StartupNotify=false

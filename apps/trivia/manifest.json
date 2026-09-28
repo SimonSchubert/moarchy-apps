@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "id": "org.moarchy.trivia",
+  "name": "Trivia",
+  "version": "0.1.0",
+  "author": "Simon Schubert",
+  "license": "MIT",
+  "description": "Multiple-choice quizzes from Open Trivia DB: twenty-four categories, three difficulties, four answers or true and false, and a record of every answer by category. A round survives the app being reclaimed. Desktop and phone layouts.",
+  "homepage": "https://github.com/SimonSchubert/moarchy-apps/tree/main/apps/trivia",
+  "repository": "https://github.com/SimonSchubert/moarchy-apps",
+  "keywords": ["trivia", "quiz", "pub quiz", "questions", "game", "open trivia db"],
+  "icon": "icon.svg",
+  "kinds": ["panel"],
+  "keepLoaded": true,
+  "entryPoints": {
+    "panel": "Panel.qml"
+  }
+}

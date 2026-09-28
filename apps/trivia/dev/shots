@@ -1,0 +1,23 @@
+# What to photograph, for scripts/app-shot.sh. dev/demo.py writes the round:
+# DEMO=quiz (the default) is a question answered right, wrong one answered
+# wrong, done the score screen, home no round at all.
+shot phone
+shot phone-light LOOK=light
+shot phone-wrong DEMO=wrong
+shot phone-open DEMO=open
+shot phone-home DEMO=home
+shot phone-done DEMO=done
+shot phone-record DEMO=home MOARCHY_TRIVIA_PAGE=record
+shot phone-offline DEMO=home MOARCHY_TRIVIA_PAGE=error
+shot desktop SIZE=1280x820
+shot desktop-home SIZE=1280x820 DEMO=home
+shot desktop-done SIZE=1280x820 DEMO=done
+shot desktop-light SIZE=1280x820 DEMO=home LOOK=light
+shot desktop-latte SIZE=1280x820 DEMO=wrong THEME=.themes/catppuccin-latte/colors.toml
+
+# The store's three, for App Finder: a question, the categories and a score.
+# scripts/app-shot.sh's themed mode shoots these once per Omarchy theme.
+STORE="SIZE=540x1044 SCALE=1.5"
+shot store-1-question $STORE
+shot store-2-categories $STORE DEMO=home
+shot store-3-score $STORE DEMO=done
