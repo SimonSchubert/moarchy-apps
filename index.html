@@ -1,17 +1,10 @@
 <!doctype html>
 <meta charset="utf-8">
-<title>[moarchy-apps] pacman repository</title>
-<h1>[moarchy-apps]</h1>
-<p>A signed pacman repository for <a href="https://github.com/SimonSchubert/moarchy-apps">moarchy-apps</a>.</p>
-<pre>
-# /etc/pacman.conf
-[moarchy-apps]
-SigLevel = Required TrustedOnly
-Server = https://simonschubert.github.io/moarchy-apps/aarch64
-
-# trust the key that signs it
-curl -O https://simonschubert.github.io/moarchy-apps/aarch64/moarchy-apps.gpg
-sudo pacman-key --add moarchy-apps.gpg
-sudo pacman-key --lsign-key 3CA83612E7F3108F442006B418305B893569BAD3
-</pre>
+<title>[market-apps] pacman repository</title>
+<h1>[market-apps]</h1>
+<p>The signed pacman repository the <a href="https://github.com/SimonSchubert/omarchy-mobile-market">Omarchy Mobile Market</a>
+installs from: apps built from the AUR and tested on a phone-sized screen, and the
+<a href="https://github.com/SimonSchubert/moarchy-apps">moarchy-apps</a> Quickshell apps.</p>
+<p>Nothing to set up: on Omarchy Mobile, open App Finder, pick an app and enter the phone's PIN.
+The Market's package adds this repository and trusts its key.</p>
 <p>Key fingerprint: <code>3CA83612E7F3108F442006B418305B893569BAD3</code></p>
