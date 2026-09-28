@@ -36,7 +36,7 @@ the aarch64 repos, the AUR or Flathub. This is where they get written.
 | <img src="apps/files/docs/screenshots/omarchy-mobile.png" width="70" alt="files on Omarchy Mobile"> | [files](apps/files) | One folder at a time: copy, move, rename, and a delete that goes to the trash every other app reads — in Quickshell, for the desktop and the phone | v0.2.0 |
 | <img src="apps/editor/docs/screenshots/omarchy-mobile.png" width="70" alt="editor on Omarchy Mobile"> | [editor](apps/editor) | One text file at a time, and an `$EDITOR` that waits — in Quickshell, for the desktop and the phone | v0.2.0 |
 | <img src="apps/mail/docs/screenshots/omarchy-mobile.png" width="70" alt="mail on Omarchy Mobile"> | [mail](apps/mail) | One account over IMAP and SMTP, no HTML drawn, and new mail noticed with the window closed — in Quickshell, for the desktop and the phone | v0.2.0 |
-|  | [video-library](apps/video-library) | LBRY's videos through Odysee: its front page, search, channels to follow, a library of your own, played in the page — in Quickshell, for the desktop and the phone | unreleased |
+|  | [video-library](apps/video-library) | LBRY's videos through Odysee: its front page, search, channels to follow, a library of your own, played in the page — in Quickshell, for the desktop and the phone | v0.1.0 |
 
 Food is the Open Food Facts row on that list: barcode to nutrition, and Linux
 has `qrca` and `decoder`, which read a code and do not say what the packet is.

@@ -39,6 +39,7 @@ As of 2026-09-28, and this table is the thing to re-check rather than trust:
 
 | app | package | version | AUR | App Finder | `[market-apps]` |
 |---|---|---|---|---|---|
+| video-library | `moarchy-video-library` | 0.1.0 | yes | recommended, first | no |
 | vitals | `moarchy-vitals` | 0.2.1 | yes | recommended | yes |
 | tictactoe | `moarchy-tictactoe` | 0.2.0 | yes | recommended | yes |
 | minesweeper | `moarchy-minesweeper` | 0.2.0 | yes | recommended | yes |
