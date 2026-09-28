@@ -99,7 +99,7 @@ Item {
                  ? root.app.ui.alpha(root.app.ui.muted, 0.7) : root.app.ui.muted
           font.family: root.app.ui.font
           font.pixelSize: root.app.ui.fs.xs
-          font.weight: Font.DemiBold
+          font.weight: Font.Bold
           font.letterSpacing: 1.2
         }
       }
@@ -184,7 +184,7 @@ Item {
           y: root.compact ? Math.round((cell.height - height) / 2) : root.large ? 5 : 3
           width: root.disc
           height: root.disc
-          radius: width / 2
+          radius: root.app.ui.round(width)
 
           color: {
             if (root.large) return cell.isToday ? root.app.ui.accent : "transparent"
@@ -201,7 +201,7 @@ Item {
             color: root.large && cell.isToday ? root.app.ui.inkOnAccent : root.ink(cell.modelData)
             font.family: root.app.ui.font
             font.pixelSize: root.compact ? root.app.ui.fs.sm : root.app.ui.fs.md
-            font.weight: cell.isToday || cell.isSelected ? Font.DemiBold : Font.Normal
+            font.weight: cell.isToday || cell.isSelected ? Font.Bold : Font.Normal
           }
         }
 
@@ -222,7 +222,7 @@ Item {
 
               width: 5
               height: 5
-              radius: 2.5
+              radius: root.app.ui.round(height)
               color: root.app.eventColour(modelData)
               opacity: cell.modelData.inMonth ? 1.0 : 0.45
             }
@@ -246,10 +246,10 @@ Item {
               required property var modelData
               width: parent.width
               height: 18
-              radius: 4
+              radius: root.app.ui.radius
               color: root.app.eventWash(chip.modelData.colour)
               opacity: cell.modelData.inMonth ? 1 : 0.55
-              Rectangle { width: 3; height: parent.height - 6; y: 3; x: 3; radius: 1.5; color: root.app.eventColour(chip.modelData.colour) }
+              Rectangle { width: 3; height: parent.height - 6; y: 3; x: 3; color: root.app.eventColour(chip.modelData.colour) }
               Text {
                 x: 10
                 width: parent.width - 12

@@ -23,14 +23,11 @@ Item {
       anchors.leftMargin: root.app.ui.gutter
       anchors.right: addButton.left
       anchors.verticalCenter: parent.verticalCenter
-      Text {
-        width: parent.width
+      // "# Today", as Omarchy heads a group, and the date under it.
+      SectionTitle {
+        app: root.app
+        height: 22
         text: Dates.headline(root.app.selected, root.app.today)
-        color: root.app.selected === root.app.today ? root.app.ui.accent : root.app.ui.text
-        font.family: root.app.ui.font
-        font.pixelSize: root.app.ui.fs.lg
-        font.weight: Font.DemiBold
-        elide: Text.ElideRight
       }
       Text {
         width: parent.width
@@ -38,7 +35,7 @@ Item {
         text: Dates.relative(root.app.selected, root.app.today).length ? Dates.dayLabel(root.app.selected) : ""
         color: root.app.ui.muted
         font.family: root.app.ui.font
-        font.pixelSize: root.app.ui.fs.sm
+        font.pixelSize: root.app.ui.fs.xs
         elide: Text.ElideRight
       }
     }

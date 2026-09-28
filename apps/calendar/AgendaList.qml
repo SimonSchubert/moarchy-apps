@@ -49,7 +49,7 @@ Flickable {
           color: root.app.ui.muted
           font.family: root.app.ui.font
           font.pixelSize: root.app.ui.fs.xs
-          font.weight: Font.DemiBold
+          font.weight: Font.Bold
           font.letterSpacing: 1.2
         }
 
@@ -66,7 +66,7 @@ Flickable {
             color: group.isToday ? root.app.ui.accent : root.app.ui.muted
             font.family: root.app.ui.font
             font.pixelSize: root.app.ui.fs.xs
-            font.weight: Font.DemiBold
+            font.weight: Font.Bold
           }
           Text {
             anchors.horizontalCenter: parent.horizontalCenter
@@ -74,7 +74,7 @@ Flickable {
             color: group.isToday ? root.app.ui.accent : root.app.ui.text
             font.family: root.app.ui.font
             font.pixelSize: 24
-            font.weight: group.isToday ? Font.DemiBold : Font.Normal
+            font.weight: group.isToday ? Font.Bold : Font.Normal
           }
         }
 

@@ -19,7 +19,7 @@ Rectangle {
 
   implicitHeight: Math.max(app.ui.target + 8, text.height + 18)
   height: implicitHeight
-  radius: app.ui.radius + 2
+  radius: app.ui.radius
   color: app.eventWash(entry ? entry.colour : "blue")
   border.width: selected ? 2 : 0
   border.color: hue
@@ -35,7 +35,7 @@ Rectangle {
     anchors.verticalCenter: parent.verticalCenter
     width: 4
     height: parent.height - 18
-    radius: 2
+    radius: 0
     color: root.hue
   }
 
@@ -54,7 +54,7 @@ Rectangle {
       color: root.app.ui.text
       font.family: root.app.ui.font
       font.pixelSize: root.app.ui.fs.md
-      font.weight: Font.DemiBold
+      font.weight: Font.Bold
       elide: Text.ElideRight
       maximumLineCount: 1
     }

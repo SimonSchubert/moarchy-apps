@@ -118,8 +118,10 @@ Item {
       text: root.app.draftIsNew ? "New event" : "Event"
       color: root.app.ui.text
       font.family: root.app.ui.font
-      font.pixelSize: root.app.compact ? 20 : 20
+      font.pixelSize: root.app.ui.fs.md
       font.weight: Font.Bold
+      font.capitalization: Font.AllUppercase
+      font.letterSpacing: root.app.ui.tracking
       elide: Text.ElideRight
     }
     Row {
@@ -264,7 +266,7 @@ Item {
               color: root.app.ui.text
               font.family: root.app.ui.font
               font.pixelSize: root.app.ui.fs.md
-              font.weight: Font.DemiBold
+              font.weight: Font.Bold
             }
             IconButton {
               anchors.right: parent.right
@@ -380,7 +382,7 @@ Item {
               readonly property bool on: !!root.draft && root.draft.colour === swatch.modelData
               width: 32
               height: 32
-              radius: 16
+              radius: root.app.ui.round(height)
               color: root.app.eventColour(swatch.modelData)
               border.width: swatch.on ? 3 : 0
               border.color: root.app.ui.text
