@@ -47,7 +47,10 @@ Item {
       text: root.app.folderLabel
       color: root.app.ui.muted
       font.family: root.app.ui.font
-      font.pixelSize: root.app.ui.fs.sm
+      font.pixelSize: root.app.ui.fs.xs
+      font.weight: Font.Bold
+      font.capitalization: Font.AllUppercase
+      font.letterSpacing: root.app.ui.tracking
       elide: Text.ElideRight
     }
     Row {
@@ -123,7 +126,7 @@ Item {
           Rectangle {
             width: 40
             height: 40
-            radius: 20
+            radius: root.app.ui.radius
             color: root.app.ui.surfaceHigh
             Text {
               anchors.centerIn: parent
@@ -131,7 +134,7 @@ Item {
               color: root.app.ui.text
               font.family: root.app.ui.font
               font.pixelSize: root.app.ui.fs.lg
-              font.weight: Font.DemiBold
+              font.weight: Font.Bold
             }
           }
           Column {
@@ -143,7 +146,7 @@ Item {
               color: root.app.ui.text
               font.family: root.app.ui.font
               font.pixelSize: root.app.ui.fs.md
-              font.weight: Font.DemiBold
+              font.weight: Font.Bold
               elide: Text.ElideRight
             }
             Text {
@@ -287,8 +290,10 @@ Item {
           bottomPadding: 4
           color: root.app.ui.muted
           font.family: root.app.ui.font
-          font.pixelSize: root.app.ui.fs.sm
-          font.weight: Font.DemiBold
+          font.pixelSize: root.app.ui.fs.xs
+          font.weight: Font.Bold
+          font.capitalization: Font.AllUppercase
+          font.letterSpacing: root.app.ui.tracking
         }
         Repeater {
           model: root.body ? root.body.attachments : []

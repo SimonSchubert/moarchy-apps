@@ -100,8 +100,10 @@ Item {
       text: Compose.title(root.app.compose)
       color: root.app.ui.text
       font.family: root.app.ui.font
-      font.pixelSize: root.app.compact ? 20 : 18
+      font.pixelSize: root.app.ui.fs.md
       font.weight: Font.Bold
+      font.capitalization: Font.AllUppercase
+      font.letterSpacing: root.app.ui.tracking
       elide: Text.ElideRight
     }
     Row {

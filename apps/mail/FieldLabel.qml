@@ -8,6 +8,9 @@ Text {
   verticalAlignment: Text.AlignVCenter
   color: app.ui.muted
   font.family: app.ui.font
-  font.pixelSize: app.ui.fs.sm
+  font.pixelSize: app.ui.fs.xs
+  font.weight: Font.Bold
+  font.capitalization: Font.AllUppercase
+  font.letterSpacing: app.ui.tracking
   elide: Text.ElideRight
 }

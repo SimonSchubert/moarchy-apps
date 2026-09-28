@@ -1305,7 +1305,7 @@ App {
       anchors.margins: 16
       width: 56
       height: 56
-      radius: root.ui.radius + 8
+      radius: root.ui.radius
       color: fabMouse.pressed ? Qt.darker(root.ui.accent, 1.15) : root.ui.accent
       Accessible.role: Accessible.Button
       Accessible.name: "Write a message"
@@ -1357,10 +1357,10 @@ App {
       anchors.bottom: parent.bottom
       anchors.margins: 12
       anchors.leftMargin: 8
-      radius: root.ui.radius + 4
+      radius: root.ui.radius
       color: root.ui.surface
       border.width: 1
-      border.color: root.ui.divider
+      border.color: root.ui.line
       clip: true
 
       EmptyState {

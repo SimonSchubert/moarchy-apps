@@ -52,10 +52,10 @@ Item {
     height: col.implicitHeight + 24 + (atBottom ? root.app.bottomInset : 0)
     anchors.horizontalCenter: parent.horizontalCenter
     y: atBottom ? parent.height - height : (parent.height - height) / 2
-    radius: root.app.ui.radius + 6
+    radius: root.app.ui.radius
     color: root.app.ui.bg
     border.width: 1
-    border.color: root.app.ui.border
+    border.color: root.app.ui.line
     MouseArea { anchors.fill: parent }
 
     Column {
@@ -75,7 +75,7 @@ Item {
         color: root.app.ui.text
         font.family: root.app.ui.font
         font.pixelSize: root.app.ui.fs.md
-        font.weight: Font.DemiBold
+        font.weight: Font.Bold
         elide: Text.ElideRight
       }
       Text {

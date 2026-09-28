@@ -35,7 +35,7 @@ Rectangle {
     anchors.verticalCenter: parent.verticalCenter
     width: 40
     height: 40
-    radius: 20
+    radius: root.app.ui.radius
     color: root.unread ? root.app.ui.accentSoft : root.app.ui.surfaceHigh
     Text {
       anchors.centerIn: parent
@@ -43,7 +43,7 @@ Rectangle {
       color: root.unread ? root.app.ui.accent : root.app.ui.text
       font.family: root.app.ui.font
       font.pixelSize: root.app.ui.fs.lg
-      font.weight: Font.DemiBold
+      font.weight: Font.Bold
     }
   }
 
@@ -64,7 +64,7 @@ Rectangle {
         color: root.app.ui.text
         font.family: root.app.ui.font
         font.pixelSize: root.app.ui.fs.md
-        font.weight: root.unread ? Font.DemiBold : Font.Normal
+        font.weight: root.unread ? Font.Bold : Font.Normal
         elide: Text.ElideRight
       }
       Row {
@@ -100,7 +100,7 @@ Rectangle {
       color: root.app.ui.text
       font.family: root.app.ui.font
       font.pixelSize: root.app.ui.fs.sm
-      font.weight: root.unread ? Font.DemiBold : Font.Normal
+      font.weight: root.unread ? Font.Bold : Font.Normal
       elide: Text.ElideRight
     }
     Text {

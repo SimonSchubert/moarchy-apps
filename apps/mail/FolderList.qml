@@ -69,7 +69,7 @@ Item {
         visible: folderRow.modelData.unseen > 0
         width: Math.max(22, count.implicitWidth + 12)
         height: 22
-        radius: 11
+        radius: root.app.ui.round(height)
         color: folderRow.quiet ? root.app.ui.surfaceHigh : root.app.ui.accent
         Text {
           id: count
@@ -78,7 +78,7 @@ Item {
           color: folderRow.quiet ? root.app.ui.text : root.app.ui.inkOnAccent
           font.family: root.app.ui.font
           font.pixelSize: root.app.ui.fs.xs
-          font.weight: Font.DemiBold
+          font.weight: Font.Bold
         }
       }
     }
