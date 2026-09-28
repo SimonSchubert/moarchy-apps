@@ -465,10 +465,10 @@ App {
       anchors.rightMargin: root.ui.gutter
       anchors.bottomMargin: root.ui.gutter
       anchors.topMargin: 4
-      radius: root.ui.radius + 4
+      radius: root.ui.radius
       color: root.ui.surface
       border.width: 1
-      border.color: root.ui.divider
+      border.color: root.ui.line
 
       readonly property var product: root.selection && root.selection.kind === "product" ? root.book.products[root.selection.code] || null : null
 

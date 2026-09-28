@@ -20,10 +20,10 @@ Column {
     anchors.horizontalCenter: parent.horizontalCenter
     width: root.size
     height: root.size
-    radius: root.app.ui.radius + 2
+    radius: root.app.ui.radius
     color: root.grade ? root.app.ui.gradeFill(root.grade) : root.app.ui.surfaceHigh
     border.width: 1
-    border.color: root.grade ? root.app.ui.gradeHue(root.grade) : root.app.ui.divider
+    border.color: root.grade ? root.app.ui.gradeHue(root.grade) : root.app.ui.line
     Text {
       anchors.centerIn: parent
       text: root.grade ? root.grade.toUpperCase() : root.fallback
@@ -39,6 +39,8 @@ Column {
     text: root.caption
     color: root.app.ui.muted
     font.family: root.app.ui.font
-    font.pixelSize: root.app.ui.fs.xs
+    font.pixelSize: 10
+    font.capitalization: Font.AllUppercase
+    font.letterSpacing: 0.6
   }
 }

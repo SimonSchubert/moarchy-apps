@@ -104,7 +104,7 @@ Item {
     id: glass
     anchors.fill: parent
     visible: root.busyTitle === "" && root.phase !== "blank"
-    radius: root.app.compact ? 0 : root.app.ui.radius + 4
+    radius: root.app.compact ? 0 : root.app.ui.radius
     color: root.app.ui.well
     clip: true
 
@@ -126,7 +126,7 @@ Item {
       anchors.centerIn: parent
       width: Math.min((picture.visible && picture.paintedWidth > 0 ? picture.paintedWidth : parent.width) * 0.78, 360)
       height: Math.min(width * 0.46, (picture.visible && picture.paintedHeight > 0 ? picture.paintedHeight : parent.height) * 0.7)
-      radius: root.app.ui.radius + 4
+      radius: root.app.ui.radius
       color: "transparent"
       border.width: 3
       border.color: root.app.ui.accent
@@ -138,7 +138,7 @@ Item {
       anchors.bottomMargin: 24
       width: hint.implicitWidth + 32
       height: 36
-      radius: 18
+      radius: root.app.ui.round(height)
       color: root.app.ui.alpha(root.app.ui.bg, 0.85)
       Row {
         id: hint
@@ -151,7 +151,7 @@ Item {
           color: root.app.ui.text
           font.family: root.app.ui.font
           font.pixelSize: root.app.ui.fs.sm
-          font.weight: Font.DemiBold
+          font.weight: Font.Bold
         }
       }
     }

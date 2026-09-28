@@ -61,7 +61,7 @@ Item {
         radius: root.app.ui.radius
         color: row.p.nutriscore ? root.app.ui.gradeFill(row.p.nutriscore) : root.app.ui.surfaceHigh
         border.width: 1
-        border.color: row.p.nutriscore ? root.app.ui.gradeHue(row.p.nutriscore) : root.app.ui.divider
+        border.color: row.p.nutriscore ? root.app.ui.gradeHue(row.p.nutriscore) : root.app.ui.line
         Text {
           anchors.centerIn: parent
           text: row.p.nutriscore ? row.p.nutriscore.toUpperCase() : F.DASH

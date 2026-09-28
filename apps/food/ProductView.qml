@@ -142,7 +142,7 @@ Item {
               color: root.app.ui.text
               font.family: root.app.ui.font
               font.pixelSize: root.app.ui.fs.md
-              font.weight: Font.DemiBold
+              font.weight: Font.Bold
               font.features: ({ "tnum": 1 })
             }
           }
@@ -157,7 +157,7 @@ Item {
         color: root.app.ui.warn
         font.family: root.app.ui.font
         font.pixelSize: root.app.ui.fs.md
-        font.weight: Font.DemiBold
+        font.weight: Font.Bold
       }
 
       Text {
