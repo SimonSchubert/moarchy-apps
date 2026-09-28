@@ -1,11 +1,22 @@
 # What to photograph, for scripts/app-shot.sh.
-shot phone
-shot phone-light LOOK=light
-shot phone-marking MOARCHY_MINESWEEPER_MARKING=1
-shot phone-lost DEMO=lost
-shot phone-record MOARCHY_MINESWEEPER_PAGE=record
-shot phone-newgame MOARCHY_MINESWEEPER_NEW=1
-shot desktop SIZE=1280x820
-shot desktop-light SIZE=1280x820 LOOK=light
-shot desktop-won SIZE=1280x820 DEMO=won
-shot desktop-latte SIZE=1280x820 THEME=.themes/catppuccin-latte/colors.toml DEMO=lost
+# The clock stands still: ticking, it reads a second more on one run than on
+# another.
+STILL=MOARCHY_MINESWEEPER_STILL=1
+shot phone $STILL
+shot phone-light $STILL LOOK=light
+shot phone-marking $STILL MOARCHY_MINESWEEPER_MARKING=1
+shot phone-lost $STILL DEMO=lost
+shot phone-record $STILL MOARCHY_MINESWEEPER_PAGE=record
+shot phone-newgame $STILL MOARCHY_MINESWEEPER_NEW=1
+shot desktop $STILL SIZE=1280x820
+shot desktop-light $STILL SIZE=1280x820 LOOK=light
+shot desktop-won $STILL SIZE=1280x820 DEMO=won
+shot desktop-latte $STILL SIZE=1280x820 THEME=.themes/catppuccin-latte/colors.toml DEMO=lost
+
+# The store's three, for App Finder: a board in progress, a lost one and the
+# record. scripts/app-shot.sh's themed mode shoots these once per Omarchy
+# theme.
+STORE="SIZE=540x1044 SCALE=1.5"
+shot store-1-game $STILL $STORE
+shot store-2-lost $STILL $STORE DEMO=lost
+shot store-3-record $STILL $STORE MOARCHY_MINESWEEPER_PAGE=record

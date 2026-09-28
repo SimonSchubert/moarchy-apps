@@ -234,7 +234,7 @@ def main() -> None:
         os.environ.get("MOARCHY_MAIL_DIR") or Path.home() / ".local/share/moarchy-mail"
     )
     directory.mkdir(parents=True, exist_ok=True)
-    now = int(time.time() * 1000)
+    now = int(float(os.environ.get("MOARCHY_MAIL_NOW") or time.time()) * 1000)
 
     contacts = directory.parent / "moarchy-contacts"
     book = [

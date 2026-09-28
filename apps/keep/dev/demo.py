@@ -16,7 +16,7 @@ import sys
 import time
 from pathlib import Path
 
-NOW = time.time()
+NOW = float(os.environ.get("MOARCHY_KEEP_NOW") or time.time())
 MINUTE = 60
 
 

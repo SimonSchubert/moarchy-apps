@@ -219,7 +219,11 @@ App {
   property bool peekDue: false
 
   property var people: []
-  property real now: Date.now()
+  property real now: clockNow()
+  // MOARCHY_MAIL_NOW, in seconds: the clock the list is dated against, pinned
+  // for the shots, where dev/demo.py dates the mail from the same moment.
+  readonly property real pinnedNow: parseInt(Quickshell.env("MOARCHY_MAIL_NOW") || "0", 10)
+  function clockNow() { return pinnedNow > 0 ? pinnedNow * 1000 : Date.now() }
 
   property var openRow: null
   property var body: null
@@ -294,7 +298,7 @@ App {
   onSummoned: function (payload) {
     everShown = true
     warmUp()
-    now = Date.now()
+    now = clockNow()
     var ask = Compose.parsePayload(JSON.stringify(payload || {}), Date.now())
     if (ask.draft) startCompose(ask.draft, screen === "compose" ? "list" : screen)
     Qt.callLater(whenReady)
@@ -509,7 +513,7 @@ App {
   }
 
   function arrived(list) {
-    now = Date.now()
+    now = clockNow()
     if (folder === "INBOX" && showing) refresh(false)
     if (showing && folder === "INBOX" && screen !== "setup") return
     // feedbackd's sound for it, where there is feedbackd. fbcli ends on the
@@ -1044,7 +1048,7 @@ App {
     repeat: true
     running: root.showing
     onTriggered: {
-      root.now = Date.now()
+      root.now = root.clockNow()
       root.whenReady()
     }
   }

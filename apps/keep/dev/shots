@@ -1,11 +1,23 @@
 # What to photograph, for scripts/app-shot.sh.
-shot phone
-shot phone-light LOOK=light
-shot phone-list MOARCHY_KEEP_OPEN=Shopping
-shot phone-text MOARCHY_KEEP_OPEN=Sourdough LOOK=light
-shot phone-menu MOARCHY_KEEP_MENU=Trip
-shot phone-tokyo THEME=.themes/tokyo-night/colors.toml
-shot desktop SIZE=1280x820
-shot desktop-light SIZE=1280x820 LOOK=light
-shot desktop-open SIZE=1280x820 MOARCHY_KEEP_OPEN=Shopping
-shot desktop-latte SIZE=1280x820 THEME=.themes/catppuccin-latte/colors.toml MOARCHY_KEEP_OPEN=Trip
+# A Tuesday afternoon, pinned in both halves: demo.py dates the notes
+# from it and the app reads its clock from it, so "today" is the same day
+# and the same minutes on every run.
+NOW=MOARCHY_KEEP_NOW=1789478400
+shot phone $NOW
+shot phone-light $NOW LOOK=light
+shot phone-list $NOW MOARCHY_KEEP_OPEN=Shopping
+shot phone-text $NOW MOARCHY_KEEP_OPEN=Sourdough LOOK=light
+shot phone-menu $NOW MOARCHY_KEEP_MENU=Trip
+shot phone-tokyo $NOW THEME=.themes/tokyo-night/colors.toml
+shot desktop $NOW SIZE=1280x820
+shot desktop-light $NOW SIZE=1280x820 LOOK=light
+shot desktop-open $NOW SIZE=1280x820 MOARCHY_KEEP_OPEN=Shopping
+shot desktop-latte $NOW SIZE=1280x820 THEME=.themes/catppuccin-latte/colors.toml MOARCHY_KEEP_OPEN=Trip
+
+# The store's three, for App Finder: the notes, the pinned shopping list, and a
+# text note. scripts/app-shot.sh's themed mode shoots these once per Omarchy
+# theme.
+STORE="SIZE=540x1044 SCALE=1.5"
+shot store-1-notes $NOW $STORE
+shot store-2-list $NOW $STORE MOARCHY_KEEP_OPEN=Shopping
+shot store-3-text $NOW $STORE MOARCHY_KEEP_OPEN=Sourdough

@@ -4,28 +4,39 @@
 # a plain message with a quote, a link and a PDF, and a newsletter that is
 # mostly links and pictures -- so every screen here has the thing on it that
 # is hard to get right.
-shot phone
-shot phone-light LOOK=light
-shot phone-message MOARCHY_MAIL_OPEN=231
-shot phone-newsletter MOARCHY_MAIL_OPEN=229
-shot phone-reply MOARCHY_MAIL_OPEN=231 MOARCHY_MAIL_REPLY=all
-shot phone-compose MOARCHY_MAIL_PAGE=compose "MOARCHY_MAIL_TO=Jonas Weber <jonas@example.com>, ha" \
+# A Tuesday afternoon, pinned in both halves: demo.py dates the mail
+# from it and the app reads its clock from it, so "today" is the same day
+# and the same minutes on every run.
+NOW=MOARCHY_MAIL_NOW=1789478400
+shot phone $NOW
+shot phone-light $NOW LOOK=light
+shot phone-message $NOW MOARCHY_MAIL_OPEN=231
+shot phone-newsletter $NOW MOARCHY_MAIL_OPEN=229
+shot phone-reply $NOW MOARCHY_MAIL_OPEN=231 MOARCHY_MAIL_REPLY=all
+shot phone-compose $NOW MOARCHY_MAIL_PAGE=compose "MOARCHY_MAIL_TO=Jonas Weber <jonas@example.com>, ha" \
   MOARCHY_MAIL_SUBJECT=Copenhagen MOARCHY_MAIL_FOCUS=to
-shot phone-folders MOARCHY_MAIL_PAGE=folders
-shot phone-unsent MOARCHY_MAIL_EXTRAS=1
-shot phone-menu MOARCHY_MAIL_MENU=230
-shot phone-setup MOARCHY_MAIL_NOACCOUNT=1 MOARCHY_MAIL_PAGE=setup "MOARCHY_MAIL_TYPED=Ada Okonkwo|ada@example.org|correct horse"
-shot phone-setup-refused MOARCHY_MAIL_NOACCOUNT=1 MOARCHY_MAIL_PAGE=setup \
+shot phone-folders $NOW MOARCHY_MAIL_PAGE=folders
+shot phone-unsent $NOW MOARCHY_MAIL_EXTRAS=1
+shot phone-menu $NOW MOARCHY_MAIL_MENU=230
+shot phone-setup $NOW MOARCHY_MAIL_NOACCOUNT=1 MOARCHY_MAIL_PAGE=setup "MOARCHY_MAIL_TYPED=Ada Okonkwo|ada@example.org|correct horse"
+shot phone-setup-refused $NOW MOARCHY_MAIL_NOACCOUNT=1 MOARCHY_MAIL_PAGE=setup \
   "MOARCHY_MAIL_TYPED=Ada Okonkwo|ada@gmail.com|correct horse" \
   "MOARCHY_MAIL_NOTE=Gmail needs an app password, made at myaccount.google.com/apppasswords." \
   "MOARCHY_MAIL_ERROR=This account wants an app password, which is made in the provider's security settings, rather than the account's own password."
-shot desktop SIZE=1280x820 MOARCHY_MAIL_OPEN=231
-shot desktop-light SIZE=1280x820 LOOK=light MOARCHY_MAIL_OPEN=229
-shot desktop-compose SIZE=1280x820 MOARCHY_MAIL_OPEN=231 MOARCHY_MAIL_REPLY=all
-shot desktop-unsent SIZE=1280x820 MOARCHY_MAIL_EXTRAS=1
-shot desktop-settings SIZE=1280x820 MOARCHY_MAIL_PAGE=settings
+shot desktop $NOW SIZE=1280x820 MOARCHY_MAIL_OPEN=231
+shot desktop-light $NOW SIZE=1280x820 LOOK=light MOARCHY_MAIL_OPEN=229
+shot desktop-compose $NOW SIZE=1280x820 MOARCHY_MAIL_OPEN=231 MOARCHY_MAIL_REPLY=all
+shot desktop-unsent $NOW SIZE=1280x820 MOARCHY_MAIL_EXTRAS=1
+shot desktop-settings $NOW SIZE=1280x820 MOARCHY_MAIL_PAGE=settings
 [[ -f .themes/catppuccin-latte/colors.toml ]] && \
-  shot desktop-latte SIZE=1280x820 MOARCHY_MAIL_OPEN=229 THEME=.themes/catppuccin-latte/colors.toml
+  shot desktop-latte $NOW SIZE=1280x820 MOARCHY_MAIL_OPEN=229 THEME=.themes/catppuccin-latte/colors.toml
 [[ -f .themes/tokyo-night/colors.toml ]] && \
-  shot phone-tokyo MOARCHY_MAIL_OPEN=231 THEME=.themes/tokyo-night/colors.toml
+  shot phone-tokyo $NOW MOARCHY_MAIL_OPEN=231 THEME=.themes/tokyo-night/colors.toml
 true
+
+# The store's three, for App Finder: the inbox, a message open, and the
+# folders. scripts/app-shot.sh's themed mode shoots these once per Omarchy theme.
+STORE="SIZE=540x1044 SCALE=1.5"
+shot store-1-inbox $NOW $STORE
+shot store-2-message $NOW $STORE MOARCHY_MAIL_OPEN=231
+shot store-3-folders $NOW $STORE MOARCHY_MAIL_PAGE=folders

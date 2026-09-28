@@ -244,11 +244,14 @@ App {
   // game is on. Saved once a minute rather than once a second -- an fsync a
   // second for an hour is thousands of writes to a phone's flash -- and
   // whenever it stops.
+  // MOARCHY_MINESWEEPER_STILL stops it, for the shots: a clock that ticks
+  // while the picture is taken reads one second more on one run than another.
+  readonly property bool still: (Quickshell.env("MOARCHY_MINESWEEPER_STILL") || "") !== ""
   Timer {
     id: tick
     interval: 1000
     repeat: true
-    running: root.looked && root.running
+    running: root.looked && root.running && !root.still
     onTriggered: {
       root.game = S.withSeconds(root.game, root.game.seconds + 1)
       if (root.game.seconds % 60 === 0) root.save()

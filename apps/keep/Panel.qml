@@ -272,6 +272,9 @@ App {
   // list), MOARCHY_KEEP_MENU (part of a title), MOARCHY_KEEP_QUERY: start on a
   // screen, for the screenshots and for a phone with no finger to tap with.
   property bool hooked: false
+  // MOARCHY_KEEP_NOW, in seconds: the clock the notes are dated against, pinned
+  // for the shots, where dev/demo.py dates them from the same moment.
+  readonly property real pinnedNow: parseInt(Quickshell.env("MOARCHY_KEEP_NOW") || "0", 10)
   function find(want) {
     var n = N.get(notes, want)
     if (n) return n

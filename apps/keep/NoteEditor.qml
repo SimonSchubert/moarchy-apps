@@ -321,7 +321,7 @@ Rectangle {
     anchors.bottom: parent.bottom
     anchors.bottomMargin: 12
     x: 18
-    text: root.draft ? N.editedLabel(root.stamp) : ""
+    text: root.draft ? N.editedLabel(root.stamp, root.app.pinnedNow > 0 ? root.app.pinnedNow : undefined) : ""
     color: root.app.ui.muted
     font.family: root.app.ui.font
     font.pixelSize: root.app.ui.fs.xs
