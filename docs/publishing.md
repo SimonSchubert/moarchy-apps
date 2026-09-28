@@ -62,10 +62,10 @@ As of 2026-09-28, and this table is the thing to re-check rather than trust:
 | files | `moarchy-files` | 0.2.0 | yes | recommended | yes |
 | editor | `moarchy-editor` | 0.2.0 | yes | recommended | yes |
 | mail | `moarchy-mail` | 0.2.0 | yes | recommended | yes |
-| crypto-market | `crypto-market` | 1.1.1 | yes | recommended | no |
-| couch-for-trakt | `couch-for-trakt` | 1.1.0 | yes | recommended | no |
-| transit | `transit` | 1.1.0 | yes | recommended | no |
-| airwaves | `airwaves` | 1.0.0 | yes | recommended | no |
+| crypto-market | `crypto-market` | 1.2.0 | yes | recommended | no |
+| couch-for-trakt | `couch-for-trakt` | 1.2.0 | yes | recommended | no |
+| transit | `transit` | 1.2.0 | yes | recommended | no |
+| airwaves | `airwaves` | 1.1.0 | yes | recommended | no |
 | queens | `queens` | 1.0.8 | no -- upstream's name to claim | no | no |
 | puzzle-games | `puzzle-games` | 1.1.4 | no -- upstream's name to claim | no | no |
 
