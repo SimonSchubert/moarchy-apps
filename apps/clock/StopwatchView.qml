@@ -60,8 +60,8 @@ Item {
             color: root.app.ui.muted
             font.family: root.app.ui.font
             font.pixelSize: root.app.ui.fs.xs
-            font.weight: Font.DemiBold
-            font.letterSpacing: 1
+            font.weight: Font.Bold
+            font.letterSpacing: root.app.ui.tracking
           }
         }
       }
@@ -95,10 +95,10 @@ Item {
     y: root.wide ? 12 : stage.height
     width: root.wide ? Math.min(380, parent.width * 0.45) : parent.width - root.app.ui.gutter * 2
     height: root.wide ? parent.height - 24 : parent.height - stage.height - root.app.ui.gutter
-    radius: root.app.ui.radius + 4
+    radius: root.app.ui.radius
     color: root.app.ui.surface
     border.width: 1
-    border.color: root.app.ui.divider
+    border.color: root.app.ui.line
 
     ListView {
       id: list
@@ -136,7 +136,7 @@ Item {
             text: Watch.watchText(lap.modelData.lap).slice(0, -2)
             tail: Watch.watchText(lap.modelData.lap).slice(-2)
             pixelSize: root.app.body
-            weight: lap.modelData.best || lap.modelData.worst ? Font.DemiBold : Font.Normal
+            weight: lap.modelData.best || lap.modelData.worst ? Font.Bold : Font.Normal
             color: lap.mark
             tailColor: root.app.ui.alpha(lap.mark, 0.7)
           }

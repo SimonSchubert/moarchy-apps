@@ -175,7 +175,7 @@ Item {
               readonly property bool on: root.draft ? root.draft.days.indexOf(modelData) >= 0 : false
               width: 40
               height: 40
-              radius: 20
+              radius: root.app.ui.radius
               color: on ? root.app.ui.accent : dayTap.pressed ? root.app.ui.pressed : root.app.ui.surfaceHigh
               Accessible.role: Accessible.CheckBox
               Accessible.name: Alarms.DAY_SHORT[modelData]
@@ -186,7 +186,7 @@ Item {
                 color: day.on ? root.app.ui.inkOnAccent : root.app.ui.muted
                 font.family: root.app.ui.font
                 font.pixelSize: root.app.ui.fs.sm
-                font.weight: Font.DemiBold
+                font.weight: Font.Bold
               }
               MouseArea {
                 id: dayTap

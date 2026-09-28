@@ -80,7 +80,7 @@ Rectangle {
       color: root.app.ui.text
       font.family: root.app.ui.font
       font.pixelSize: root.app.ui.fs.lg + 2
-      font.weight: Font.DemiBold
+      font.weight: Font.Bold
     }
 
     Row {

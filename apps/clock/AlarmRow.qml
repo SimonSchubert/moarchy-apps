@@ -12,12 +12,12 @@ Rectangle {
   readonly property bool on: !!alarm.enabled
 
   height: 88
-  radius: app.ui.radius + 4
+  radius: app.ui.radius
   color: tap.pressed ? Qt.tint(app.ui.surface, app.ui.pressed)
     : tap.containsMouse ? Qt.tint(app.ui.surface, app.ui.hover)
     : on ? app.ui.surface : row.app.ui.offCard
   border.width: 1
-  border.color: app.ui.divider
+  border.color: app.ui.line
   Accessible.role: Accessible.Button
   Accessible.name: Alarms.timeText(alarm.hour, alarm.minute, app.hour24) + (alarm.label ? ", " + alarm.label : "")
 
@@ -94,6 +94,7 @@ Rectangle {
     accent: row.app.ui.accent
     knobInk: row.app.ui.inkOnAccent
     dim: row.app.ui.muted
+    corner: row.app.ui.radius
     onToggled: row.app.toggleAlarm(row.alarm.id)
   }
 }

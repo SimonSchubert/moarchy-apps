@@ -96,8 +96,10 @@ Item {
       visible: rows.app.missedNote.length > 0
       width: parent.width
       height: Math.max(rows.app.ui.target, noteText.implicitHeight + 20)
-      radius: rows.app.ui.radius + 4
+      radius: rows.app.ui.radius
       color: rows.app.ui.alpha(rows.app.ui.late, 0.14)
+      border.width: 1
+      border.color: rows.app.ui.alpha(rows.app.ui.late, 0.5)
       Text {
         id: noteText
         anchors.verticalCenter: parent.verticalCenter
@@ -181,7 +183,7 @@ Item {
     anchors.margins: 16
     width: 56
     height: 56
-    radius: 18
+    radius: root.app.ui.radius
     color: fabMouse.pressed ? Qt.darker(root.app.ui.accent, 1.15) : root.app.ui.accent
     Accessible.role: Accessible.Button
     Accessible.name: "New alarm"

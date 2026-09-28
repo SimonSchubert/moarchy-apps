@@ -152,7 +152,7 @@ Item {
             // the same hurry a sum is.
             width: root.wide ? 88 : 100
             height: root.wide ? 52 : 56
-            radius: root.app.ui.radius + 2
+            radius: root.app.ui.radius
             color: keyTap.pressed ? root.app.ui.pressed
               : keyTap.containsMouse ? Qt.tint(root.app.ui.surface, root.app.ui.hover)
               : modelData.key < 0 ? root.app.ui.well : root.app.ui.surface

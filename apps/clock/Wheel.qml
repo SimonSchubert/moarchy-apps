@@ -110,7 +110,7 @@ Item {
         color: view.currentIndex === cell.index ? root.ink : root.dim
         font.family: root.family
         font.pixelSize: root.bodySize
-        font.weight: Font.DemiBold
+        font.weight: Font.Bold
         font.features: ({ "tnum": 1 })
       }
 

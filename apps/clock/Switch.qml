@@ -17,6 +17,8 @@ Item {
   property color accent: "steelblue"
   property color knobInk: "white"
   property color dim: "grey"
+  // The theme's corners: square on Omarchy, a pill where windows are rounded.
+  property int corner: 0
 
   signal toggled(bool checked)
 
@@ -39,7 +41,7 @@ Item {
     anchors.centerIn: parent
     width: 46
     height: 26
-    radius: height / 2
+    radius: root.corner > 0 ? height / 2 : 0
     // Off is a filled track one shade darker, not an outlined one. The
     // outline was a 1px border that a phone screen loses outdoors, and a
     // switch whose off state is invisible is a switch with one state.
@@ -51,7 +53,7 @@ Item {
       id: knob
       width: 20
       height: 20
-      radius: height / 2
+      radius: root.corner > 0 ? height / 2 : 0
       y: (parent.height - height) / 2
       x: root.checked ? parent.width - width - 3 : 3
       color: root.checked ? root.knobInk : root.dim
