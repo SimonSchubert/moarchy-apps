@@ -24,7 +24,7 @@ depends=('quickshell' 'ttf-jetbrains-mono-nerd' 'hicolor-icon-theme')
 # whose compression has moved under pinned checksums before.
 source=("$url/releases/download/mill-v$pkgver/$pkgname-$pkgver.tar.gz")
 # Pinned in the commit after the tag, as every app's here is.
-sha256sums=('SKIP')
+sha256sums=('c5d9317d0e8135d5b253f56b1c4b89019ee5fd357746d72e8b3d4f583bda4429')
 
 check() {
   cd "$pkgname-$pkgver"

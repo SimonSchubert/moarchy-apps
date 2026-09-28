@@ -22,7 +22,7 @@ depends=('quickshell' 'ttf-jetbrains-mono-nerd' 'hicolor-icon-theme')
 # tag, with shared/kit in place of the kit link.
 source=("$url/releases/download/fiveletters-v$pkgver/$pkgname-$pkgver.tar.gz")
 # Pinned in the commit after the tag, as every app's here is.
-sha256sums=('SKIP')
+sha256sums=('d2904296cb7d6cfa7a24506786bf446b54e1dbf5ee8531a41e5088ac1da1a9ee')
 
 check() {
   cd "$pkgname-$pkgver"

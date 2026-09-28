@@ -24,7 +24,7 @@ depends=('quickshell' 'ttf-jetbrains-mono-nerd' 'hicolor-icon-theme')
 # whose compression has moved under pinned checksums before.
 source=("$url/releases/download/chess-v$pkgver/$pkgname-$pkgver.tar.gz")
 # Pinned in the commit after the tag, as every app's here is.
-sha256sums=('SKIP')
+sha256sums=('1bf3a0a326936a9442f26cc983c83ab7a04d661767f338b5819a8957cac64920')
 
 check() {
   cd "$pkgname-$pkgver"

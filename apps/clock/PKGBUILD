@@ -27,7 +27,7 @@ optdepends=('sound-theme-freedesktop: the alarm tone'
 # with shared/kit in place of the kit link.
 source=("$url/releases/download/clock-v$pkgver/$pkgname-$pkgver.tar.gz")
 # Pinned in the commit after the tag, as every app's here is.
-sha256sums=('SKIP')
+sha256sums=('8aa9fd815f08501f4dacda63aa0612dd0e2a0ea85a828b99a0bd22f1b091dbca')
 
 check() {
   cd "$pkgname-$pkgver"

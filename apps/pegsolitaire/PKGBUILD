@@ -24,7 +24,7 @@ depends=('quickshell' 'ttf-jetbrains-mono-nerd' 'hicolor-icon-theme')
 # archive, whose compression has moved under pinned checksums before.
 source=("$url/releases/download/pegsolitaire-v$pkgver/$pkgname-$pkgver.tar.gz")
 # Pinned in the commit after the tag, as every app's here is.
-sha256sums=('SKIP')
+sha256sums=('0b24059588c49e16049c10ece2443306339cb23a40f4d60af6173aa7621a2368')
 
 check() {
   cd "$pkgname-$pkgver"

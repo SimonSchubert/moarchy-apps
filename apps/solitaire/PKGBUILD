@@ -23,7 +23,7 @@ depends=('quickshell' 'ttf-jetbrains-mono-nerd' 'hicolor-icon-theme')
 # archive, whose compression has moved under pinned checksums before.
 source=("$url/releases/download/solitaire-v$pkgver/$pkgname-$pkgver.tar.gz")
 # Pinned in the commit after the tag, as every app's here is.
-sha256sums=('SKIP')
+sha256sums=('e1dc97106e448434f828104de0f72dff0f8b11c436cd957bf46bbc9d7d897e88')
 
 check() {
   cd "$pkgname-$pkgver"

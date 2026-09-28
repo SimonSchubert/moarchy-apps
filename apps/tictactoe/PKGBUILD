@@ -23,7 +23,7 @@ depends=('quickshell' 'ttf-jetbrains-mono-nerd' 'hicolor-icon-theme')
 # archive, whose compression has moved under pinned checksums before.
 source=("$url/releases/download/tictactoe-v$pkgver/$pkgname-$pkgver.tar.gz")
 # Pinned in the commit after the tag, as every app's here is.
-sha256sums=('SKIP')
+sha256sums=('6e6443653b3be42acb9cd30c0b94dfa32ede183c6922c969b92be5502d287443')
 
 check() {
   cd "$pkgname-$pkgver"

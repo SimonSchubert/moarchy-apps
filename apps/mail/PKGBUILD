@@ -32,7 +32,7 @@ optdepends=('xdg-utils: open links and saved attachments'
 # whose compression has moved under pinned checksums before.
 source=("$url/releases/download/mail-v$pkgver/$pkgname-$pkgver.tar.gz")
 # Pinned in the commit after the tag, as every app's here is.
-sha256sums=('SKIP')
+sha256sums=('8493a3618fd70f125fff114b74491b8fa08365097468204e5427fd7a12691dd7')
 
 check() {
   cd "$pkgname-$pkgver"

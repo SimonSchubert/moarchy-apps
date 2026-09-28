@@ -21,7 +21,7 @@ depends=('quickshell' 'ttf-jetbrains-mono-nerd' 'hicolor-icon-theme')
 # tag, with shared/kit in place of the kit link.
 source=("$url/releases/download/calculator-v$pkgver/$pkgname-$pkgver.tar.gz")
 # Pinned in the commit after the tag, as every app's here is.
-sha256sums=('SKIP')
+sha256sums=('3d108e96014974a9517e80d69d2172b10c3613a911a61ea78a9e4d11d38f8b7c')
 
 check() {
   cd "$pkgname-$pkgver"

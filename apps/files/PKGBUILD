@@ -23,7 +23,7 @@ depends=('quickshell' 'ttf-jetbrains-mono-nerd' 'hicolor-icon-theme' 'findutils'
 # with shared/kit in place of the kit link.
 source=("$url/releases/download/files-v$pkgver/$pkgname-$pkgver.tar.gz")
 # Pinned in the commit after the tag, as every app's here is.
-sha256sums=('SKIP')
+sha256sums=('940824b4856785c8878bf225c2e4f7563e145b70d36ea1ff89edfce28f2d88bd')
 
 check() {
   cd "$pkgname-$pkgver"

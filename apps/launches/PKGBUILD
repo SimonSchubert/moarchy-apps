@@ -24,7 +24,7 @@ depends=('quickshell' 'curl' 'ttf-jetbrains-mono-nerd' 'hicolor-icon-theme')
 # archive, whose compression has moved under pinned checksums before.
 source=("$url/releases/download/launches-v$pkgver/$pkgname-$pkgver.tar.gz")
 # Pinned in the commit after the tag, as every app's here is.
-sha256sums=('SKIP')
+sha256sums=('33e4a98edd73aba6e6ddedfefd01420852976054b56818f2b8bfad681f89d674')
 
 check() {
   cd "$pkgname-$pkgver"

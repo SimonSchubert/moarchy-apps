@@ -24,7 +24,7 @@ depends=('quickshell' 'ttf-jetbrains-mono-nerd' 'hicolor-icon-theme')
 # A release asset that packaging/release.sh builds from apps/vitals at the
 # tag, not GitHub's generated archive of the whole repository.
 source=("$url/releases/download/vitals-v$pkgver/$pkgname-$pkgver.tar.gz")
-sha256sums=('SKIP')
+sha256sums=('ca0155dbca23ee00c2c160bc2ccb4957c0ceb8048b3ff32b01797f07ec1ed682')
 
 # Deliberately a versioned package rather than a -git one. mobileomarchy pins
 # each package by a commit; for a VCS package that pin governs the packaging and

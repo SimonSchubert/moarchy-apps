@@ -25,7 +25,7 @@ depends=('quickshell' 'bash' 'ttf-jetbrains-mono-nerd' 'hicolor-icon-theme')
 # archive, whose compression has moved under pinned checksums before.
 source=("$url/releases/download/editor-v$pkgver/$pkgname-$pkgver.tar.gz")
 # Pinned in the commit after the tag, as every app's here is.
-sha256sums=('SKIP')
+sha256sums=('2caa73e129f0bd88d6266391aff8a2a8bf5b22a9e2e91cabb68ac6974eff12f3')
 
 check() {
   cd "$pkgname-$pkgver"

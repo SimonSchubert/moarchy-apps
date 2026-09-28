@@ -24,7 +24,7 @@ depends=('quickshell' 'ttf-jetbrains-mono-nerd' 'hicolor-icon-theme')
 # archive, whose compression has moved under pinned checksums before.
 source=("$url/releases/download/reversi-v$pkgver/$pkgname-$pkgver.tar.gz")
 # Pinned in the commit after the tag, as every app's here is.
-sha256sums=('SKIP')
+sha256sums=('f75f3a90a8fc5b3da0900cd8472a55fc9f64ace780acebe21dfb19e09ba055c3')
 
 check() {
   cd "$pkgname-$pkgver"

@@ -22,7 +22,7 @@ depends=('quickshell' 'ttf-jetbrains-mono-nerd' 'hicolor-icon-theme')
 # tag, with shared/kit in place of the kit link.
 source=("$url/releases/download/contacts-v$pkgver/$pkgname-$pkgver.tar.gz")
 # Pinned in the commit after the tag, as every app's here is.
-sha256sums=('SKIP')
+sha256sums=('be7430d958a32db2a8af98c3c6b6248e30ccd99acc252cde8b157b2484d5583d')
 
 check() {
   cd "$pkgname-$pkgver"

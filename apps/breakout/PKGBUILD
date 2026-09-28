@@ -23,7 +23,7 @@ depends=('quickshell' 'ttf-jetbrains-mono-nerd' 'hicolor-icon-theme')
 # archive, whose compression has moved under pinned checksums before.
 source=("$url/releases/download/breakout-v$pkgver/$pkgname-$pkgver.tar.gz")
 # Pinned in the commit after the tag, as every app's here is.
-sha256sums=('SKIP')
+sha256sums=('40aaf5cb35bf715827fef481a07b5cd27c4b01aa383a9613eefa9276a6aef67d')
 
 check() {
   cd "$pkgname-$pkgver"

@@ -21,7 +21,7 @@ depends=('quickshell' 'curl' 'ttf-jetbrains-mono-nerd' 'hicolor-icon-theme')
 # tag, with shared/kit in place of the kit link.
 source=("$url/releases/download/weather-v$pkgver/$pkgname-$pkgver.tar.gz")
 # Pinned in the commit after the tag, as every app's here is.
-sha256sums=('SKIP')
+sha256sums=('1a645d73cb641d1557026f357fdbc39a4f1418211b66106057d9f1b5c2fc40c1')
 
 check() {
   cd "$pkgname-$pkgver"

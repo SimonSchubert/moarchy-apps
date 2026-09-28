@@ -29,7 +29,7 @@ depends=('quickshell' 'curl' 'ttf-jetbrains-mono-nerd' 'hicolor-icon-theme'
 # with shared/kit in place of the kit link.
 source=("$url/releases/download/food-v$pkgver/$pkgname-$pkgver.tar.gz")
 # Pinned in the commit after the tag, as every app's here is.
-sha256sums=('SKIP')
+sha256sums=('0d049c582ab142e202747f2e3002b863afdb1a79b16bbe26872bc1d83c62ccc7')
 
 check() {
   cd "$pkgname-$pkgver"
