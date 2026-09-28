@@ -416,7 +416,11 @@ Item {
               Text {
                 id: appName
                 anchors.verticalCenter: parent.verticalCenter
-                text: ":: " + root.title
+                // A phone has room for one name: the app's on its first page,
+                // and after that the page's -- the tabs under it say whose.
+                width: Math.min(implicitWidth, crumbs.width - (root.mark ? 28 : 0))
+                elide: Text.ElideRight
+                text: ":: " + (root.compact ? root.phoneName() : root.title)
                 color: root.ui.accent
                 font.family: root.ui.font
                 font.pixelSize: root.ui.fs.md
@@ -435,7 +439,7 @@ Item {
               Text {
                 id: crumb
                 anchors.verticalCenter: parent.verticalCenter
-                visible: text !== ""
+                visible: text !== "" && !root.compact
                 width: Math.min(implicitWidth, crumbs.width - appName.width - 76)
                 text: root.crumbText()
                 color: root.ui.text
@@ -776,6 +780,11 @@ Item {
     if (!tabbed) return ""
     for (var i = 0; i < tabs.length; i++) if (tabs[i].key === tab) return tabs[i].label
     return ""
+  }
+  function phoneName() {
+    if (inSettings) return "Settings"
+    if (heading !== "") return heading
+    return tab !== homeTab && tabbed ? crumbText() : title
   }
   // Kept for apps that name the page themselves.
   function headTitle() { return crumbText() || title }
