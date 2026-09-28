@@ -12,8 +12,10 @@ Rectangle {
   property int sumSize: 36
 
   implicitHeight: sumText.implicitHeight + answerText.implicitHeight + 30
-  radius: app.ui.radius + 8
+  radius: app.ui.radius
   color: app.ui.surface
+  border.width: 1
+  border.color: app.ui.line
 
   Text {
     id: sumText

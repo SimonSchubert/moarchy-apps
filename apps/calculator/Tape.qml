@@ -14,16 +14,13 @@ Item {
   signal picked(string answer)
   signal cleared()
 
-  Text {
+  SectionTitle {
     id: heading
-    x: 4
-    text: root.titled ? "Tape" : ""
-    color: root.app.ui.muted
-    font.family: root.app.ui.font
-    font.pixelSize: root.app.ui.fs.sm
-    font.weight: Font.DemiBold
+    app: root.app
+    visible: root.titled
+    text: "Tape"
+    note: root.tape.length === 1 ? "1 sum" : root.tape.length + " sums"
     height: clear.height
-    verticalAlignment: Text.AlignVCenter
   }
   Button {
     id: clear
@@ -59,6 +56,8 @@ Item {
       height: col.implicitHeight + 16
       radius: root.app.ui.radius
       color: tap.pressed ? root.app.ui.pressed : tap.containsMouse ? root.app.ui.hover : root.app.ui.surface
+      border.width: 1
+      border.color: root.app.ui.line
 
       Column {
         id: col
@@ -84,7 +83,7 @@ Item {
           color: root.app.ui.text
           font.family: root.app.ui.font
           font.pixelSize: root.app.ui.fs.lg
-          font.weight: Font.DemiBold
+          font.weight: Font.Bold
           font.features: ({ "tnum": 1 })
         }
       }

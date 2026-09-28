@@ -57,8 +57,10 @@ Grid {
       required property var modelData
       width: root.keyWidth
       height: root.keyHeight
-      radius: root.app.ui.radius + 6
+      radius: root.app.ui.radius
       color: root.fill(modelData.kind, tap.pressed)
+      border.width: 1
+      border.color: root.app.ui.line
       Behavior on color { ColorAnimation { duration: 90 } }
 
       Text {
@@ -67,7 +69,7 @@ Grid {
         color: root.ink(key.modelData.kind)
         font.family: root.app.ui.font
         font.pixelSize: root.size(key.modelData)
-        font.weight: key.modelData.kind === "digit" ? Font.Medium : Font.DemiBold
+        font.weight: key.modelData.kind === "digit" ? Font.Normal : Font.Bold
       }
 
       MouseArea {
