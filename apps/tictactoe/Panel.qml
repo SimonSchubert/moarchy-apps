@@ -305,10 +305,12 @@ App {
 
     Text {
       text: "Against"
-      color: root.ui.text
+      color: root.ui.muted
       font.family: root.ui.font
-      font.pixelSize: root.ui.fs.md
+      font.pixelSize: root.ui.fs.xs
       font.weight: Font.Bold
+      font.capitalization: Font.AllUppercase
+      font.letterSpacing: root.ui.tracking
     }
     Flow {
       width: parent.width
@@ -319,10 +321,12 @@ App {
     Text {
       visible: newGame.mode === S.SOLO
       text: "Difficulty"
-      color: root.ui.text
+      color: root.ui.muted
       font.family: root.ui.font
-      font.pixelSize: root.ui.fs.md
+      font.pixelSize: root.ui.fs.xs
       font.weight: Font.Bold
+      font.capitalization: Font.AllUppercase
+      font.letterSpacing: root.ui.tracking
     }
     Flow {
       visible: newGame.mode === S.SOLO
@@ -350,10 +354,12 @@ App {
     }
     Text {
       text: newGame.mode === S.SOLO ? "You play" : "Player one plays"
-      color: root.ui.text
+      color: root.ui.muted
       font.family: root.ui.font
-      font.pixelSize: root.ui.fs.md
+      font.pixelSize: root.ui.fs.xs
       font.weight: Font.Bold
+      font.capitalization: Font.AllUppercase
+      font.letterSpacing: root.ui.tracking
     }
     Flow {
       width: parent.width
