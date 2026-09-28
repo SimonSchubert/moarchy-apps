@@ -4,6 +4,7 @@
 #
 #   PHONE=omarchy@<address> scripts/install-plugin.sh tictactoe habits
 #   PHONE=omarchy@<address> scripts/install-plugin.sh --remove tictactoe
+#   PHONE=omarchy@127.0.0.1 PHONE_PORT=2222 scripts/install-plugin.sh keep   # the VM
 #
 # scripts/device.sh installs an app's package, which runs it as its own
 # Quickshell process when the shell does not have it. This is the other half:
@@ -21,6 +22,11 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 # An Omarchy Mobile phone announces nothing over mDNS; `./mobile phone list` in
 # the mobile repo finds its address.
 PHONE="${PHONE:?set PHONE=omarchy@<phone address>}"
+# The emulator's ssh is forwarded to a port on this machine:
+#   PHONE=omarchy@127.0.0.1 PHONE_PORT=2222 scripts/install-plugin.sh ...
+# PHONE_SSH_OPTS for anything else ssh needs -- a VM whose host key changes
+# with every image: PHONE_SSH_OPTS="-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
+ssh() { command ssh -p "${PHONE_PORT:-22}" ${PHONE_SSH_OPTS:-} "$@"; }
 
 remove=0
 [[ ${1:-} == --remove ]] && { remove=1; shift; }
@@ -42,13 +48,16 @@ for app in "$@"; do
   # Everything the app runs from, and nothing it was checked or photographed
   # with. One tar over one connection: scp of many small files is what trips
   # this phone's MaxStartups.
-  tar -C "$dir" -chf - --exclude=./docs --exclude=./dev --exclude=./tests \
+  # COPYFILE_DISABLE and --no-xattrs: a Mac's tar otherwise writes its own
+  # metadata in, and GNU tar on the phone complains about every file.
+  COPYFILE_DISABLE=1 tar -C "$dir" -chf - --no-xattrs --exclude=./docs --exclude=./dev --exclude=./tests \
       --exclude=./PKGBUILD --exclude=./.SRCINFO --exclude='__pycache__' --exclude=./kit/tests . \
     | ssh "$PHONE" "rm -rf '$dest' && mkdir -p '$dest' && tar -C '$dest' -xf -"
 done
 
 echo "==> shell.json, and a restart"
-ssh "$PHONE" REMOVE=$remove IDS="${ids[*]}" bash -s <<'ENDSSH'
+# The ids quoted for the far side's shell, which splits the command again.
+ssh "$PHONE" "REMOVE=$remove IDS='${ids[*]}' bash -s" <<'ENDSSH'
 set -euo pipefail
 for id in $IDS; do
   if [ "$REMOVE" = 0 ]; then
