@@ -28,10 +28,10 @@ Item {
     anchors.topMargin: root.app.compact ? 52 : 58
     width: 240
     height: col.implicitHeight + 12
-    radius: root.app.ui.radius + 4
+    radius: root.app.ui.radius
     color: root.app.ui.surfaceHigh
     border.width: 1
-    border.color: root.app.ui.border
+    border.color: root.app.ui.line
     MouseArea { anchors.fill: parent }
 
     Column {

@@ -846,7 +846,7 @@ App {
     anchors.margins: 16
     width: 56
     height: 56
-    radius: root.ui.radius + 8
+    radius: root.ui.radius
     color: fabMouse.pressed ? Qt.darker(root.ui.accent, 1.15) : root.ui.accent
     Accessible.role: Accessible.Button
     Accessible.name: "New file"
@@ -929,7 +929,7 @@ App {
         visible: root.docProblem.length > 0
         width: parent.width
         height: visible ? problemRow.implicitHeight + 24 : 0
-        radius: root.ui.radius + 2
+        radius: root.ui.radius
         color: root.alpha(root.ui.warn, 0.14)
         border.width: 1
         border.color: root.alpha(root.ui.warn, 0.5)
@@ -955,10 +955,10 @@ App {
         id: paper
         width: parent.width
         height: parent.height - (problemBox.visible ? problemBox.height + parent.spacing : 0)
-        radius: root.ui.radius + 4
+        radius: root.ui.radius
         color: root.ui.surface
         border.width: 1
-        border.color: edit.activeFocus ? root.alpha(root.ui.accent, 0.6) : root.ui.divider
+        border.color: edit.activeFocus ? root.alpha(root.ui.accent, 0.6) : root.ui.line
 
         Flickable {
           id: flick

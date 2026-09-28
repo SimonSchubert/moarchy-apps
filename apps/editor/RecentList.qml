@@ -46,17 +46,19 @@ Flickable {
       text: "Recent"
       color: root.app.ui.muted
       font.family: root.app.ui.font
-      font.pixelSize: root.app.ui.fs.sm
-      font.weight: Font.DemiBold
+      font.pixelSize: root.app.ui.fs.xs
+      font.weight: Font.Bold
+      font.capitalization: Font.AllUppercase
+      font.letterSpacing: root.app.ui.tracking
     }
 
     Rectangle {
       width: parent.width
       height: rows.implicitHeight + 8
-      radius: root.app.ui.radius + 4
+      radius: root.app.ui.radius
       color: root.app.ui.surface
       border.width: 1
-      border.color: root.app.ui.divider
+      border.color: root.app.ui.line
 
       Column {
         id: rows
