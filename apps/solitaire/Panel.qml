@@ -408,10 +408,12 @@ App {
 
     Text {
       text: "Turn over"
-      color: root.ui.text
+      color: root.ui.muted
       font.family: root.ui.font
-      font.pixelSize: root.ui.fs.md
-      font.weight: Font.DemiBold
+      font.pixelSize: root.ui.fs.xs
+      font.weight: Font.Bold
+      font.capitalization: Font.AllUppercase
+      font.letterSpacing: root.ui.tracking
     }
     Flow {
       width: parent.width
@@ -463,7 +465,7 @@ App {
       color: root.ui.text
       font.family: root.ui.font
       font.pixelSize: root.ui.fs.sm
-      font.weight: Font.DemiBold
+      font.weight: Font.Bold
     }
     Button {
       id: phoneNoticeButton
@@ -558,10 +560,10 @@ App {
           visible: root.notice !== null
           width: parent.width
           height: visible ? noticeCol.implicitHeight + 28 : 0
-          radius: root.ui.radius + 4
+          radius: root.ui.radius
           color: root.ui.accentSoft
           border.width: 1
-          border.color: root.ui.alpha(root.ui.accent, 0.4)
+          border.color: root.ui.accent
           Column {
             id: noticeCol
             x: 14
@@ -575,7 +577,7 @@ App {
               color: root.ui.text
               font.family: root.ui.font
               font.pixelSize: root.ui.fs.md
-              font.weight: Font.DemiBold
+              font.weight: Font.Bold
             }
             Button {
               app: root

@@ -77,7 +77,7 @@ Item {
       y: r.y
       width: r.w
       height: r.h
-      radius: width * 0.12
+      radius: root.app.ui.radius > 0 ? width * 0.12 : 2
       color: root.app.ui.slot
       Pip {
         visible: K.isFoundation(slot.index)
@@ -136,7 +136,7 @@ Item {
     y: first ? first.y - 1 : 0
     width: first ? first.w + 2 : 0
     height: first && last ? last.y + last.h - first.y + 2 : 0
-    radius: width * 0.12
+    radius: root.app.ui.radius > 0 ? width * 0.12 : 2
     color: "transparent"
     border.width: 3
     border.color: root.app.ui.pick
@@ -151,7 +151,7 @@ Item {
       y: r.y - 1
       width: r.w + 2
       height: r.h + 2
-      radius: width * 0.12
+      radius: root.app.ui.radius > 0 ? width * 0.12 : 2
       color: root.app.ui.alpha(root.app.ui.pick, 0.14)
       border.width: 2.5
       border.color: root.app.ui.drop

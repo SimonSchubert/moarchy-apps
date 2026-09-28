@@ -15,7 +15,10 @@ Rectangle {
   // Nothing on top of it.
   property bool full: true
 
-  radius: width * 0.12
+  // A card keeps a sliver of a corner even on a square screen: without one it
+  // reads as a tile, not a card. The full curve comes back with a rounded
+  // theme.
+  radius: app.ui.radius > 0 ? width * 0.12 : 2
   color: faceUp ? app.ui.cardFace : app.ui.cardBack
   border.width: 1
   border.color: faceUp ? app.ui.cardEdge : app.ui.cardBackLine
