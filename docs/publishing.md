@@ -1,318 +1,161 @@
 # Publishing
 
-Every app in this repository belongs in **three** places, and an app that has
-reached only one of them is not finished:
+Every app in this repository ships in **two** places, and a third decides
+whether a phone's user ever sees it:
 
 | where | who it is for | what carries it |
 |---|---|---|
-| **the AUR** | anyone on Arch or Arch Linux ARM who is not running the phone image | `apps/<app>/PKGBUILD` + `.SRCINFO`, pushed to `ssh://aur@aur.archlinux.org/<pkgname>.git` |
-| **`[moarchy-apps]`** | the phone: a signed pacman repo, so the store's privileged helper can install it | `packaging/repo-add.sh` → `packaging/publish-pages.sh` → the `gh-pages` branch |
-| **moarchy-store's catalogue** | the phone's user, who does not know a package name to type | a row in `catalogue.toml`, an entry in `metadata.toml`, screenshots, and a verdict in `sweep/verdicts.toml` |
+| **the AUR** | anyone on Arch or Arch Linux ARM, on a desktop or a phone | `apps/<app>/PKGBUILD` + `.SRCINFO`, pushed by `.github/workflows/aur.yml` |
+| **`[market-apps]`** | Omarchy Mobile: the signed repo its Market installs from, after the phone's PIN | `scripts/package.sh` → `packaging/publish-market.sh` → this repo's `gh-pages` branch |
+| **App Finder's recommendations** | the phone's user, who finds apps in App Finder rather than by name | an entry in [mobile-market-data](https://github.com/SimonSchubert/mobile-market-data)'s `aur/recommended.json`, with three screens and an icon |
 
-## Why all three, when the argument used to be either/or
+## Why two channels
 
-The commit that published the seven games to the signed repo said *"deliberately
-not the AUR"*, and what it argued was right as far as it went: moarchy-store's
-helper execs `pacman -S` against a signed allowlist, an AUR package is in no sync
-database, so the store cannot install one **at all**. Nine AUR pushes would have
-been nine promises in a channel the phone cannot read, and `sweep/verdicts.toml`
-still holds `moarchy-keep` as *"AUR only, and ours"* — deferred from a store we
-wrote — as the evidence for how that ends.
+The AUR is where an Arch user looks, and it is somebody else's server: it
+carries source, a PKGBUILD pinning a release tarball, and every user builds.
+A phone should not compile anything, and the Market's installer will only run
+`pacman -S` against its own signed repo -- `libexec/market-pacman` in
+omarchy-mobile-market refuses any package `[market-apps]` does not offer. So a
+phone gets the binary package from `[market-apps]`, installed through App
+Finder with the phone's PIN (polkit's `auth_admin_keep`, answered by the
+shell's own PIN pad), and nothing to configure: the Market's package adds the
+repo to `pacman.conf` and trusts its key.
 
-That is an argument for the signed repo being the channel the **store** installs
-from. It was never an argument against the AUR, because the AUR is not aimed at
-the phone: it is aimed at everybody else. These are Quickshell apps that lay
-out for a 360px phone and for a desktop window both, which is a shape a laptop
-user has no other source for, and the AUR is where an Arch user looks first. Publishing there costs one `git push` per release
-of files this repository already has to contain.
+The two cannot drift. There is one PKGBUILD per app, it pins a release tarball
+by sha256, the AUR gets that file verbatim, and `scripts/package.sh` builds the
+binary package from the same tree -- the same bytes, from the same tag.
 
-So the rule is **both, for every app**, and the two cannot drift — which is what
-makes carrying both cheap. There is one PKGBUILD per app, in `apps/<app>/`, and
-it pins a release tarball by sha256. The AUR gets that file verbatim;
-`scripts/package.sh` builds the binary package from the same tree; both install
-the same bytes from the same tag. The only thing the AUR needs that the repo does
-not is `.SRCINFO`, and that is generated from the PKGBUILD rather than written.
+`[market-apps]` is shared: omarchy-mobile-market's test run publishes the AUR
+apps it built and tested into the same database, from
+`omarchy-market-test/aur/publish.sh`. That script rebuilds the database from
+scratch and keeps the packages `recommended.json` names, from this repo's
+`packages/`; `packaging/publish-market.sh` adds ours to the database as it is
+and refuses to push a change to anything that is not ours.
+
+A package in `[market-apps]` that App Finder does not list is installable by
+name and found by nobody. App Finder lists the test run's apps and the
+recommended ones, first, with their screens turning in a carousel; an app of
+ours becomes visible by getting an entry there.
 
 ## What is where today
 
 As of 2026-09-28, and this table is the thing to re-check rather than trust:
 
-| app | package | version | AUR | `[moarchy-apps]` | catalogue |
+| app | package | version | AUR | `[market-apps]` | App Finder |
 |---|---|---|---|---|---|
-| keep | `moarchy-keep` | 0.2.0, the Quickshell app | yes | yes, and in `[market-apps]` | moarchy-store's, retired with moarchy; App Finder's recommendations are the listing now |
-| habits | `moarchy-habits` | 0.2.0, the Quickshell app | yes | yes, and in `[market-apps]` | moarchy-store's, retired with moarchy; App Finder's recommendations are the listing now |
-| vitals | `moarchy-vitals` | 0.2.1, the Quickshell app | yes | yes, and in `[market-apps]` | moarchy-store's, retired with moarchy; App Finder's recommendations are the listing now |
-| chess | `moarchy-chess` | 0.2.0, the Quickshell app | yes | yes, and in `[market-apps]` | moarchy-store's, retired with moarchy; App Finder's recommendations are the listing now |
-| reversi | `moarchy-reversi` | 0.2.0, the Quickshell app | yes | yes, and in `[market-apps]` | moarchy-store's, retired with moarchy; App Finder's recommendations are the listing now |
-| tictactoe | `moarchy-tictactoe` | 0.2.0, the Quickshell app | yes | yes, and in `[market-apps]` | moarchy-store's, retired with moarchy; App Finder's recommendations are the listing now |
-| solitaire | `moarchy-solitaire` | 0.2.0, the Quickshell app | yes | yes, and in `[market-apps]` | moarchy-store's, retired with moarchy; App Finder's recommendations are the listing now |
-| pegsolitaire | `moarchy-pegsolitaire` | 0.2.0, the Quickshell app | yes | yes, and in `[market-apps]` | moarchy-store's, retired with moarchy; App Finder's recommendations are the listing now |
-| minesweeper | `moarchy-minesweeper` | 0.2.0, the Quickshell app | yes | yes, and in `[market-apps]` | moarchy-store's, retired with moarchy; App Finder's recommendations are the listing now |
-| weather | `moarchy-weather` | 0.2.0, the Quickshell app | yes | yes, and in `[market-apps]` | moarchy-store's, retired with moarchy; App Finder's recommendations are the listing now |
-| clock | `moarchy-clock` | 0.2.0, the Quickshell app | yes | yes, and in `[market-apps]` | moarchy-store's, retired with moarchy; App Finder's recommendations are the listing now |
-| editor | `moarchy-editor` | 0.2.0, the Quickshell app | yes | yes, and in `[market-apps]` | moarchy-store's, retired with moarchy; App Finder's recommendations are the listing now |
-| mill | `moarchy-mill` | 0.2.0, the Quickshell app | yes | yes, and in `[market-apps]` | moarchy-store's, retired with moarchy; App Finder's recommendations are the listing now |
-| fiveletters | `moarchy-fiveletters` | 0.2.0, the Quickshell app | yes | yes, and in `[market-apps]` | moarchy-store's, retired with moarchy; App Finder's recommendations are the listing now |
-| breakout | `moarchy-breakout` | 0.2.0, the Quickshell app | yes | yes, and in `[market-apps]` | moarchy-store's, retired with moarchy; App Finder's recommendations are the listing now |
-| launches | `moarchy-launches` | 0.2.0, the Quickshell app | yes | yes, and in `[market-apps]` | moarchy-store's, retired with moarchy; App Finder's recommendations are the listing now |
-| food | `moarchy-food` | 0.2.0, the Quickshell app | yes | yes, and in `[market-apps]` | moarchy-store's, retired with moarchy; App Finder's recommendations are the listing now |
-| files | `moarchy-files` | 0.2.0, the Quickshell app | yes | yes, and in `[market-apps]` | moarchy-store's, retired with moarchy; App Finder's recommendations are the listing now |
-| calculator | `moarchy-calculator` | 0.2.0, the Quickshell app | yes | yes, and in `[market-apps]` | moarchy-store's, retired with moarchy; App Finder's recommendations are the listing now |
-| contacts | `moarchy-contacts` | 0.2.0, the Quickshell app | yes | yes, and in `[market-apps]` | moarchy-store's, retired with moarchy; App Finder's recommendations are the listing now |
-| calendar | `moarchy-calendar` | 0.2.0, the Quickshell app | yes | yes, and in `[market-apps]` | moarchy-store's, retired with moarchy; App Finder's recommendations are the listing now |
-| mail | `moarchy-mail` | 0.2.0, the Quickshell app | yes | yes, and in `[market-apps]` | moarchy-store's, retired with moarchy; App Finder's recommendations are the listing now |
-| queens | `queens` | 1.0.8 | no — upstream's name to claim | no — it was in moarchy's `[moarchy]` | **yes** |
-| puzzle-games | `puzzle-games` | 1.1.4 | no — upstream's name to claim | no — it was in moarchy's `[moarchy]` | **yes** |
-| coins | `moarchy-coins` | 0.1.1 | to be deleted | to be dropped | to be dropped — replaced by `crypto-market`, see below |
-| crypto-market | `crypto-market` | 1.1.1 | yes | no — AUR only | no |
-| couch-for-trakt | `couch-for-trakt` | 1.1.0 | yes | no — AUR only | no |
-| transit | `transit` | 1.1.0 | yes | no — AUR only | no |
-| airwaves | `airwaves` | 1.0.0 | yes | no — AUR only | no |
+| vitals | `moarchy-vitals` | 0.2.1 | yes | yes | recommended |
+| tictactoe | `moarchy-tictactoe` | 0.2.0 | yes | yes | recommended |
+| minesweeper | `moarchy-minesweeper` | 0.2.0 | yes | yes | recommended |
+| reversi | `moarchy-reversi` | 0.2.0 | yes | yes | recommended |
+| chess | `moarchy-chess` | 0.2.0 | yes | yes | recommended |
+| mill | `moarchy-mill` | 0.2.0 | yes | yes | recommended |
+| solitaire | `moarchy-solitaire` | 0.2.0 | yes | yes | recommended |
+| pegsolitaire | `moarchy-pegsolitaire` | 0.2.0 | yes | yes | recommended |
+| fiveletters | `moarchy-fiveletters` | 0.2.0 | yes | yes | recommended |
+| breakout | `moarchy-breakout` | 0.2.0 | yes | yes | recommended |
+| keep | `moarchy-keep` | 0.2.0 | yes | yes | not listed |
+| habits | `moarchy-habits` | 0.2.0 | yes | yes | not listed |
+| launches | `moarchy-launches` | 0.2.0 | yes | yes | not listed |
+| food | `moarchy-food` | 0.2.0 | yes | yes | not listed |
+| calculator | `moarchy-calculator` | 0.2.0 | yes | yes | not listed |
+| weather | `moarchy-weather` | 0.2.0 | yes | yes | not listed |
+| clock | `moarchy-clock` | 0.2.0 | yes | yes | not listed |
+| calendar | `moarchy-calendar` | 0.2.0 | yes | yes | not listed |
+| contacts | `moarchy-contacts` | 0.2.0 | yes | yes | not listed |
+| files | `moarchy-files` | 0.2.0 | yes | yes | not listed |
+| editor | `moarchy-editor` | 0.2.0 | yes | yes | not listed |
+| mail | `moarchy-mail` | 0.2.0 | yes | yes | not listed |
+| crypto-market | `crypto-market` | 1.1.1 | yes | no | recommended, not installable yet |
+| couch-for-trakt | `couch-for-trakt` | 1.1.0 | yes | no | recommended, not installable yet |
+| transit | `transit` | 1.1.0 | yes | no | recommended, not installable yet |
+| airwaves | `airwaves` | 1.0.0 | yes | no | recommended, not installable yet |
+| queens | `queens` | 1.0.8 | no -- upstream's name to claim | no | no |
+| puzzle-games | `puzzle-games` | 1.1.4 | no -- upstream's name to claim | no | no |
 
-Thirteen of fifteen are in all three. What is left is `keep` and `habits`,
-which have no catalogue row, and the two Flutter ones, which are listed but
-were only ever built into moarchy's own `[moarchy]` and are not on the AUR.
-
-`coins` was retired on 2026-09-27 for Crypto Market, `apps/crypto-market`: a
-Quickshell app published as `crypto-market`, on the AUR only. It is the one
-package of ours without the `moarchy-` prefix, so `aur.yml` names it and
-`release.sh` takes the tarball's name from the PKGBUILD. Nothing carries an
-installed `moarchy-coins` over: it is dropped from the AUR, `[moarchy-apps]`
-and the catalogue.
-
-`couch-for-trakt` followed the same day, from the `omarchy-couch` plugin
-repository, on the same terms: AUR only, named in `aur.yml`. So did `transit`, from
-`omarchy-transit`, and `airwaves`, written here in Couch's shape.
-
-What follows is the history of the version of Coins that left.
-
-`coins` went through all three on 2026-09-14, in the order this file gives, and
-it is the row that proves the order matters: the catalogue lint fails an entry
-whose package is in no sync database the phone can read, so the signed repo had
-to be published — and its cached copy of that database refreshed — before the
-row could pass. What it did **not** go through is a device. The
-omarchy-mobile checkout is not on the machine that did this, so `tested` and
-`measured` are both empty, the store renders the entry as *"Not yet tested on a
-device"*, and `lint-catalogue.py` prints a warning naming it. That warning is
-correct and should stay until somebody runs `scripts/sweep-measure.sh` against
-it. Every other row of ours says `pinephone-a64` because somebody held the
-phone; this one says nothing, and the difference is the whole point of the
-field.
-
-It also released twice in an afternoon. 0.1.0 drew the rank column from
-CoinGecko's `market_cap_rank`, which on the day came back with two coins at 9
-and drew a list numbered 8, 9, 9, 10 — found by pointing the app at the live
-endpoint to take the catalogue screenshot, which is the one thing a fixture
-cannot do. 0.1.1 numbers by position in the answer. The AUR and the signed repo
-both carry 0.1.1; 0.1.0 remains a GitHub release, because a tag that has been
-pushed is not a thing to move.
-
-The nine games were listed at catalogue serial 26 and measured on a PinePhone
-A64 rather than in the VM — the device already had seven of them installed, so
-the cost was two `pacman -S` from `[moarchy-apps]` and nine photographs. That
-makes `tested = "pinephone-a64"` on each of them a claim about hardware, which
-is the strongest thing that field can say.
-
-Each of the nine added on 2026-09-13 was checked before it was pushed, the same
-way the workflow checks: `namcap` clean, `.SRCINFO` identical to one generated
-from the PKGBUILD, the release asset fetched and its sha256 compared against the
-pin, and then a real `makepkg` in a clean Arch ARM container — which downloads
-the tarball, validates the checksum, and runs the package's own `check()`. That
-last one is not ceremony: `makepkg` runs `check()` for every AUR user, so a test
-needing a display would break the install for all of them. They skip the widget
-tests and run the rest, 60 to 179 of them per app.
+`coins` was retired on 2026-09-27 for Crypto Market (`apps/crypto-market`),
+which is published as `crypto-market` -- one of the packages of ours without
+the `moarchy-` prefix, so `aur.yml` names them and `release.sh` takes the
+tarball's name from the PKGBUILD. `moarchy-coins` 0.1.1 is still on the AUR.
 
 ## One shape: a package that is also a plugin
 
-Every app here is now the same shape (see [`shared/kit`](../shared/kit)): a
-package that installs the QML tree to `/usr/share/moarchy-<app>` and a
-launcher, `/usr/bin/moarchy-<app>`, that asks the running Omarchy shell for the
-plugin first (`omarchy-shell shell summon <id>`) and otherwise starts the same
-tree as its own Quickshell process. So the three channels above publish every
-app, and every package runs on any Quickshell desktop -- the GTK apps and the
-phone-only plugins that came before were one shape each, and each reached half
-of the places the other did.
+Every app here is the same shape (see [`shared/kit`](../shared/kit)): a package
+that installs the QML tree to `/usr/share/moarchy-<app>` and a launcher,
+`/usr/bin/moarchy-<app>`, that asks the running Omarchy shell for the plugin
+first (`omarchy-shell shell summon <id>`) and otherwise starts the same tree as
+its own Quickshell process. So one package runs on the phone, on an Omarchy
+desktop and on any other Quickshell desktop.
 
 `depends` is `quickshell` and the JetBrains Mono Nerd Font the kit's icons are
 drawn in, plus whatever an app's helper needs (Python for Mail's IMAP helper,
-GStreamer and zbar for Food's scanner). `qt6-declarative` is not named,
-because `quickshell` already depends on it, and **`quickshell` is not
-AUR-only**: it is `extra/quickshell`, `Architecture: aarch64`, and `pacman -Sp
-quickshell` resolves its whole closure out of the repositories. Each PKGBUILD's
+GStreamer and zbar for Food's scanner). `quickshell` is `extra/quickshell` for
+aarch64, so nothing comes from the AUR at install time. Each PKGBUILD's
 `check()` runs the app's tests under `qmltestrunner` offscreen, which needs no
 display, so it runs for every AUR user as it does here.
 
-**What a package cannot do is put the app into the shell.** Upstream's shell
-scans two roots: `$OMARCHY_PATH/shell/plugins` for first-party plugins, which
-is where Mobile installs its own UI, and `~/.config/omarchy/plugins` for
-everything else (`shell/services/PluginRegistry.qml`). There is no system-wide
-root for a third-party plugin, so a package has nowhere to put one that the
-shell will find and the package will own, and enabling it is an id in the
-per-user `~/.config/omarchy/shell.json`, which a package must not write. So
-the packaged app opens as its own process, and `scripts/install-plugin.sh`
-copies an app into the home directory and enables it for the phone that wants
-it in the shell -- a copy `pacman` knows nothing about, which is why it is a
-developer's script and not a channel. A system scan root upstream would make
-the package enough on its own.
+**What a package cannot do is put the app into the shell as a plugin.**
+Upstream's shell loads third-party plugins only from
+`~/.config/omarchy/plugins`, enabled by an id in the per-user `shell.json`,
+which a package must not write. So the packaged app opens as its own process,
+and `scripts/install-plugin.sh` copies an app into the home directory and
+enables it, for a phone or a VM that wants it inside the shell.
 
-## The gaps that are structural, not just unfinished rows
-
-1. **~~CI publishes one app.~~** Fixed: `.github/workflows/aur.yml` is matrixed
-   over every app whose `.SRCINFO` declares a `pkgbase` beginning with
-   `moarchy-`, so a commit that touches an app's PKGBUILD or `.SRCINFO`
-   publishes that app and nothing else, and `workflow_dispatch` takes one app
-   name or none for all of them. The prefix is the rule because `queens` and
-   `puzzle-games` carry upstream's names: a new app of ours is published the day
-   it is added, and a new one of theirs is never published by accident.
-
-   Worth knowing, because it was true for as long as the workflow existed: the
-   checksum step could only ever fail. It read the source URL with
-   `grep -oP '^\s+source = .*::\K\S+'`, which requires a `name::url` source,
-   and every `.SRCINFO` here carries a plain URL — so the pattern matched
-   nothing, `curl` was handed an empty string, and the step died. Nobody saw it
-   because the only app it was wired to was updated by hand. It reads the field
-   with `awk` now, and still strips a `name::` prefix if one is ever used.
-
-2. **No image carries `[moarchy-apps]`.** The moarchy image did, and moarchy is
-   no longer developed; Omarchy Mobile, which replaced it, has its own
-   `[omarchy-mobile]` repo and no stanza for this one. Until it does, a phone
-   gets the stanza from the README by hand, and a catalogue row for a package
-   that lives only here is an Install button that works on that phone and on no
-   other.
-
-3. **queens and puzzle-games were only ever in moarchy's repo.** Both are
-   `arch=aarch64` Flutter builds and were published into `[moarchy]` with that
-   distro's pipeline. Neither is on the AUR, and both could be: upstream's
-   source plus the runner or patch this repo carries is exactly what an AUR
-   package is — and it is now the only way either reaches a phone.
-
-## Releasing one app, end to end
-
-Nothing below is new machinery; it is the order the existing scripts have to run
-in, which is the part that was never written down.
+## Releasing, end to end
 
 ```sh
-# 1. green first, in the container -- ruff, the icon and PKGBUILD lints,
-#    app-lint, qmllint, the tests, and a real run that fails on any QML
-#    warning. Then look at app-shot.sh's photographs, phone and desktop.
+# 1. green, in the container, and look at the photographs
 docker run --rm -v "$PWD:/src" -w /src moarchy-qml scripts/check.sh <app>
+docker run --rm -v "$PWD:/src" -w /src moarchy-qml scripts/app-shot.sh <app>
 
-# 2. tag, then build the tarball from the tag
-git tag <app>-v<version> && git push origin <app>-v<version>
+# 2. tag, push the tag, build the tarball from it
+git tag -a <app>-v<version> -m "<app> <version>" && git push origin <app>-v<version>
 packaging/release.sh <app> <version>        # -> dist/moarchy-<app>-<version>.tar.gz + sha256
 
-# 3. pin it, and upload the SAME file as the release asset.
-#    The tarball is a function of the tag's commit date, so pin the checksum
-#    after the tag is final and never move the tag afterwards.
-$EDITOR apps/<app>/PKGBUILD                 # pkgver + sha256sums
+# 3. upload the SAME file as the release asset, then pin its checksum.
+#    The tarball is a function of the tag's commit date, so never move the tag.
 gh release create <app>-v<version> dist/moarchy-<app>-<version>.tar.gz
+$EDITOR apps/<app>/PKGBUILD                 # sha256sums
 
-# 4. regenerate .SRCINFO from the PKGBUILD (needs makepkg, so: container)
-cd apps/<app> && makepkg --printsrcinfo > .SRCINFO
+# 4. .SRCINFO from the PKGBUILD (makepkg, so: the container, as a user)
+(cd apps/<app> && makepkg --printsrcinfo > .SRCINFO)
+
+# 5. commit and push: aur.yml publishes every app whose PKGBUILD or .SRCINFO
+#    changed -- namcap, .SRCINFO against a fresh one, the asset's checksum,
+#    then the push. A new package base is created by its first push.
+git commit -am "Pin <app> <version> to its release asset, with its .SRCINFO" && git push
+
+# 6. the phone
+scripts/package.sh <app>                    # -> packages/moarchy-<app>-<version>-1-any.pkg.tar.xz
+packaging/publish-market.sh packages/moarchy-<app>-<version>-1-any.pkg.tar.xz
 ```
 
-Then the three channels. **AUR:**
+Then, for an app App Finder should show: a new or updated entry in
+mobile-market-data's `aur/recommended.json` -- the same fields as an
+`aur/apps.json` entry, the version `[market-apps]` now carries, three screens
+at 540 px (`app-shot.sh` with `SIZE=540x1044 SCALE=1.5`, as WebP named by
+content hash) and a 144 px icon. Phones fetch it at most hourly.
 
-```sh
-git clone ssh://aur@aur.archlinux.org/<pkgname>.git   # pushing creates it
-cp apps/<app>/{PKGBUILD,.SRCINFO} <pkgname>/ && cd <pkgname>
-git commit -am "Update <pkgname>"
-git push origin HEAD:refs/heads/master               # master, and HEAD: matters
-```
+A few things that fail late rather than loudly:
 
-**The branch is `master`.** Cloning a package base that does not exist yet gives
-an empty repository, where git names the first branch after this machine's
-`init.defaultBranch` — `main`, here — so a plain `git push` or `git push origin
-master` fails with *"src refspec master does not match any"* and creates
-nothing. `HEAD:refs/heads/master` is what an initial import needs. `aur.yml`
-never hits this because it only ever pushes to package bases that already exist.
-
-The first commit on a new base follows the convention the existing ones set:
-`Initial import: <pkgname> <version>`, then `Update <pkgname>` after that.
-
-`<pkgname>` is `moarchy-<app>` for everything written here and upstream's own
-name for the two that are packaging only — `queens`, `puzzle-games` — which is
-also what they would be called on the AUR.
-
-`aur.yml` already does the three checks worth keeping when this is finally
-matrixed over every app: `namcap` on the PKGBUILD, a diff of `.SRCINFO` against
-a freshly generated one, and a fetch of the release asset to confirm the pinned
-sha256 is the checksum of the file that is actually there. A stale `.SRCINFO`
-advertises the wrong dependencies to every helper while the PKGBUILD quietly
-builds something else, and a wrong checksum fails at `makepkg` on somebody
-else's machine rather than on ours.
-
-**`[moarchy-apps]`,** which is two halves because the two tools it needs are on
-different machines — `repo-add` is pacman's and lives in the Arch container, the
-secret key is on the laptop and has no reason to travel:
-
-```sh
-scripts/package.sh <app>                       # container -> packages/*.pkg.tar.xz
-gpg --detach-sign --no-armor packages/moarchy-<app>-*.pkg.tar.xz   # laptop
-packaging/repo-add.sh packages/*.pkg.tar.*     # container: builds the .db
-packaging/publish-pages.sh                     # laptop: signs the .db, resolves
-git push origin gh-pages                       #         the symlinks, publishes
-```
-
-`repo-add.sh` will sign anything unsigned if `MOARCHY_SIGNING_KEY` names a key
-that is actually in the keyring, and refuses to build an unsigned repo otherwise
-— `ALLOW_UNSIGNED=1` exists and gives away the one advantage this has over the
-AUR, so it is for debugging and not for a release.
-
-**The catalogue**, in moarchy-store, and this is the half that is not a push.
-`.claude/skills/catalogue-sweep` there runs the whole loop; the scripts under it
-are:
-
-```sh
-scripts/sweep-measure.sh <pkg>      # install it in the VM at 360x674: cost,
-                                    # geometry, the light/dark diff, screenshots
-scripts/sweep-record.py --from /tmp/measured --adaptive fits <pkg>
-                                    # merge that into metadata.toml
-cp /tmp/measured/<pkg>-dark.png screenshots/ && scripts/sweep-shots.sh
-                                    # pngquant + oxipng, in place
-$EDITOR sweep/verdicts.toml catalogue.toml metadata.toml   # verdict, row, prose
-$EDITOR catalogue.toml              # bump `serial`
-python3 scripts/lint-catalogue.py
-scripts/sign-catalogue.sh && git commit -a && git push
-```
-
-Four things there are not optional, and each of them is a check that fails late
-rather than a convention:
-
-- **`sweep-record.py` will not write `adaptive` unless you pass it.** The harness
-  reports *mapped*, never *fits* — Hyprland tiles, so it forces 360x674 onto an
-  app that cannot cope, and a clipped app reports the same geometry as a perfect
-  one. Whether it fits is a judgement made by looking at the picture.
-- **The verdict and the row have to agree.** `lint-catalogue.py` fails on a
-  `verdicts.toml` entry marked `listed` that is not in `catalogue.toml`, so when
-  `moarchy-keep`'s row finally lands, its `deferred` / *"AUR only, and ours"*
-  verdict is part of the same commit.
-- **`serial` must increase.** Clients refuse a fetched catalogue whose serial is
-  not above the one they already trust, which is what stops a replayed older
-  catalogue from re-adding something that was removed.
-- **The package must be in a sync database `syncdb.py` knows about** — `core`,
-  `extra`, `[moarchy]` or `[moarchy-apps]` — or the lint calls the Install button
-  dead. It has been wrong about that in the direction that matters once already,
-  which is gap 2 above: the lint models a repo the *image* does not yet carry.
-
-Screenshots are fetched from GitHub at runtime rather than packaged, so their
-size is somebody's mobile data — hence the squeeze step. An entry with an empty
-`tested` renders as *"Not yet tested on a device"*: a suggestion. A device string
-is a claim someone can hold us to, and `sweep-record.py` will never overwrite one
-with a VM run.
-
-Once signed and pushed, every installed store picks the catalogue up on next
-launch. No package update, no AUR push — that is the whole point of signing it.
+- **The AUR's branch is `master`.** `aur.yml` pushes `HEAD:refs/heads/master`;
+  by hand, a fresh clone of a base that does not exist yet has no branch, and a
+  plain `git push` creates nothing.
+- **A stale `.SRCINFO`** advertises the wrong dependencies to every AUR helper
+  while the PKGBUILD quietly builds something else. `aur.yml` fails on it, which
+  is also why a push of PKGBUILDs at `sha256sums=('SKIP')` publishes nothing.
+- **The version in `recommended.json`** has to be the one `[market-apps]`
+  carries: `omarchy-market-test/aur/publish.sh` keeps exactly that package, and
+  App Finder offers exactly that.
+- **`[market-apps]`'s database is shared.** Never rebuild it from `packages/`
+  with `repo-add --new`: that deletes the AUR apps. `publish-market.sh` refuses
+  to push a diff that touches them.
 
 ## The checklist, short
 
 For each app, in this order:
 
-- [ ] `scripts/check.sh <app>` green in the container
-- [ ] tag, `packaging/release.sh`, checksum pinned, asset uploaded
-- [ ] `.SRCINFO` regenerated and committed
-- [ ] pushed to the AUR
-- [ ] package built, signed, in `[moarchy-apps]`, `gh-pages` pushed
-- [ ] measured and shot in the VM, verdict recorded
-- [ ] row in `catalogue.toml`, entry in `metadata.toml`, `serial` bumped,
-      catalogue re-signed and pushed
+- [ ] `scripts/check.sh <app>` green, the photographs looked at
+- [ ] tag pushed, `packaging/release.sh`, asset uploaded, checksum pinned
+- [ ] `.SRCINFO` regenerated, committed, pushed -- `aur.yml` green
+- [ ] `scripts/package.sh`, `packaging/publish-market.sh`
+- [ ] `recommended.json` entry, screens and icon, if App Finder should show it

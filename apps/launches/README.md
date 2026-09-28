@@ -187,9 +187,16 @@ open a launch, `s` stars it, `r` refreshes, `1` and `2` switch pages.
 
 ## Where to get it
 
-Not published yet. 0.1.0, the GTK app, never was; 0.2.0 is this, in the tree
-and not tagged. The AUR, `[moarchy-apps]` and the store catalogue wait for the
-tag.
+On Omarchy Mobile it is in `[market-apps]`, the signed repo the Market installs
+from with the phone's PIN -- but App Finder does not list it yet: it shows the
+recommended apps, and Launches is not one of them (`docs/publishing.md`). On any
+other Arch or Arch Linux ARM machine, from the AUR:
+
+```sh
+paru -S moarchy-launches
+```
+
+`docs/publishing.md` says which channel has which version.
 
 ## Licence
 

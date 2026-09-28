@@ -174,16 +174,16 @@ history, the arrows and Enter open a product, Delete takes it out.
 
 ## Where to get it
 
-Three channels, the same as every app here, and `docs/publishing.md` is the
-table of which one this has actually reached — `git grep` cannot tell you that.
+On Omarchy Mobile it is in `[market-apps]`, the signed repo the Market installs
+from with the phone's PIN -- but App Finder does not list it yet: it shows the
+recommended apps, and Food is not one of them (`docs/publishing.md`). On any
+other Arch or Arch Linux ARM machine, from the AUR:
 
 ```sh
-# the phone, through the signed repo the store's helper can install from
-sudo pacman -S moarchy-food
-
-# anyone else on Arch or Arch Linux ARM
 paru -S moarchy-food
 ```
+
+`docs/publishing.md` says which channel has which version.
 
 ## Licence
 

@@ -277,8 +277,8 @@ apps/<name>/kit        a link to shared/kit
 shared/kit/            what every app has in common, and its tests
 shared/kit-gallery/    every kit widget on one screen
 packaging/release.sh   tag -> per-app tarball (the kit resolved) + sha256
-packaging/repo-add.sh  built packages -> a signed [moarchy-apps] pacman repo
-packaging/publish-pages.sh    that repo -> the gh-pages branch it is served from
+packaging/publish-market.sh   built packages -> [market-apps], the signed repo
+                       the Omarchy Mobile Market installs from (gh-pages)
 scripts/check.sh       every check: ruff, the lints, the Python helper tests,
                        and app-check.sh
 scripts/app-check.sh   per app: app-lint, qmllint, its tests, a real quickshell
@@ -298,78 +298,28 @@ docs/publishing.md     the three channels every app ships in, and what is
 are none of the above: their PKGBUILDs build from upstream.
 
 The kit is **vendored into each package at build time**, not shipped as its
-own pacman package. moarchy-store reports what an app costs in packages and
-megabytes onto a stock image, and a second package for the kit is a cost with
-nothing behind it. One source copy here, many self-contained packages there.
+own pacman package. A second package for the kit would be one more thing to
+download and keep in step on every phone, with nothing behind it. One source copy here, many self-contained packages there.
 
 ## The part that is not writing the app
 
-An app nobody can install is a hobby. moarchy-store installs through a helper
-that execs `pacman -S` against an allowlist it reads from a root-owned, signed
-`catalogue.toml`. An AUR package is in no sync database, so the helper cannot
-install one **at all** — which is why `moarchy-keep` sits in that repo's
-`sweep/verdicts.toml` as *"AUR only, and ours"*, deferred from a store we wrote.
+An app nobody can install is a hobby. Every app here ships in two places, and
+[`docs/publishing.md`](docs/publishing.md) is the table of which has reached
+which:
 
-The standing answer recorded there is *"if an AUR app matters, package it for
-the repos rather than weaken the allowlist"*. `packaging/repo-add.sh` is that,
-done literally: a signed binary repo **is** a pacman sync database, so
+- **The AUR**, for anyone on Arch or Arch Linux ARM: one PKGBUILD per app,
+  pinning a release tarball by checksum, pushed by `.github/workflows/aur.yml`
+  whenever an app's PKGBUILD changes.
+- **`[market-apps]`**, for Omarchy Mobile: the signed repo the phone's Market
+  installs from. On the phone, an app is found in App Finder and installed
+  with the phone's PIN -- nothing to add to `pacman.conf`, no key to trust by
+  hand; the Market's own package does both. The binary packages are built
+  from the same tree as the AUR's tarballs, so both install the same bytes.
 
-- the helper works unchanged — it never asks which repo a package came from,
-  only whether the name is in the catalogue;
-- the allowlist is untouched, so the security property the helper exists to
-  provide stays exactly as narrow as it was;
-- packages carry a detached signature from a key pinned in the image's own
-  keyring, which is better provenance than the AUR offers — the AUR ships no
-  package signatures at all, because it ships no packages.
-
-What changes is one stanza in a phone's `/etc/pacman.conf`, with the key
-pinned — a decision made once, deliberately, rather than a hole.
-
-```
-[moarchy-apps]
-SigLevel = Required TrustedOnly
-Server = https://simonschubert.github.io/moarchy-apps/aarch64
-```
-
-...and the key that signs it, which is the half that makes `TrustedOnly` mean
-anything:
-
-```sh
-curl -O https://simonschubert.github.io/moarchy-apps/aarch64/moarchy-apps.gpg
-sudo pacman-key --add moarchy-apps.gpg
-sudo pacman-key --lsign-key 3CA83612E7F3108F442006B418305B893569BAD3
-```
-
-The section name is not cosmetic. pacman fetches `<Server>/<section>.db`, so
-the section name *is* the filename on the far end, and a repo published under
-one name cannot be mounted under another. `REPO=` overrides it in both
-packaging scripts and defaults to `moarchy-apps`, so the database and the
-stanza cannot drift apart by way of a forgotten variable.
-
-That single change is what makes every app in this repo listable, and it
-retires the "AUR only" verdict for `moarchy-keep` too.
-
-It does not retire the AUR. The argument above is about the channel the *store*
-installs from, and the AUR was never aimed at the phone — it is where an Arch
-user looks for an app that works on a 360px phone and a desktop both, which is
-a shape they have no other source for. Both, then, for every app: one PKGBUILD per app pinning one release
-tarball by checksum, so the two channels install the same bytes from the same
-tag and cannot drift. [`docs/publishing.md`](docs/publishing.md) says which apps
-have actually reached which.
-
-The repo is live and holds all thirteen apps at their released versions. It is
-built in two halves, because the two tools it needs are on different machines:
-
-```sh
-packaging/repo-add.sh packages/*.pkg.tar.*   # in the Arch container, for repo-add
-packaging/publish-pages.sh                   # here, where the signing key is
-git push origin gh-pages
-```
-
-`SigLevel = Required TrustedOnly` is checked rather than assumed: a real pacman
-in a clean container, pointed at the published URL with nothing but that key
-trusted, syncs the database and installs `moarchy-chess` with
-`Validated By: Signature`.
+What App Finder shows is a third, smaller thing: the recommended apps at the
+top of it, with their screens turning in a carousel, are an entry each in
+[mobile-market-data](https://github.com/SimonSchubert/mobile-market-data)'s
+`aur/recommended.json`. The games and Vitals are there today.
 
 ## Working on it
 
@@ -410,17 +360,15 @@ lint where the checks run.
 3. `scripts/check.sh <name>` green, including the real run.
 4. Tag `<name>-v<version>`, `packaging/release.sh <name> <version>`, put the
    printed sha256 in the PKGBUILD, upload the tarball as the release asset.
-5. Push the PKGBUILD and a regenerated `.SRCINFO` to the AUR.
-6. `packaging/repo-add.sh`, `packaging/publish-pages.sh`, push `gh-pages`.
-7. Add the row to moarchy-store's `catalogue.toml` — and measure it in the VM
-   first, like any other entry.
+5. Commit the pinned PKGBUILD and a regenerated `.SRCINFO`, and push:
+   `aur.yml` publishes it to the AUR.
+6. `scripts/package.sh <name>`, then `packaging/publish-market.sh` with the
+   package, for the phone.
+7. For App Finder to show it: an entry in mobile-market-data's
+   `aur/recommended.json`, with three screens and an icon.
 
-Steps 5 to 7 are three channels and not a choice between them: the AUR is for
-everyone not running our image, `[moarchy-apps]` is the only one the store's
-helper can install from, and the catalogue is how anybody finds it. `git grep`
-will not tell you which of them an app has actually reached, so
-[`docs/publishing.md`](docs/publishing.md) holds that table, the order the
-scripts run in, and the gaps that are structural rather than unfinished.
+[`docs/publishing.md`](docs/publishing.md) holds the table of which app has
+reached which channel, the exact commands, and what fails late.
 
 ## Licence
 
