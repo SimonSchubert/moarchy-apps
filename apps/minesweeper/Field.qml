@@ -70,7 +70,8 @@ Item {
           y: root.gap / 2
           width: parent.width - root.gap
           height: parent.height - root.gap
-          radius: Math.max(3, root.cell * 0.14)
+          // A tile's corner is the theme's, and never more than a tile can carry.
+          radius: Math.min(root.app.ui.radius, root.cell * 0.14)
           color: sq.boom ? root.app.ui.boom : sq.pit ? root.app.ui.pit
             : mouse.pressed ? Qt.darker(root.app.ui.lid, 1.08)
             : mouse.containsMouse ? Qt.tint(root.app.ui.lid, root.app.ui.hover) : root.app.ui.lid
@@ -193,7 +194,7 @@ Item {
             anchors.centerIn: parent
             width: root.cell * 0.8
             height: Math.max(2, root.cell * 0.09)
-            radius: height / 2
+            radius: root.app.ui.round(height)
             rotation: modelData
             color: root.app.ui.wrong
           }

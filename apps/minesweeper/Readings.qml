@@ -18,10 +18,10 @@ Item {
     property var app
     width: 92
     height: parent.height
-    radius: app.ui.radius + 2
+    radius: app.ui.radius
     color: app.ui.surface
     border.width: 1
-    border.color: app.ui.divider
+    border.color: app.ui.line
     Column {
       anchors.centerIn: parent
       spacing: 1
@@ -40,6 +40,8 @@ Item {
         color: box.app.ui.muted
         font.family: box.app.ui.font
         font.pixelSize: box.app.ui.fs.xs
+        font.capitalization: Font.AllUppercase
+        font.letterSpacing: box.app.ui.tracking
       }
     }
   }

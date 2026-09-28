@@ -10,11 +10,11 @@ Rectangle {
   readonly property bool on: app.marking
   implicitWidth: row.implicitWidth + 32
   implicitHeight: app.ui.target + 4
-  radius: height / 2
+  radius: app.ui.radius
   opacity: app.over ? 0.45 : 1
   color: on ? app.ui.flag : mouse.pressed ? app.ui.pressed : mouse.containsMouse ? app.ui.hover : app.ui.surface
   border.width: on ? 0 : 1
-  border.color: app.ui.border
+  border.color: app.ui.line
   Accessible.role: Accessible.CheckBox
   Accessible.name: "Flag"
   Accessible.checked: on
@@ -56,7 +56,9 @@ Rectangle {
       color: root.on ? root.app.ui.inkOnFlag : root.app.ui.text
       font.family: root.app.ui.font
       font.pixelSize: root.app.ui.fs.sm
-      font.weight: Font.DemiBold
+      font.weight: Font.Bold
+      font.capitalization: Font.AllUppercase
+      font.letterSpacing: root.app.ui.tracking
     }
   }
 
