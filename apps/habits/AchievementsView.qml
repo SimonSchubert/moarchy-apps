@@ -48,11 +48,11 @@ Flickable {
         Rectangle {
           width: parent.width
           height: 8
-          radius: 4
+          radius: root.app.ui.round(height)
           color: root.app.ui.well
           Rectangle {
             height: parent.height
-            radius: 4
+            radius: root.app.ui.round(height)
             color: root.app.ui.accent
             width: parent.width * (root.level.toGo === null ? 1
               : root.level.into / Math.max(1, root.level.into + root.level.toGo))
@@ -68,6 +68,12 @@ Flickable {
           font.pixelSize: root.app.ui.fs.sm
         }
       }
+    }
+
+    SectionTitle {
+      app: root.app
+      text: "Achievements"
+      note: root.earnedCount + " of " + Game.ACHIEVEMENTS.length + " earned"
     }
 
     Grid {
@@ -86,10 +92,10 @@ Flickable {
           readonly property bool earned: earnedOn !== ""
           width: grid.tile
           height: 128
-          radius: root.app.ui.radius + 4
+          radius: root.app.ui.radius
           color: earned ? root.app.ui.surfaceHigh : root.app.ui.surface
           border.width: 1
-          border.color: earned ? root.app.ui.alpha(root.app.ui.warn, 0.6) : root.app.ui.divider
+          border.color: earned ? root.app.ui.alpha(root.app.ui.warn, 0.6) : root.app.ui.line
           Accessible.role: Accessible.StaticText
           Accessible.name: modelData[1] + (earned ? ", earned " + earnedOn : ", " + modelData[2])
 
@@ -111,7 +117,7 @@ Flickable {
               color: badge.earned ? root.app.ui.text : root.app.ui.muted
               font.family: root.app.ui.font
               font.pixelSize: root.app.ui.fs.sm
-              font.weight: Font.DemiBold
+              font.weight: Font.Bold
               elide: Text.ElideRight
             }
             // Earned once and never lost, so the date it was earned is worth

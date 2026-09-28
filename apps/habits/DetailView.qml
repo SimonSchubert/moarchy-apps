@@ -132,12 +132,12 @@ Item {
           Rectangle {
             width: parent.width
             height: 8
-            radius: 4
+            radius: root.app.ui.round(height)
             color: root.app.ui.well
             Rectangle {
               width: parent.width * root.strength
               height: parent.height
-              radius: 4
+              radius: root.app.ui.round(height)
               color: root.hue
             }
           }

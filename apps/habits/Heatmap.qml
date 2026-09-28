@@ -48,7 +48,7 @@ Row {
             required property var modelData
             width: root.cell
             height: root.cell
-            radius: Math.max(2, Math.round(root.cell * 0.25))
+            radius: root.app.ui.radius > 0 ? Math.max(2, Math.round(root.cell * 0.25)) : 0
             // A day that has not happened yet is left out, not marked missed.
             color: modelData === null ? "transparent"
               : root.habit ? root.app.markColour(root.habit, modelData, root.app.revision) : "transparent"

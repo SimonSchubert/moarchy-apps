@@ -36,7 +36,7 @@ Rectangle {
     y: root.stacked ? 18 : (parent.height - height) / 2
     width: 10
     height: 10
-    radius: 5
+    radius: root.app.ui.radius > 0 ? 5 : 0
     color: root.habit ? root.app.habitHue(root.habit.colour) : "transparent"
   }
 
@@ -53,7 +53,7 @@ Rectangle {
       color: root.app.ui.text
       font.family: root.app.ui.font
       font.pixelSize: root.app.ui.fs.md
-      font.weight: Font.DemiBold
+      font.weight: Font.Bold
       elide: Text.ElideRight
     }
     Text {

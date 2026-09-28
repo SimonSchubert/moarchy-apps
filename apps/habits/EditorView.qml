@@ -165,7 +165,7 @@ Item {
                 anchors.centerIn: parent
                 width: 34
                 height: 34
-                radius: 10
+                radius: root.app.ui.radius
                 color: root.app.habitHue(swatch.modelData.key)
                 border.width: swatch.chosen ? 3 : 0
                 border.color: root.app.ui.text

@@ -411,9 +411,11 @@ App {
     anchors.bottom: parent.bottom
     anchors.bottomMargin: 16
     width: Math.min(parent.width - 32, undoRow.implicitWidth + 32)
-    height: 48
-    radius: 24
-    color: root.ui.text
+    height: 42
+    radius: root.ui.radius
+    color: root.ui.surfaceHigh
+    border.width: 1
+    border.color: root.ui.line
     Row {
       id: undoRow
       anchors.centerIn: parent
@@ -421,10 +423,9 @@ App {
       Text {
         anchors.verticalCenter: parent.verticalCenter
         text: "Deleted " + (root.removed ? root.removed.habit.name : "")
-        color: root.ui.bg
+        color: root.ui.text
         font.family: root.ui.font
         font.pixelSize: root.ui.fs.sm
-        font.weight: Font.DemiBold
       }
       Text {
         anchors.verticalCenter: parent.verticalCenter
@@ -433,6 +434,8 @@ App {
         font.family: root.ui.font
         font.pixelSize: root.ui.fs.sm
         font.weight: Font.Bold
+        font.capitalization: Font.AllUppercase
+        font.letterSpacing: root.ui.tracking
         MouseArea { anchors.fill: parent; anchors.margins: -12; onClicked: root.undoDelete() }
       }
     }

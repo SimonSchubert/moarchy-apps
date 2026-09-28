@@ -23,7 +23,8 @@ Item {
     anchors.centerIn: parent
     width: root.size
     height: root.size
-    radius: Math.max(3, Math.round(root.size * 0.28))
+    // A square, as a day on Omarchy is; rounded only where the theme rounds.
+    radius: root.app.ui.radius > 0 ? Math.max(3, Math.round(root.size * 0.28)) : 0
     color: root.habit && root.day ? root.app.markColour(root.habit, root.day, root.app.revision) : "transparent"
     border.width: root.isToday ? 2 : 0
     border.color: root.app.ui.accent

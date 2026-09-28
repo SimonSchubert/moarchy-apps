@@ -73,11 +73,11 @@ Item {
             Rectangle {
               width: parent.width
               height: 6
-              radius: 3
+              radius: root.app.ui.round(height)
               color: root.app.ui.well
               Rectangle {
                 height: parent.height
-                radius: 3
+                radius: root.app.ui.round(height)
                 color: root.app.ui.accent
                 width: parent.width * (root.level.toGo === null ? 1
                   : root.level.into / Math.max(1, root.level.into + root.level.toGo))
@@ -115,7 +115,7 @@ Item {
                 color: modelData === root.app.today ? root.app.ui.accent : root.app.ui.muted
                 font.family: root.app.ui.font
                 font.pixelSize: root.app.ui.fs.xs
-                font.weight: Font.DemiBold
+                font.weight: Font.Bold
               }
               Text {
                 anchors.horizontalCenter: parent.horizontalCenter
@@ -132,10 +132,10 @@ Item {
       Rectangle {
         width: parent.width
         height: rowsCol.implicitHeight + 8
-        radius: root.app.ui.radius + 4
+        radius: root.app.ui.radius
         color: root.app.ui.surface
         border.width: 1
-        border.color: root.app.ui.divider
+        border.color: root.app.ui.line
         Column {
           id: rowsCol
           x: 4
