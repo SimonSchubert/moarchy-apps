@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- A shelf of videos: three screens stood one behind another, the front one
+     with a play mark on it.
+
+     Drawn as the object rather than as a button, as the other icons here are:
+     the drawer is a grid of things — a handset, a rocket, a book — so a row of
+     screens belongs there and a coloured square with a triangle does not. -->
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+  <rect x="34" y="12" width="80" height="54" rx="5" fill="#5e5c64"/>
+  <rect x="24" y="24" width="84" height="58" rx="5" fill="#3d3846"/>
+  <rect x="14" y="38" width="92" height="64" rx="6" fill="#241f31"/>
+  <rect x="20" y="44" width="80" height="52" rx="2" fill="#1c71d8"/>
+  <path d="M20 80c13-5 27-5 40 0s27 5 40 0v14c0 1-1 2-2 2H22c-1 0-2-1-2-2z" fill="#1a5fb4"/>
+  <path d="M52 56v28l24-14z" fill="#f6f5f4"/>
+  <rect x="8" y="108" width="112" height="8" rx="2" fill="#986a44"/>
+  <rect x="8" y="108" width="112" height="3" rx="1" fill="#b5835a"/>
+</svg>

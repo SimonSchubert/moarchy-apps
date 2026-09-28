@@ -1,0 +1,28 @@
+#!/bin/sh
+# Open Video Library: in the running Omarchy shell when it has the plugin, as its own
+# Quickshell process when it does not.
+#
+#   moarchy-video-library                                  the front page
+#   moarchy-video-library https://odysee.com/@chan:a/v:1   that video (or lbry://...)
+#
+# `omarchy-shell shell summon` answers "ok" only when the shell is running and
+# has the plugin installed and enabled. Anything else -- no Omarchy, the shell
+# down, the plugin not added -- starts the copy this package installed.
+set -eu
+
+ID=org.moarchy.video-library
+APPDIR=${MOARCHY_VIDEO_LIBRARY_APPDIR:-/usr/share/moarchy-video-library}
+
+PAYLOAD='{}'
+if [ $# -gt 0 ] && [ -n "$1" ]; then
+  uri=$(printf '%s' "$1" | sed 's/\\/\\\\/g; s/"/\\"/g')
+  PAYLOAD="{\"uri\":\"$uri\"}"
+fi
+
+if command -v omarchy-shell >/dev/null 2>&1; then
+  if [ "$(omarchy-shell shell summon "$ID" "$PAYLOAD" 2>/dev/null)" = ok ]; then
+    exit 0
+  fi
+fi
+
+MOARCHY_PAYLOAD=$PAYLOAD exec quickshell -n -p "$APPDIR/shell.qml"

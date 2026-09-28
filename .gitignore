@@ -11,3 +11,6 @@ dist/
 # and the palettes scripts/fetch-themes.sh downloads to check against.
 .shots/
 .themes/
+# Pictures dev/capture.py saved for the shots: other people's thumbnails,
+# which are not ours to commit.
+apps/video-library/dev/.thumbs/

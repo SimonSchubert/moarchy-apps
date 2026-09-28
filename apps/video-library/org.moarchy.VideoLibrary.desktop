@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=Video Library
+GenericName=Video Browser
+Comment=Videos from LBRY and Odysee: browse, search, follow channels and watch
+Exec=moarchy-video-library %u
+Icon=org.moarchy.VideoLibrary
+Terminal=false
+Categories=AudioVideo;Video;Player;Network;
+Keywords=odysee;lbry;video;videos;youtube;channel;stream;watch;podcast;
+MimeType=x-scheme-handler/lbry;
+StartupNotify=false

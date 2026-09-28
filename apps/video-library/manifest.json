@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "id": "org.moarchy.video-library",
+  "name": "Video Library",
+  "version": "0.1.0",
+  "author": "Simon Schubert",
+  "license": "MIT",
+  "description": "LBRY's videos, as Odysee serves them to anybody: its front page by category, search, channels to follow and a library of your own, with no account, played in the page. Desktop and phone layouts.",
+  "homepage": "https://github.com/SimonSchubert/moarchy-apps/tree/main/apps/video-library",
+  "repository": "https://github.com/SimonSchubert/moarchy-apps",
+  "keywords": ["odysee", "lbry", "video", "channels", "streaming", "mpv"],
+  "icon": "icon.svg",
+  "kinds": ["panel"],
+  "keepLoaded": true,
+  "entryPoints": {
+    "panel": "Panel.qml"
+  }
+}

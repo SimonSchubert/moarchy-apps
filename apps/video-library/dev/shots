@@ -1,0 +1,21 @@
+# What to photograph, for scripts/app-shot.sh. Every shot is offline, on the
+# answers dev/capture.py recorded and at the moment it recorded them, with the
+# pictures it saved in dev/.thumbs (run capture.py first, or the cards are
+# boxes with a glyph in them, which is also what they are with no signal).
+FX=apps/video-library/dev/fixture.json
+NOW=MOARCHY_VIDEO_LIBRARY_NOW=$(jq .NOW "$FX")
+THUMBS=MOARCHY_VIDEO_LIBRARY_THUMBS=$PWD/apps/video-library/dev/.thumbs
+VIDEO=$(jq -r '.["home:tech:1"].result.items[0].claim_id' "$FX")
+
+shot phone $NOW $THUMBS
+shot phone-light LOOK=light $NOW $THUMBS MOARCHY_VIDEO_LIBRARY_CAT=tech
+shot phone-video $NOW $THUMBS MOARCHY_VIDEO_LIBRARY_CAT=tech MOARCHY_VIDEO_LIBRARY_PAGE=video MOARCHY_VIDEO_LIBRARY_OPEN=$VIDEO
+shot phone-channel $NOW $THUMBS MOARCHY_VIDEO_LIBRARY_CAT=tech MOARCHY_VIDEO_LIBRARY_PAGE=channel MOARCHY_VIDEO_LIBRARY_OPEN=$VIDEO
+shot phone-search $NOW $THUMBS MOARCHY_VIDEO_LIBRARY_PAGE=search MOARCHY_VIDEO_LIBRARY_SEARCH=linux
+shot phone-following $NOW $THUMBS MOARCHY_VIDEO_LIBRARY_PAGE=following
+shot desktop SIZE=1280x820 $NOW $THUMBS
+shot desktop-video SIZE=1280x820 $NOW $THUMBS MOARCHY_VIDEO_LIBRARY_CAT=tech MOARCHY_VIDEO_LIBRARY_PAGE=video MOARCHY_VIDEO_LIBRARY_OPEN=$VIDEO
+shot desktop-channel SIZE=1280x820 LOOK=light $NOW $THUMBS MOARCHY_VIDEO_LIBRARY_CAT=tech MOARCHY_VIDEO_LIBRARY_PAGE=channel MOARCHY_VIDEO_LIBRARY_OPEN=$VIDEO
+shot desktop-search SIZE=1280x820 $NOW $THUMBS MOARCHY_VIDEO_LIBRARY_PAGE=search MOARCHY_VIDEO_LIBRARY_SEARCH=linux MOARCHY_VIDEO_LIBRARY_KIND=channels
+shot desktop-library SIZE=1280x820 THEME=.themes/catppuccin-latte/colors.toml $NOW $THUMBS MOARCHY_VIDEO_LIBRARY_PAGE=library
+shot desktop-tokyo SIZE=1280x820 THEME=.themes/tokyo-night/colors.toml $NOW $THUMBS MOARCHY_VIDEO_LIBRARY_PAGE=following
