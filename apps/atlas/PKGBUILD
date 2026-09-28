@@ -20,7 +20,7 @@ depends=('quickshell' 'curl' 'ttf-jetbrains-mono-nerd' 'hicolor-icon-theme')
 # whose compression has moved under pinned checksums before.
 source=("$url/releases/download/atlas-v$pkgver/$pkgname-$pkgver.tar.gz")
 # Pinned in the commit after the tag, as every app's here is.
-sha256sums=('SKIP')
+sha256sums=('53a3f332a80fb0c74294038aeb140521086b71da78dd5bcb4160e2d948d4c89e')
 
 check() {
   cd "$pkgname-$pkgver"
