@@ -6,7 +6,7 @@ import "Api.mjs" as Api
 // Coin logos on disk, so a logo is downloaded once rather than once per
 // shell start: Qt keeps network images in memory only.
 //
-//     source: app.logos.revision, app.logos.source(url)
+//     source: { app.logos.revision; return app.logos.source(url) }
 //
 // source() answers a file:// URL when the logo is on disk, and "" while it is
 // being fetched (CoinLogo draws initials meanwhile), then the file once it is
@@ -28,6 +28,9 @@ Item {
   id: root
   property var app
   property string dir: ""
+  // For the screenshots: a folder of logos dev/capture.py saved, by
+  // fixedName(), read in place of the cache, which then fetches nothing.
+  property string fixed: ""
   readonly property int slots: 1500
   readonly property int parallel: 4
 
@@ -49,7 +52,14 @@ Item {
 
   function fileOf(slot, gen, url) { return root.dir + "/" + slot + "-" + (gen % 2) + "." + extension(url) }
 
+  // "https://coin-images.coingecko.com/coins/images/1/small/bitcoin.png?16"
+  // is coins_images_1_small_bitcoin.png.
+  function fixedName(url) {
+    return String(url).replace(/^https:\/\/[^\/]+\//, "").replace(/\?.*$/, "").replace(/[^A-Za-z0-9._-]/g, "_")
+  }
+
   function source(url) {
+    if (url && fixed) return Api.imageUrl(url) ? "file://" + fixed + "/" + fixedName(url) : ""
     if (!url || !loaded) return ""
     var slot = index.urls[url]
     if (slot !== undefined) return "file://" + fileOf(slot, index.gen[slot] || 0, url)
@@ -73,7 +83,7 @@ Item {
   }
 
   function fetch(url) {
-    if (!Api.imageUrl(url)) { failed[url] = true; return }
+    if (!Api.imageUrl(url) || app.gecko.sealed) { failed[url] = true; return }
     if (active[url] || queue.indexOf(url) >= 0) return
     // Newest first: the logos of the rows on screen now, not of a list
     // scrolled past a second ago.
@@ -117,7 +127,9 @@ Item {
     var gen = (ix.gen[slot] || 0) + 1
     writeOk = true
     var w = writer.createObject(root, { path: fileOf(slot, gen, url) })
+    // qmllint disable missing-property
     w.setData(data)
+    // qmllint enable missing-property
     w.destroy()
     if (!writeOk) { failed[url] = true; return }
     var old = ix.owners[slot]

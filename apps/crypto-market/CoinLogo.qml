@@ -32,7 +32,11 @@ Item {
     anchors.fill: parent
     // From the disk cache; "" while it is being fetched, which shows the
     // initials.
-    source: root.app.logos ? (root.app.logos.revision, root.app.logos.source(root.source)) : root.source
+    source: {
+      if (!root.app.logos) return root.source
+      root.app.logos.revision
+      return root.app.logos.source(root.source)
+    }
     asynchronous: true
     cache: true
     smooth: true

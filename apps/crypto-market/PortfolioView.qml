@@ -51,8 +51,6 @@ Item {
              cost: cost, pnl: pnl, pnlPct: cost > 0 ? pnl / cost * 100 : NaN, priced: priced, partial: partial }
   }
 
-  readonly property var palette: [app.ui.accent, "#f7931a", "#627eea", "#14f195", "#e84142", "#8c8c8c"]
-
   // Largest five and everything else, for the allocation bar.
   readonly property var slices: {
     var t = totals.value
@@ -60,10 +58,10 @@ Item {
     var out = [], rest = 0
     for (var i = 0; i < rows.length; i++) {
       if (!(rows[i].value > 0)) continue
-      if (out.length < 5) out.push({ label: rows[i].symbol, share: rows[i].value / t, color: palette[out.length] })
+      if (out.length < 5) out.push({ label: rows[i].symbol, share: rows[i].value / t, color: root.app.ui.series[out.length] })
       else rest += rows[i].value
     }
-    if (rest > 0) out.push({ label: "Other", share: rest / t, color: palette[5] })
+    if (rest > 0) out.push({ label: "Other", share: rest / t, color: root.app.ui.series[5] })
     return out
   }
 
@@ -80,8 +78,13 @@ Item {
     clip: true
     model: root.rows
     property int cursor: -1
+    // The summary above the rows grows when the prices arrive, and a
+    // ListView keeps its offset through a header that grows: the top of the
+    // card would scroll out of view by itself. At the top it stays at the top.
+    property bool keepTop: true
+    onMovementEnded: keepTop = atYBeginning
 
-    function move(delta) {
+    function moveCursor(delta) {
       if (!count) return false
       cursor = Math.max(0, Math.min(count - 1, cursor + delta))
       positionViewAtIndex(cursor, ListView.Contain)
@@ -97,6 +100,7 @@ Item {
     header: Column {
       width: list.width
       spacing: 12
+      onHeightChanged: if (list.keepTop) Qt.callLater(list.positionViewAtBeginning)
       topPadding: 4
       bottomPadding: 8
 

@@ -1,6 +1,7 @@
 import QtQuick
 import Quickshell
 import "Api.mjs" as Api
+import "Theme.js" as Theme
 
 // Crypto Market: CoinGecko's markets, coin pages, watchlist and a portfolio,
 // as an app.
@@ -26,20 +27,42 @@ Item {
 
   readonly property bool compact: stage.width < 720
   readonly property string currency: store.currency
-  property real clock: Date.now()
+
+  // For the screenshots (scripts/app-shot.sh, dev/shots), all inert unset.
+  // MOARCHY_CRYPTO_MARKET_OFFLINE: never open a socket -- answers come from
+  // the fixture.json dev/demo.py left in MOARCHY_CRYPTO_MARKET_DIR (Gecko).
+  // MOARCHY_CRYPTO_MARKET_NOW: a frozen clock, in seconds, so what was
+  // recorded then is fresh now. MOARCHY_CRYPTO_MARKET_LOGOS: a folder of
+  // logos by URL, in place of the logo cache (LogoCache).
+  // MOARCHY_CRYPTO_MARKET_PAGE: the tab to open on, over the one saved; a
+  // coin page is CRYPTO_MARKET_PAYLOAD='{"coin":"bitcoin"}', as bin/ passes it.
+  readonly property bool offline: (Quickshell.env("MOARCHY_CRYPTO_MARKET_OFFLINE") || "") !== ""
+  readonly property real pinnedNow: (parseFloat(Quickshell.env("MOARCHY_CRYPTO_MARKET_NOW") || "0") || 0) * 1000
+  readonly property string harnessDir: Quickshell.env("MOARCHY_CRYPTO_MARKET_DIR") || ""
+  readonly property string harnessPage: Quickshell.env("MOARCHY_CRYPTO_MARKET_PAGE") || ""
+  // MOARCHY_CRYPTO_MARKET_RANGE: the chart's range on a coin page (1, 7, 30,
+  // 90, 365, max) in place of 7 days.
+  readonly property string harnessRange: Quickshell.env("MOARCHY_CRYPTO_MARKET_RANGE") || ""
+  function now() { return pinnedNow > 0 ? pinnedNow : Date.now() }
+  property real clock: now()
 
   function alpha(c, a) { return Qt.rgba(c.r, c.g, c.b, a) }
   function luminance(c) { return 0.2126 * c.r + 0.7152 * c.g + 0.0722 * c.b }
 
-  // Omarchy's theme inside its shell, a plain one under any other Quickshell.
+  // Omarchy's theme: the shell's inside it, its theme files outside it, a
+  // plain palette where there is neither.
   HostTheme { id: theme }
   Component.onCompleted: theme.probe(root)
 
-  readonly property QtObject ui: QtObject {
+  // Every hex colour the app draws with is here, as the theme's fallback.
+  readonly property var ui: QtObject {
     readonly property bool dark: root.luminance(theme.background) < 0.5
     readonly property color bg: theme.background
     readonly property color text: theme.text
-    readonly property color muted: theme.muted
+    // A theme's muted is sometimes its border colour, too faint for a
+    // caption: then the text, faded.
+    readonly property color muted: Theme.mutedReads(theme.muted, theme.background)
+      ? theme.muted : Qt.tint(bg, root.alpha(text, 0.62))
     readonly property color accent: theme.accent
     readonly property color border: theme.border
     readonly property color surface: Qt.tint(bg, root.alpha(text, dark ? 0.06 : 0.04))
@@ -51,11 +74,18 @@ Item {
     readonly property color selected: root.alpha(accent, 0.14)
     readonly property color accentSoft: root.alpha(accent, 0.16)
     readonly property color divider: root.alpha(text, 0.08)
-    readonly property color up: dark ? "#34d399" : "#15803d"
-    readonly property color down: dark ? "#f87171" : "#dc2626"
+    // A price's direction in the theme's own green and red where it has
+    // them and they read as green and red; the plain pair where it does not
+    // (Lumon's "red" is a blue, White's a grey).
+    readonly property color up: Theme.tone(theme.hue("green"), "green", bg, dark ? "#34d399" : "#15803d")
+    readonly property color down: Theme.tone(theme.hue("red"), "red", bg, dark ? "#f87171" : "#dc2626")
     readonly property color upSoft: root.alpha(up, 0.15)
     readonly property color downSoft: root.alpha(down, 0.15)
-    readonly property color star: "#f5b82e"
+    readonly property color star: Theme.tone(theme.hue("yellow"), "yellow", bg, dark ? "#f5b82e" : "#c98a06")
+    readonly property color scrim: "#000000"
+    // The allocation bar: the accent, then the colours of the coins most
+    // portfolios start with, then a grey for the rest.
+    readonly property var series: [accent, "#f7931a", "#627eea", "#14f195", "#e84142", "#8c8c8c"]
     readonly property string font: theme.fontFamily
     readonly property int radius: Math.max(6, Math.min(12, theme.cornerRadius))
     readonly property int target: root.compact ? 44 : 38
@@ -160,7 +190,8 @@ Item {
     if (!opened) return
     var v = currentView()
     if (v && v.refresh) v.refresh(force)
-    if (detailLoader.item) detailLoader.item.refresh(force)
+    var detail = detailLoader.item as DetailView
+    if (detail) detail.refresh(force)
   }
 
   function currentView() {
@@ -195,6 +226,7 @@ Item {
   // ------------------------------------------------------------ host API
 
   function open(payloadJson) {
+    theme.reload()
     opened = true
     window.visible = true
     var p = null
@@ -232,8 +264,9 @@ Item {
     id: storeObj
     onReadyChanged: {
       if (!ready) return
-      var t = prefs.lastTab
+      var t = root.harnessPage || prefs.lastTab
       if (["markets", "watchlist", "discover", "portfolio"].indexOf(t) >= 0) root.tab = t
+      else if (t === "search" || t === "settings") root.setTab(t)
       root.refresh(false)
     }
     onSnapshotLoaded: function (text) { geckoObj.restoreText(text) }
@@ -243,12 +276,16 @@ Item {
     id: geckoObj
     apiKey: storeObj.apiKey
     currency: storeObj.currency
+    sealed: root.offline
+    fixturePath: root.offline && root.harnessDir ? root.harnessDir + "/fixture.json" : ""
+    pinnedNow: root.pinnedNow
   }
 
   LogoCache {
     id: logosObj
     app: root
     dir: storeObj.cacheDir + "/logos"
+    fixed: Quickshell.env("MOARCHY_CRYPTO_MARKET_LOGOS") || ""
   }
 
   LauncherEntry {
@@ -267,7 +304,7 @@ Item {
     interval: 15000
     repeat: true
     running: root.opened
-    onTriggered: { root.clock = Date.now(); root.refresh(false) }
+    onTriggered: { root.clock = root.now(); root.refresh(false) }
   }
 
   onCurrencyChanged: Qt.callLater(function () { root.refresh(false) })
@@ -316,14 +353,14 @@ Item {
           Keys.onPressed: function (event) {
             var v = root.currentView()
             var list = v && v.list ? v.list : null
-            var detail = detailLoader.item
+            var detail = detailLoader.item as DetailView
             var k = event.key
             // One step back; at the top there is nothing to leave -- an app
             // window is closed by the window manager, not by Escape.
             if (k === Qt.Key_Escape || k === Qt.Key_Back) { root.back(); event.accepted = true; return }
             if (root.txOpen) return
-            if (k === Qt.Key_Down && list) { event.accepted = list.move(1); return }
-            if (k === Qt.Key_Up && list) { event.accepted = list.move(-1); return }
+            if (k === Qt.Key_Down && list) { event.accepted = list.moveCursor(1); return }
+            if (k === Qt.Key_Up && list) { event.accepted = list.moveCursor(-1); return }
             if ((k === Qt.Key_Return || k === Qt.Key_Enter) && list) { event.accepted = list.activateCurrent(); return }
             if ((k === Qt.Key_Left || k === Qt.Key_Right) && detail) { detail.stepRange(k === Qt.Key_Left ? -1 : 1); event.accepted = true; return }
             if (event.modifiers & (Qt.ControlModifier | Qt.AltModifier | Qt.MetaModifier)) return

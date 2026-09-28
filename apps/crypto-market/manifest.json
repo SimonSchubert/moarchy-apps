@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "id": "io.github.simonschubert.crypto-market",
   "name": "Crypto Market",
-  "version": "1.1.1",
+  "version": "1.2.0",
   "author": "Simon Schubert",
   "license": "MIT",
   "description": "CoinGecko as an app: the top 100 to 1,000 coins with 7-day sparklines, coin pages with price charts, market cap, supply and all-time highs, a watchlist, trending coins, gainers and losers, categories, a converter and a portfolio with profit and loss. Fetches market data from CoinGecko over HTTPS. Laid out for the desktop and the phone.",

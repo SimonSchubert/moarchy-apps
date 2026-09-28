@@ -30,4 +30,12 @@ ShellRoot {
     interval: 1000
     onTriggered: Qt.quit()
   }
+
+  // MOARCHY_QUIT_AFTER=6 -- for headless runs (scripts/app-check.sh): a run
+  // that does not end is a run that hangs CI.
+  Timer {
+    interval: 1000 * (parseInt(Quickshell.env("MOARCHY_QUIT_AFTER") || "0", 10) || 0)
+    running: interval > 0
+    onTriggered: Qt.quit()
+  }
 }

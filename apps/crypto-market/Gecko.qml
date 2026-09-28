@@ -1,4 +1,5 @@
 import QtQuick
+import Quickshell.Io
 import "Api.mjs" as Api
 
 // Every request to CoinGecko goes through here, one at a time.
@@ -16,13 +17,24 @@ Item {
   property string currency: "usd"
   property bool active: true
 
+  // For the screenshots (Panel's MOARCHY_CRYPTO_MARKET_* notes). `sealed`
+  // sends nothing: a request is answered from `fixturePath` -- what
+  // dev/capture.py recorded, by URL -- through the same worker as a live
+  // answer, or not at all, and no answer is an error. `pinnedNow` (ms)
+  // stops the clock, so the recording is as fresh as when it was made.
+  property bool sealed: false
+  property string fixturePath: ""
+  property real pinnedNow: 0
+  property var fixture: null
+  function clock() { return pinnedNow > 0 ? pinnedNow : Date.now() }
+
   // Bumped on every change to the cache or to what is in flight. Bindings
   // read it to re-evaluate peek(), status() and error().
   property int revision: 0
 
   // Rate-limit and connectivity state, for the strip under the header.
   property real blockedUntil: 0
-  property real now: Date.now()
+  property real now: clock()
   property bool offline: false
   readonly property int waitSeconds: Math.max(0, Math.ceil((blockedUntil - now) / 1000))
   readonly property string banner: waitSeconds > 0
@@ -57,7 +69,7 @@ Item {
 
   function age(url) {
     var e = cache[url]
-    return e ? Date.now() - e.t : Infinity
+    return e ? clock() - e.t : Infinity
   }
 
   function busy(url) {
@@ -78,7 +90,7 @@ Item {
     if (!url) return
     if (age(url) < ttl) return
     var f = failures[url]
-    if (f && Date.now() - f.t < 15000 && !urgent) return
+    if (f && clock() - f.t < 15000 && !urgent) return
     for (var i = 0; i < queue.length; i++) {
       if (queue[i].url !== url) continue
       if (urgent && i > 0) {
@@ -140,6 +152,7 @@ Item {
 
   function pump() {
     if (inflight || !queue.length) return
+    if (sealed) { answerSealed(); return }
     var t = Date.now()
     var wait = Math.max(blockedUntil - t, lastSent + gap - t)
     if (wait > 0) {
@@ -220,6 +233,29 @@ Item {
     timeout.restart()
   }
 
+  // Sealed: every queued request at once, from the fixture once it is read.
+  // One with no recorded answer is dropped, as if it had never been asked.
+  function answerSealed() {
+    if (fixturePath && fixture === null) return
+    var q = queue
+    queue = []
+    for (var i = 0; i < q.length; i++) {
+      var answer = fixture ? fixture[q[i].url] : undefined
+      if (answer !== undefined) finish(q[i], 200, JSON.stringify(answer), "")
+    }
+    touch()
+  }
+
+  FileView {
+    path: root.fixturePath
+    printErrors: false
+    onLoaded: {
+      try { root.fixture = JSON.parse(text()) || ({}) } catch (e) { root.fixture = ({}) }
+      root.pump()
+    }
+    onLoadFailed: { root.fixture = ({}); root.pump() }
+  }
+
   function finish(job, status, body, retryAfter) {
     inflight = ""
     if (status === 200) {
@@ -267,7 +303,7 @@ Item {
       fail({ url: url }, "CoinGecko sent something unreadable")
     } else {
       var c = cache
-      c[url] = { t: Date.now(), data: data, kind: kind }
+      c[url] = { t: clock(), data: data, kind: kind }
       prune(c)
       cache = c
       var f = failures
@@ -279,7 +315,7 @@ Item {
 
   function fail(job, message) {
     var f = failures
-    f[job.url] = { t: Date.now(), message: message }
+    f[job.url] = { t: clock(), message: message }
     failures = f
   }
 

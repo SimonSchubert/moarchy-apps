@@ -46,7 +46,7 @@ ListView {
 
   // Keyboard: arrows move a cursor, Enter opens it. Returns whether the key
   // was the list's.
-  function move(delta) {
+  function moveCursor(delta) {
     if (!count) return false
     cursor = Math.max(0, Math.min(count - 1, (cursor < 0 ? (delta > 0 ? -1 : count) : cursor) + delta))
     positionViewAtIndex(cursor, ListView.Contain)

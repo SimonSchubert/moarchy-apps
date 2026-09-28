@@ -40,7 +40,7 @@ Item {
 
   Rectangle {
     anchors.fill: parent
-    color: "#000000"
+    color: root.app.ui.scrim
     opacity: 0.45
     MouseArea { anchors.fill: parent; onClicked: root.done() }
   }

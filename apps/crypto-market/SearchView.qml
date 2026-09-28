@@ -91,7 +91,7 @@ Item {
           else { field.focus = false; event.accepted = false }
         }
         Keys.onReturnPressed: if (root.results.length) root.choose(root.results[0])
-        Keys.onDownPressed: { list.forceActiveFocus(); list.move(1) }
+        Keys.onDownPressed: { list.forceActiveFocus(); list.moveCursor(1) }
 
         Text {
           anchors.fill: parent
@@ -155,7 +155,7 @@ Item {
       onActivated: root.choose(modelData)
     }
     Keys.onReturnPressed: { var c = list.currentCoin(); if (c) root.choose(c) }
-    Keys.onUpPressed: { if (list.cursor <= 0) field.forceActiveFocus(); else list.move(-1) }
-    Keys.onDownPressed: list.move(1)
+    Keys.onUpPressed: { if (list.cursor <= 0) field.forceActiveFocus(); else list.moveCursor(-1) }
+    Keys.onDownPressed: list.moveCursor(1)
   }
 }

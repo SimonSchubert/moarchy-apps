@@ -1,0 +1,22 @@
+# What to photograph, for scripts/app-shot.sh. Every shot is offline, on the
+# answers dev/capture.py recorded and at the moment it recorded them, with the
+# logos it saved in dev/.images (run capture.py first, or every logo is the
+# coin's initials, which is also what it is before a logo has downloaded).
+FX=apps/crypto-market/dev/fixture.json
+NOW=MOARCHY_CRYPTO_MARKET_NOW=$(jq .NOW "$FX")
+LOGOS=MOARCHY_CRYPTO_MARKET_LOGOS=$PWD/apps/crypto-market/dev/.images
+BTC='CRYPTO_MARKET_PAYLOAD={"coin":"bitcoin"}'
+ETH='CRYPTO_MARKET_PAYLOAD={"coin":"ethereum"}'
+STORE="SIZE=540x1044 SCALE=1.5"
+
+# The store's three: the market, a coin, your portfolio.
+shot store-markets $STORE $NOW $LOGOS
+shot store-coin $STORE $NOW $LOGOS "$BTC" MOARCHY_CRYPTO_MARKET_RANGE=30
+shot store-portfolio $STORE $NOW $LOGOS MOARCHY_CRYPTO_MARKET_PAGE=portfolio
+
+shot phone $NOW $LOGOS
+shot phone-watchlist $NOW $LOGOS MOARCHY_CRYPTO_MARKET_PAGE=watchlist
+shot phone-discover $NOW $LOGOS MOARCHY_CRYPTO_MARKET_PAGE=discover
+shot phone-latte THEME=.themes/catppuccin-latte/colors.toml $NOW $LOGOS "$ETH"
+shot desktop SIZE=1280x820 $NOW $LOGOS "$BTC"
+shot desktop-portfolio SIZE=1280x820 THEME=.themes/tokyo-night/colors.toml $NOW $LOGOS MOARCHY_CRYPTO_MARKET_PAGE=portfolio

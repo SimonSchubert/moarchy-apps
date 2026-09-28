@@ -157,6 +157,7 @@ Item {
 
   Process {
     id: lock
+    // qmllint disable signal-handler-parameters
     onExited: function (exitCode, exitStatus) {
       watchdog.stop()
       var j = root.job
@@ -166,6 +167,7 @@ Item {
       else root.fail("Couldn't make Crypto Market's files private (" + j.args[0] + " failed).")
       root.next()
     }
+    // qmllint enable signal-handler-parameters
   }
 
   // A command that never ran, or never came back, counts as failed.

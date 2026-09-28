@@ -14,17 +14,22 @@ Item {
   property var seed: null
   property bool pane: false          // the right half of a split, not a page
 
-  property string days: "7"
   readonly property var ranges: [
     { days: "1", label: "24h" }, { days: "7", label: "7d" }, { days: "30", label: "1M" },
     { days: "90", label: "3M" }, { days: "365", label: "1Y" }, { days: "max", label: "Max" }
   ]
+  property string days: ranges.some(function (r) { return r.days === app.harnessRange }) ? app.harnessRange : "7"
 
   readonly property string cur: app.currency
   readonly property string coinUrl: Api.coinUrl(coinId)
   readonly property string chartUrl: Api.chartUrl(coinId, cur, days)
   readonly property var full: { app.gecko.revision; return app.gecko.peek(coinUrl) }
-  readonly property var coin: full || seed || { id: coinId, name: "", symbol: "" }
+  // A seed can be as little as an id (a coin page opened by name) or a
+  // trending row with no market figures: what it lacks is NaN, not undefined,
+  // which a number property refuses.
+  readonly property var coin: full || Object.assign({
+    id: coinId, name: "", symbol: "", price: NaN, ch24: NaN, low24: NaN, high24: NaN
+  }, seed || {})
   readonly property var points: { app.gecko.revision; return app.gecko.peek(chartUrl) || [] }
   readonly property bool loading: { app.gecko.revision; return app.gecko.busy(coinUrl) }
   readonly property bool chartLoading: { app.gecko.revision; return app.gecko.busy(chartUrl) }
@@ -540,7 +545,11 @@ Item {
       Text {
         width: parent.width
         wrapMode: Text.Wrap
-        text: "Market data by CoinGecko" + (root.full ? " · updated " + root.app.agoText((root.app.clock, root.app.gecko.revision, root.app.gecko.age(root.coinUrl))) : "")
+        text: {
+          root.app.clock
+          root.app.gecko.revision
+          return "Market data by CoinGecko" + (root.full ? " · updated " + root.app.agoText(root.app.gecko.age(root.coinUrl)) : "")
+        }
         color: root.app.ui.muted
         font.family: root.app.ui.font
         font.pixelSize: root.app.ui.fs.xs
