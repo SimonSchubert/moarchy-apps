@@ -61,6 +61,20 @@ ssh "$PHONE" "REMOVE=$remove IDS='${ids[*]}' bash -s" <<'ENDSSH'
 set -euo pipefail
 for id in $IDS; do
   if [ "$REMOVE" = 0 ]; then
+    # The entry Mobile's plugin-apps service lists in the drawer. Without one
+    # it writes a bare entry with a generic icon; with $id.desktop in the
+    # plugin it uses that. So: the app's own entry, pointed at the shell and
+    # at the plugin's icon -- and hidden when the app's package is installed
+    # too, whose entry already opens it in the shell, or the drawer lists it
+    # twice.
+    d=~/.config/omarchy/plugins/$id
+    src=$(ls "$d"/*.desktop 2>/dev/null | grep -v -e '\.open\.desktop$' -e '\.compose\.desktop$' -e "/$id\.desktop\$" | head -1)
+    if [ -n "$src" ]; then
+      { sed -e "s|^Exec=.*|Exec=omarchy-shell shell summon $id|" -e "s|^Icon=.*|Icon=$d/icon.svg|" \
+            -e '/^NoDisplay=/d' -e '/^MimeType=/d' "$src"
+        [ -f "/usr/share/applications/$(basename "$src")" ] && echo "NoDisplay=true"
+      } > "$d/$id.desktop"
+    fi
     omarchy plugin validate ~/.config/omarchy/plugins/$id
     omarchy plugin enable $id 2>/dev/null || omarchy plugin enable $id --yes 2>/dev/null || true
   fi
