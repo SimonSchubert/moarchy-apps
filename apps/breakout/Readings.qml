@@ -1,6 +1,6 @@
 import QtQuick
 
-// The score, the best, and the lives left as a row of dots: three of anything
+// The score, the best, and the lives left as a row of marks: three of anything
 // is faster to read as three shapes than as a digit, and this is glanced at in
 // the middle of a rally without taking an eye off the ball.
 Item {
@@ -25,8 +25,8 @@ Item {
       color: root.app.ui.muted
       font.family: root.app.ui.font
       font.pixelSize: root.app.ui.fs.xs
-      font.weight: Font.DemiBold
-      font.letterSpacing: 0.8
+      font.weight: Font.Bold
+      font.letterSpacing: root.app.ui.tracking
     }
   }
 
@@ -42,10 +42,10 @@ Item {
         required property int index
         width: 12
         height: 12
-        radius: 6
+        radius: root.app.ui.round(height)
         color: index < root.app.lives ? root.app.ui.bat : "transparent"
-        border.width: 2
-        border.color: index < root.app.lives ? root.app.ui.bat : root.app.ui.border
+        border.width: index < root.app.lives ? 0 : 1
+        border.color: root.app.ui.line
       }
     }
   }

@@ -465,7 +465,7 @@ App {
           color: root.dead ? root.ui.bad : root.ui.text
           font.family: root.ui.font
           font.pixelSize: root.ui.fs.lg
-          font.weight: Font.DemiBold
+          font.weight: Font.Bold
         }
         Row {
           spacing: 10

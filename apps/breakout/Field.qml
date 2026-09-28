@@ -34,8 +34,10 @@ Item {
     y: root.oy
     width: root.across
     height: root.across * B.HEIGHT
-    radius: root.across * 0.03
+    radius: root.app.ui.radius
     color: root.app.ui.field
+    border.width: 1
+    border.color: root.app.ui.line
     clip: true
 
     Repeater {
@@ -51,7 +53,8 @@ Item {
         y: root.px(r.y + gap / 4)
         width: root.px(r.w - gap)
         height: root.px(r.h - gap / 2)
-        radius: root.px(B.BRICK_H * 0.22)
+        // Square as the rest of the app is, unless the theme rounds.
+        radius: root.app.ui.radius > 0 ? root.px(B.BRICK_H * 0.22) : 0
         color: root.app.ui.rows[Math.floor(index / B.COLUMNS) % root.app.ui.rows.length]
 
         // The groove that says this one is not done yet: one per hit still
@@ -82,14 +85,14 @@ Item {
       y: root.px(B.BAT_Y - B.BAT_H / 2)
       width: root.px(B.BAT_W)
       height: root.px(B.BAT_H)
-      radius: height / 2
+      radius: root.app.ui.round(height)
       color: root.app.ui.bat
       Rectangle {
         anchors.horizontalCenter: parent.horizontalCenter
         y: parent.height * 0.32 - height / 2
         width: parent.width * 0.7
         height: Math.max(1, parent.height * 0.16)
-        radius: height / 2
+        radius: root.app.ui.round(height)
         color: root.app.ui.batRim
       }
     }
