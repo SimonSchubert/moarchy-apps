@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "id": "org.moarchy.atlas",
+  "name": "Atlas",
+  "version": "0.1.0",
+  "author": "Simon Schubert",
+  "license": "MIT",
+  "description": "Every country's flag, capital and figures from REST Countries, its neighbours a tap away, and a flag quiz in three kinds that works offline. Desktop and phone layouts.",
+  "homepage": "https://github.com/SimonSchubert/moarchy-apps/tree/main/apps/atlas",
+  "repository": "https://github.com/SimonSchubert/moarchy-apps",
+  "keywords": ["atlas", "country", "countries", "flag", "flags", "capital", "quiz", "geography", "world", "rest countries"],
+  "icon": "icon.svg",
+  "kinds": ["panel"],
+  "keepLoaded": true,
+  "entryPoints": {
+    "panel": "Panel.qml"
+  }
+}

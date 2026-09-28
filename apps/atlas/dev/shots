@@ -1,0 +1,30 @@
+# What to photograph, for scripts/app-shot.sh. Every shot is offline, on the
+# forty countries dev/demo.py writes with flags it draws itself, at a frozen
+# now three days after they were "fetched", and every round is drawn from the
+# same seed -- so the pictures are the same pictures every time.
+OFF=MOARCHY_ATLAS_OFFLINE=1
+NOW=MOARCHY_ATLAS_NOW=1790000000
+SEED=MOARCHY_ATLAS_SEED=7
+
+shot phone $OFF $NOW
+shot phone-light LOOK=light $OFF $NOW
+shot phone-europe $OFF $NOW MOARCHY_ATLAS_REGION=Europe MOARCHY_ATLAS_SORT=population
+shot phone-country $OFF $NOW MOARCHY_ATLAS_OPEN=DE
+shot phone-quiz-menu $OFF $NOW MOARCHY_ATLAS_PAGE=quiz
+shot phone-quiz $OFF $NOW $SEED MOARCHY_ATLAS_QUIZ=flags MOARCHY_ATLAS_ANSWERED=3
+shot phone-quiz-wrong $OFF $NOW $SEED MOARCHY_ATLAS_QUIZ=flags MOARCHY_ATLAS_ANSWERED=4 MOARCHY_ATLAS_REVEAL=wrong
+shot phone-quiz-find LOOK=light $OFF $NOW $SEED MOARCHY_ATLAS_QUIZ=find MOARCHY_ATLAS_ANSWERED=2 MOARCHY_ATLAS_REVEAL=right
+shot phone-quiz-score $OFF $NOW $SEED MOARCHY_ATLAS_QUIZ=capitals MOARCHY_ATLAS_ANSWERED=10
+shot phone-setup MOARCHY_ATLAS_EMPTY=1
+shot desktop SIZE=1280x820 $OFF $NOW MOARCHY_ATLAS_OPEN=DE
+shot desktop-light SIZE=1280x820 LOOK=light $OFF $NOW MOARCHY_ATLAS_OPEN=JP
+shot desktop-quiz SIZE=1280x820 $OFF $NOW $SEED MOARCHY_ATLAS_QUIZ=capitals MOARCHY_ATLAS_ANSWERED=5 MOARCHY_ATLAS_REVEAL=right
+shot desktop-latte SIZE=1280x820 THEME=.themes/catppuccin-latte/colors.toml $OFF $NOW MOARCHY_ATLAS_OPEN=CH
+shot desktop-tokyo SIZE=1280x820 THEME=.themes/tokyo-night/colors.toml $OFF $NOW MOARCHY_ATLAS_REGION=Africa
+
+# The store's three, for App Finder: the wall of flags, one country, and the
+# quiz. scripts/app-shot.sh's themed mode shoots these once per Omarchy theme.
+STORE="SIZE=540x1044 SCALE=1.5"
+shot store-1-countries $STORE $OFF $NOW
+shot store-2-country $STORE $OFF $NOW MOARCHY_ATLAS_OPEN=DE
+shot store-3-quiz $STORE $OFF $NOW $SEED MOARCHY_ATLAS_QUIZ=flags MOARCHY_ATLAS_ANSWERED=4 MOARCHY_ATLAS_REVEAL=wrong

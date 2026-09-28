@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=Atlas
+GenericName=World Atlas
+Comment=Flags, capitals and facts for every country, and a flag quiz
+Exec=moarchy-atlas
+Icon=org.moarchy.Atlas
+Terminal=false
+Categories=Education;Geography;
+Keywords=atlas;country;countries;flag;flags;capital;quiz;geography;world;population;
+StartupNotify=false
