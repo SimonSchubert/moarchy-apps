@@ -534,10 +534,12 @@ App {
 
     Text {
       text: "Against"
-      color: root.ui.text
+      color: root.ui.muted
       font.family: root.ui.font
-      font.pixelSize: root.ui.fs.md
-      font.weight: Font.DemiBold
+      font.pixelSize: root.ui.fs.xs
+      font.weight: Font.Bold
+      font.capitalization: Font.AllUppercase
+      font.letterSpacing: root.ui.tracking
     }
     Flow {
       width: parent.width
@@ -550,10 +552,12 @@ App {
     Text {
       visible: newGame.mode === S.SOLO
       text: "Difficulty"
-      color: root.ui.text
+      color: root.ui.muted
       font.family: root.ui.font
-      font.pixelSize: root.ui.fs.md
-      font.weight: Font.DemiBold
+      font.pixelSize: root.ui.fs.xs
+      font.weight: Font.Bold
+      font.capitalization: Font.AllUppercase
+      font.letterSpacing: root.ui.tracking
     }
     Flow {
       visible: newGame.mode === S.SOLO
@@ -582,10 +586,12 @@ App {
     Text {
       visible: newGame.mode === S.SOLO
       text: "You play"
-      color: root.ui.text
+      color: root.ui.muted
       font.family: root.ui.font
-      font.pixelSize: root.ui.fs.md
-      font.weight: Font.DemiBold
+      font.pixelSize: root.ui.fs.xs
+      font.weight: Font.Bold
+      font.capitalization: Font.AllUppercase
+      font.letterSpacing: root.ui.tracking
     }
     Flow {
       visible: newGame.mode === S.SOLO
@@ -628,11 +634,11 @@ App {
           required property int modelData
           width: 64
           height: 64
-          radius: root.ui.radius + 2
+          radius: root.ui.radius
           color: modelData === C.QUEEN ? root.ui.accentSoft
             : pick.pressed ? root.ui.pressed : root.ui.surface
           border.width: 1
-          border.color: modelData === C.QUEEN ? root.ui.accent : root.ui.divider
+          border.color: modelData === C.QUEEN ? root.ui.accent : root.ui.line
           Accessible.role: Accessible.Button
           Accessible.name: "Promote to " + C.KIND_NAMES[modelData]
           Piece {
@@ -701,7 +707,7 @@ App {
           color: root.over ? root.ui.accent : root.checked ? root.ui.bad : root.ui.muted
           font.family: root.ui.font
           font.pixelSize: root.ui.fs.md
-          font.weight: root.over || root.checked ? Font.DemiBold : Font.Normal
+          font.weight: root.over || root.checked ? Font.Bold : Font.Normal
         }
       }
     }

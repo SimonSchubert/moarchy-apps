@@ -25,7 +25,7 @@ Column {
       : controls.app.checked ? controls.app.ui.bad : controls.app.ui.text
     font.family: controls.app.ui.font
     font.pixelSize: controls.app.ui.fs.lg
-    font.weight: Font.DemiBold
+    font.weight: Font.Bold
   }
   // Undo stops at the end of a game: the result has gone into the record by
   // then, and a board that can be rewound past a recorded result can record

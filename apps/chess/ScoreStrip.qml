@@ -32,10 +32,10 @@ Row {
       readonly property int edge: modelData === C.WHITE ? Math.max(root.balance, 0) : Math.max(-root.balance, 0)
       width: (root.width - root.spacing) / 2
       height: 64
-      radius: root.app.ui.radius + 2
+      radius: root.app.ui.radius
       color: live ? root.app.ui.accentSoft : root.app.ui.surface
       border.width: 1
-      border.color: live ? root.app.ui.accent : root.app.ui.divider
+      border.color: live ? root.app.ui.accent : root.app.ui.line
 
       Piece {
         id: king
@@ -59,8 +59,10 @@ Row {
             text: root.names[box.modelData]
             color: box.live ? root.app.ui.accent : root.app.ui.text
             font.family: root.app.ui.font
-            font.pixelSize: root.app.ui.fs.md
-            font.weight: Font.DemiBold
+            font.pixelSize: root.app.ui.fs.sm
+            font.weight: Font.Bold
+            font.capitalization: Font.AllUppercase
+            font.letterSpacing: root.app.ui.tracking
           }
           Text {
             visible: box.edge > 0

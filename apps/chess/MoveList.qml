@@ -56,7 +56,7 @@ Card {
           color: line.latest && !line.modelData.b ? root.app.ui.accent : root.app.ui.text
           font.family: root.app.ui.font
           font.pixelSize: root.app.ui.fs.sm
-          font.weight: line.latest && !line.modelData.b ? Font.DemiBold : Font.Normal
+          font.weight: line.latest && !line.modelData.b ? Font.Bold : Font.Normal
         }
         Text {
           width: (line.width - 38) / 2
@@ -64,7 +64,7 @@ Card {
           color: line.latest && line.modelData.b ? root.app.ui.accent : root.app.ui.text
           font.family: root.app.ui.font
           font.pixelSize: root.app.ui.fs.sm
-          font.weight: line.latest && line.modelData.b ? Font.DemiBold : Font.Normal
+          font.weight: line.latest && line.modelData.b ? Font.Bold : Font.Normal
         }
       }
     }

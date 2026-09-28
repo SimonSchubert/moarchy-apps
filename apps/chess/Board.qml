@@ -166,7 +166,7 @@ Item {
           opacity: 0.9
           font.family: root.app.ui.font
           font.pixelSize: Math.max(8, root.square * 0.21)
-          font.weight: Font.DemiBold
+          font.weight: Font.Bold
         }
         Text {
           x: root.square * 0.08
@@ -176,7 +176,7 @@ Item {
           opacity: 0.9
           font.family: root.app.ui.font
           font.pixelSize: Math.max(8, root.square * 0.21)
-          font.weight: Font.DemiBold
+          font.weight: Font.Bold
         }
       }
     }
