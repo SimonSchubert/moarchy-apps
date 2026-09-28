@@ -206,7 +206,7 @@ Rectangle {
         selectedTextColor: root.app.ui.inkOnAccent
         font.family: root.app.ui.font
         font.pixelSize: root.app.ui.fs.lg + 4
-        font.weight: Font.DemiBold
+        font.weight: Font.Bold
         inputMethodHints: Qt.ImhNoPredictiveText
         onTextChanged: if (root.draft && text !== root.draft.title) { root.draft.title = text; root.touched() }
         // Enter in the title goes to the note: a title is one line.

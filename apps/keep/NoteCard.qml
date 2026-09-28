@@ -16,10 +16,12 @@ Rectangle {
 
   readonly property var shown: note.kind === N.LIST ? N.preview(note) : null
   implicitHeight: col.implicitHeight + 28
-  radius: app.ui.radius + 4
+  radius: app.ui.radius
   color: app.noteFill(note.colour)
-  border.width: selected ? 2 : note.colour === "default" ? 1 : 0
-  border.color: selected ? app.ui.accent : app.ui.divider
+  // Every note is a lined box, a coloured one too: the line is what makes a
+  // wall of notes a grid rather than a patchwork.
+  border.width: selected ? 2 : 1
+  border.color: selected ? app.ui.accent : app.ui.line
   Accessible.role: Accessible.Button
   Accessible.name: note.title || "Note"
 
@@ -50,7 +52,7 @@ Rectangle {
         color: root.app.ui.text
         font.family: root.app.ui.font
         font.pixelSize: root.app.ui.fs.md + 1
-        font.weight: Font.DemiBold
+        font.weight: Font.Bold
       }
       Icon {
         visible: root.note.pinned

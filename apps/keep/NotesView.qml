@@ -77,16 +77,11 @@ Item {
           width: lanes.width
           spacing: 8
 
-          Text {
+          SectionTitle {
             visible: root.labelled
-            topPadding: 6
+            app: root.app
             text: section.modelData.title
-            color: root.app.ui.muted
-            font.family: root.app.ui.font
-            font.pixelSize: root.app.ui.fs.xs
-            font.weight: Font.DemiBold
-            font.capitalization: Font.AllUppercase
-            font.letterSpacing: 0.8
+            note: String(section.modelData.notes.length)
           }
 
           Row {

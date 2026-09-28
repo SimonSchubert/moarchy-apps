@@ -9,10 +9,10 @@ Rectangle {
   property var app
 
   height: bar.app.ui.target + 8
-  radius: height / 2
+  radius: bar.app.ui.radius
   color: bar.app.ui.surface
   border.width: 1
-  border.color: bar.app.ui.divider
+  border.color: bar.app.ui.line
   Text {
     anchors.left: parent.left
     anchors.leftMargin: 18

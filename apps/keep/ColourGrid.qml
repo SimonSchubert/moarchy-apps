@@ -29,10 +29,10 @@ Flow {
       Rectangle {
         anchors.fill: parent
         anchors.margins: 3
-        radius: width / 2
+        radius: root.app.ui.radius
         color: root.app.noteFill(swatch.modelData.key)
         border.width: swatch.current ? 2 : 1
-        border.color: swatch.current ? root.app.ui.accent : root.app.ui.border
+        border.color: swatch.current ? root.app.ui.accent : root.app.ui.line
       }
       Icon {
         anchors.centerIn: parent

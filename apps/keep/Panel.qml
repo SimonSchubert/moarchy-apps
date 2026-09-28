@@ -342,15 +342,15 @@ App {
     anchors.margins: 12
     width: active ? Math.min(480, parent.width * 0.45) : 0
     sourceComponent: Rectangle {
-      radius: root.ui.radius + 6
+      radius: root.ui.radius
       color: "transparent"
       border.width: 1
-      border.color: root.ui.divider
+      border.color: root.ui.line
       clip: true
       NoteEditor {
         anchors.fill: parent
         anchors.margins: 1
-        radius: root.ui.radius + 5
+        radius: root.ui.radius
         app: root
         noteId: root.openId
         fresh: root.openFresh
