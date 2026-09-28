@@ -101,7 +101,7 @@ Flickable {
           color: root.app.ui.text
           font.family: root.app.ui.font
           font.pixelSize: root.app.ui.fs.lg
-          font.weight: Font.DemiBold
+          font.weight: Font.Bold
         }
         Text {
           width: parent.width
@@ -120,10 +120,10 @@ Flickable {
       width: parent.width
       height: 118
       visible: root.app.hours.length > 0
-      radius: root.app.ui.radius + 4
+      radius: root.app.ui.radius
       color: root.app.ui.surface
       border.width: 1
-      border.color: root.app.ui.divider
+      border.color: root.app.ui.line
 
       Flickable {
         id: strip
@@ -167,7 +167,7 @@ Flickable {
                   color: hour.isNow ? root.app.ui.text : root.app.ui.muted
                   font.family: root.app.ui.font
                   font.pixelSize: root.app.ui.fs.xs
-                  font.weight: hour.isNow ? Font.DemiBold : Font.Normal
+                  font.weight: hour.isNow ? Font.Bold : Font.Normal
                 }
                 Sky {
                   anchors.horizontalCenter: parent.horizontalCenter
@@ -184,7 +184,7 @@ Flickable {
                   color: root.app.tempColour(hour.modelData.temp)
                   font.family: root.app.ui.font
                   font.pixelSize: root.app.ui.fs.md
-                  font.weight: Font.DemiBold
+                  font.weight: Font.Bold
                 }
                 // The chance of rain, only when there is one worth printing.
                 Text {
@@ -216,10 +216,10 @@ Flickable {
           required property var modelData
           width: (left.width - 10) / 2
           height: 72
-          radius: root.app.ui.radius + 2
+          radius: root.app.ui.radius
           color: root.app.ui.surface
           border.width: 1
-          border.color: root.app.ui.divider
+          border.color: root.app.ui.line
           Column {
             x: 14
             anchors.verticalCenter: parent.verticalCenter
@@ -230,6 +230,8 @@ Flickable {
               color: root.app.ui.muted
               font.family: root.app.ui.font
               font.pixelSize: root.app.ui.fs.xs
+              font.capitalization: Font.AllUppercase
+              font.letterSpacing: root.app.ui.tracking
             }
             Row {
               spacing: 6
@@ -239,7 +241,7 @@ Flickable {
                 color: root.app.ui.text
                 font.family: root.app.ui.font
                 font.pixelSize: root.app.ui.fs.lg
-                font.weight: Font.DemiBold
+                font.weight: Font.Bold
               }
               Text {
                 anchors.baseline: tileValue.baseline
@@ -332,14 +334,14 @@ Flickable {
             height: 6
             Rectangle {
               anchors.fill: parent
-              radius: 3
+              radius: root.app.ui.round(height)
               color: root.app.ui.well
             }
             Rectangle {
               x: day.fraction.from * track.width
               width: Math.max(6, (day.fraction.to - day.fraction.from) * track.width)
               height: parent.height
-              radius: 3
+              radius: root.app.ui.round(height)
               gradient: Gradient {
                 orientation: Gradient.Horizontal
                 GradientStop { position: 0.0; color: root.app.tempColour(day.modelData.low) }
@@ -357,7 +359,7 @@ Flickable {
             color: root.app.ui.text
             font.family: root.app.ui.font
             font.pixelSize: root.app.ui.fs.md
-            font.weight: Font.DemiBold
+            font.weight: Font.Bold
           }
         }
       }

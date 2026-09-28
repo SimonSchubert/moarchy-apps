@@ -103,7 +103,9 @@ Item {
         color: root.app.ui.muted
         font.family: root.app.ui.font
         font.pixelSize: root.app.ui.fs.xs
-        font.weight: Font.DemiBold
+        font.weight: Font.Bold
+        font.capitalization: Font.AllUppercase
+        font.letterSpacing: root.app.ui.tracking
       }
       Repeater {
         model: !root.searching && root.app.locate ? [{ here: true }] : []
@@ -120,7 +122,9 @@ Item {
         color: root.app.ui.muted
         font.family: root.app.ui.font
         font.pixelSize: root.app.ui.fs.xs
-        font.weight: Font.DemiBold
+        font.weight: Font.Bold
+        font.capitalization: Font.AllUppercase
+        font.letterSpacing: root.app.ui.tracking
       }
       Repeater {
         model: root.searching ? [] : root.app.places
@@ -176,7 +180,7 @@ Item {
           color: root.app.ui.text
           font.family: root.app.ui.font
           font.pixelSize: root.app.ui.fs.md
-          font.weight: Font.DemiBold
+          font.weight: Font.Bold
         }
         Text {
           width: parent.width
