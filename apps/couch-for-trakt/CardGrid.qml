@@ -30,7 +30,7 @@ Item {
 
   clip: true
 
-  function move(dx, dy) {
+  function step(dx, dy) {
     var n = grid.count
     if (!n) return false
     if (cursor < 0) cursor = 0
@@ -43,7 +43,7 @@ Item {
     root.activated(items[cursor])
     return true
   }
-  function currentItem() { return null }
+  function picked() { return null }
   function toTop() { grid.positionViewAtBeginning(); cursor = -1 }
 
   onItemsChanged: if (cursor >= items.length) cursor = -1

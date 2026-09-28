@@ -148,7 +148,7 @@ Item {
           anchors.fill: parent
           anchors.margins: -1
           radius: root.app.ui.radius + 3
-          color: root.app.alpha("#000000", 0.25)
+          color: Qt.rgba(0, 0, 0, 0.25)
         }
         Poster {
           id: bigPoster

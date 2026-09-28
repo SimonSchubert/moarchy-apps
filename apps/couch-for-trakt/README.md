@@ -53,8 +53,9 @@ yay -S couch-for-trakt      # or any AUR helper
 
 That installs Quickshell too if it is not there yet, and gives you a
 `couch-for-trakt` command and an app menu entry. The app opens in a window of
-its own; closing the window ends it. Under Omarchy it takes the Omarchy theme
-when its shell has the plugin installed, and opens inside that shell.
+its own; closing the window ends it. Under Omarchy it takes the Omarchy theme,
+from the shell when its shell has the plugin installed (and then opens inside
+that shell), or from Omarchy's theme files when it runs on its own.
 
 To open it with a key on Hyprland:
 
@@ -93,8 +94,11 @@ Signing out in Settings first also revokes the token with Trakt.
 Quickshell (the package depends on it, along with the JetBrains Mono Nerd Font
 the icons are drawn in), and network access to `api.trakt.tv` and Trakt's
 image host `media.trakt.tv`. Omarchy is optional: without it the app runs as
-its own Quickshell window, in a plain light or dark palette that follows the
-desktop's preference. It reads and writes only its own files, listed below.
+its own Quickshell window, in the colours of the current Omarchy theme if
+there is one (`~/.local/state/omarchy/current/theme/colors.toml`), and
+otherwise a plain light or dark palette that follows the desktop's
+preference. Apart from the theme, it reads and writes only its own files,
+listed below.
 
 ## Keys (desktop)
 

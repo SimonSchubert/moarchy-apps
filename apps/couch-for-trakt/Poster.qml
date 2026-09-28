@@ -60,7 +60,9 @@ Item {
   Image {
     id: img
     anchors.fill: parent
-    source: root.source && root.app.images ? (root.app.images.revision, root.app.images.source(root.source)) : ""
+    // The revision is passed only to be read: the binding runs again as a
+    // picture arrives.
+    source: root.source && root.app.images ? root.app.images.source(root.source, root.app.images.revision) : ""
     asynchronous: true
     cache: true
     smooth: true

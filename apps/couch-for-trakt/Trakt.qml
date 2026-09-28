@@ -1,4 +1,6 @@
 import QtQuick
+import Quickshell
+import Quickshell.Io
 import "Api.mjs" as Api
 import "Keys.mjs" as Keys
 
@@ -14,6 +16,14 @@ Item {
   id: root
 
   property var store: null
+
+  // MOARCHY_COUCH_FOR_TRAKT_OFFLINE: never open a socket. A GET is answered
+  // from fixture.json in MOARCHY_COUCH_FOR_TRAKT_DIR -- Trakt's answers by
+  // URL, which dev/demo.py puts there for the screenshots -- or as not
+  // found; anything else as Trakt having trouble, which keeps the sign-in.
+  readonly property bool fixtureMode: (Quickshell.env("MOARCHY_COUCH_FOR_TRAKT_OFFLINE") || "") !== ""
+  readonly property string fixtureDir: Quickshell.env("MOARCHY_COUCH_FOR_TRAKT_DIR") || ""
+  property var fixture: null
 
   // The built-in app unless Settings names another one.
   readonly property string clientId: store && store.clientId ? store.clientId : Keys.CLIENT_ID
@@ -181,6 +191,7 @@ Item {
   // aborted there and its buffer dropped. A Content-Length over the limit
   // stops it before the first byte of the body.
   function request(method, url, hdrs, body, binary, done) {
+    if (fixtureMode) return answerFromFixture(method, url, done)
     var limit = binary ? maxBinary : method === "GET" ? maxJson : maxSmall
     var req = new XMLHttpRequest()
     var settled = false
@@ -212,6 +223,26 @@ Item {
     for (var h in hdrs) req.setRequestHeader(h, hdrs[h])
     req.send(body === undefined || body === null ? null : JSON.stringify(body))
     return req
+  }
+
+  function answerFromFixture(method, url, done) {
+    if (fixture === null) {
+      try { fixture = JSON.parse(fixtureView.text()) || {} } catch (e) { fixture = {} }
+    }
+    var saved = method === "GET" ? fixture[url] : undefined
+    var req = { abort: function () {}, getResponseHeader: function () { return null } }
+    Qt.callLater(function () {
+      if (saved !== undefined) done(200, JSON.stringify(saved), req)
+      else done(method === "GET" ? 404 : 503, "", req)
+    })
+    return req
+  }
+
+  FileView {
+    id: fixtureView
+    path: root.fixtureMode && root.fixtureDir ? root.fixtureDir + "/fixture.json" : ""
+    blockLoading: true
+    printErrors: false
   }
 
   function sendGet(job) {

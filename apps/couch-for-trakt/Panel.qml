@@ -25,22 +25,38 @@ Item {
   // ------------------------------------------------------------ tokens
 
   readonly property bool compact: stage.width < 720
-  property real clock: Date.now()
+  // MOARCHY_COUCH_FOR_TRAKT_NOW (seconds): a frozen clock, so "in 3 days" and
+  // the calendar say the same in two screenshots.
+  readonly property real pinnedNow: (parseFloat(Quickshell.env("MOARCHY_COUCH_FOR_TRAKT_NOW") || "") || 0) * 1000
+  function now() { return pinnedNow || Date.now() }
+  property real clock: now()
 
   function alpha(c, a) { return Qt.rgba(c.r, c.g, c.b, a) }
   function luminance(c) { return 0.2126 * c.r + 0.7152 * c.g + 0.0722 * c.b }
   // Text on a filled accent button: dark on a light accent, white otherwise.
   readonly property color onAccent: luminance(ui.accent) > 0.6 ? "#111111" : "#ffffff"
 
-  // Omarchy's theme inside its shell, a plain one under any other Quickshell.
-  HostTheme { id: theme }
-  Component.onCompleted: theme.probe(root)
+  // Omarchy's theme: the shell's, or its theme files when running on its
+  // own, and a plain palette where there is neither.
+  HostTheme {
+    id: theme
+    // The plain palettes, for a machine with no Omarchy theme.
+    plainDark: ({ background: "#1e1e2e", text: "#e6e6ef", muted: "#9a9aae", accent: "#89b4fa", border: "#3a3a4e" })
+    plainLight: ({ background: "#fafafa", text: "#1f1f28", muted: "#6b6b78", accent: "#1e66f5", border: "#d8d8e0" })
+  }
+  Component.onCompleted: { theme.probe(root); harness() }
 
-  readonly property QtObject ui: QtObject {
+  // `var`, not QtObject: qmllint reads a QtObject property as a bare QObject
+  // and cannot see the tokens on it.
+  readonly property var ui: QtObject {
     readonly property bool dark: root.luminance(theme.background) < 0.5
     readonly property color bg: theme.background
     readonly property color text: theme.text
-    readonly property color muted: theme.muted
+    // A theme's muted is sometimes a border colour, too faint for a caption;
+    // then the text, faded, which reads as the same thing. A step stricter
+    // than the kit's 0.28: Couch's captions are 11 px, over posters' edges.
+    readonly property color muted: Math.abs(root.luminance(theme.muted) - root.luminance(bg)) >= 0.32
+      ? theme.muted : Qt.tint(bg, root.alpha(text, 0.62))
     readonly property color accent: theme.accent
     readonly property color border: theme.border
     readonly property color surface: Qt.tint(bg, root.alpha(text, dark ? 0.06 : 0.04))
@@ -60,7 +76,7 @@ Item {
     readonly property int radius: Math.max(6, Math.min(10, theme.cornerRadius))
     readonly property int target: root.compact ? 44 : 38
     readonly property int chip: root.compact ? 34 : 32
-    readonly property QtObject fs: QtObject {
+    readonly property var fs: QtObject {
       readonly property int xs: 11
       readonly property int sm: 13
       readonly property int md: 14
@@ -84,7 +100,7 @@ Item {
     { key: "settings", label: "Settings", glyph: G.settings }
   ]
 
-  property string tab: "discover"
+  property string tab: harnessPage || "discover"
   // Pages over the current tab: { item } -- a movie or show, seeded with
   // what the card that opened it knew.
   property var stack: []
@@ -138,7 +154,8 @@ Item {
     if (!opened) return
     var v = currentView()
     if (v && v.refresh) v.refresh(force)
-    if (detailLoader.item) detailLoader.item.refresh(force)
+    var d = detailLoader.item as DetailView
+    if (d) d.refresh(force)
     library.ensure(force)
   }
 
@@ -178,6 +195,7 @@ Item {
   // ------------------------------------------------------------ host API
 
   function open(payloadJson) {
+    theme.reload()
     opened = true
     window.visible = true
     var p = null
@@ -209,6 +227,22 @@ Item {
     else close()
   }
 
+  // ------------------------------------------------------------ harness
+
+  // MOARCHY_COUCH_FOR_TRAKT_PAGE (a tab: discover, upnext, calendar,
+  // watchlist, search, history, settings) and _OPEN ("show:<trakt id>" or
+  // "movie:<trakt id>", a page over it): straight onto the screen a
+  // screenshot is of. The tab is there from the first frame, not switched
+  // to after one, so no two runs draw a different frame first.
+  readonly property string harnessPage: {
+    var page = Quickshell.env("MOARCHY_COUCH_FOR_TRAKT_PAGE") || ""
+    return tabs.concat(railExtras).some(function (x) { return x.key === page }) ? page : ""
+  }
+  function harness() {
+    var m = /^(movie|show):(\d+)$/.exec(Quickshell.env("MOARCHY_COUCH_FOR_TRAKT_OPEN") || "")
+    if (m) openMedia({ type: m[1], id: Api.tid(m[2]) })
+  }
+
   // ------------------------------------------------------------ plumbing
 
   Store {
@@ -216,7 +250,7 @@ Item {
     onReadyChanged: {
       if (!ready) return
       var t = prefs.lastTab
-      if (root.tabs.some(function (x) { return x.key === t })) root.tab = t
+      if (!root.harnessPage && root.tabs.some(function (x) { return x.key === t })) root.tab = t
       root.refresh(false)
     }
     onSnapshotLoaded: function (text) { traktObj.restoreText(text) }
@@ -255,7 +289,7 @@ Item {
     interval: 60000
     repeat: true
     running: root.opened
-    onTriggered: { root.clock = Date.now(); root.refresh(false) }
+    onTriggered: { root.clock = root.now(); root.refresh(false) }
   }
 
   Timer {
@@ -267,7 +301,7 @@ Item {
   // Written when the app closes, not while it is in use: the stringify of a
   // few hundred kilobytes is a hitch nobody should feel mid-scroll.
   onOpenedChanged: {
-    if (opened) clock = Date.now()
+    if (opened) clock = now()
     else store.saveSnapshot(trakt.snapshot(["list", "upnext", "watchlist", "calendar"], 14))
   }
 
@@ -310,7 +344,7 @@ Item {
           focus: true
 
           Keys.onPressed: function (event) {
-            var detail = detailLoader.item
+            var detail = detailLoader.item as DetailView
             var v = detail ? null : root.currentView()
             var grid = v && v.list ? v.list : null
             var k = event.key
@@ -318,10 +352,10 @@ Item {
             // window is closed by the window manager, not by Escape.
             if (k === Qt.Key_Escape || k === Qt.Key_Back) { root.back(); event.accepted = true; return }
             if (grid) {
-              if (k === Qt.Key_Down) { event.accepted = grid.move(0, 1); return }
-              if (k === Qt.Key_Up) { event.accepted = grid.move(0, -1); return }
-              if (k === Qt.Key_Right) { event.accepted = grid.move(1, 0); return }
-              if (k === Qt.Key_Left) { event.accepted = grid.move(-1, 0); return }
+              if (k === Qt.Key_Down) { event.accepted = grid.step(0, 1); return }
+              if (k === Qt.Key_Up) { event.accepted = grid.step(0, -1); return }
+              if (k === Qt.Key_Right) { event.accepted = grid.step(1, 0); return }
+              if (k === Qt.Key_Left) { event.accepted = grid.step(-1, 0); return }
               if (k === Qt.Key_Return || k === Qt.Key_Enter) { event.accepted = grid.activateCurrent(); return }
             } else if (detail) {
               if (k === Qt.Key_Down || k === Qt.Key_PageDown) { detail.scroll(k === Qt.Key_Down ? 80 : 400); event.accepted = true; return }
@@ -331,7 +365,7 @@ Item {
             if (event.text === "/") { root.setTab("search"); Qt.callLater(searchView.focusField); event.accepted = true; return }
             if (event.text === "r") { root.refresh(true); event.accepted = true; return }
             if (event.text === "w") {
-              var m = detail ? detail.item : grid && grid.currentItem ? grid.currentItem() : null
+              var m = detail ? detail.item : grid ? grid.picked() : null
               if (m && m.type) root.library.toggleWatchlist(m)
               event.accepted = true
               return

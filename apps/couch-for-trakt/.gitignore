@@ -1,2 +1,4 @@
 .trakt-keys
 .DS_Store
+dev/.images/
+dev/.demo/

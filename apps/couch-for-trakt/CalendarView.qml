@@ -18,7 +18,7 @@ Item {
   }
 
   // From yesterday, so last night's episode is still there in the morning.
-  readonly property string start: { app.clock; var d = new Date(); d.setDate(d.getDate() - 1); return Api.ymd(d) }
+  readonly property string start: { var d = new Date(app.clock); d.setDate(d.getDate() - 1); return Api.ymd(d) }
   readonly property string url: mode === "shows" ? Api.calendarUrl("my", "shows", start, 15)
     : mode === "movies" ? Api.calendarUrl("my", "movies", start, 60)
     : mode === "premieres" ? Api.calendarUrl("all", "shows/premieres", start, 21)

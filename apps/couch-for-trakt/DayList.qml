@@ -30,7 +30,7 @@ ListView {
   cacheBuffer: 600
   boundsBehavior: Flickable.DragOverBounds
 
-  function move(dx, dy) {
+  function step(dx, dy) {
     if (!count) return false
     var d = dy || dx
     cursor = Math.max(0, Math.min(count - 1, (cursor < 0 ? -1 : cursor) + (cursor < 0 ? 1 : d)))
@@ -42,7 +42,7 @@ ListView {
     app.openMedia(rows[cursor].media)
     return true
   }
-  function currentItem() { return cursor >= 0 && cursor < rows.length ? rows[cursor].media : null }
+  function picked() { return cursor >= 0 && cursor < rows.length ? rows[cursor].media : null }
   function toTop() { positionViewAtBeginning(); cursor = -1 }
 
   onRowsChanged: if (cursor >= rows.length) cursor = -1
@@ -55,7 +55,7 @@ ListView {
   onVerticalOvershootChanged: if (dragging && verticalOvershoot < -72) armed = true
   onDraggingChanged: if (!dragging && armed) { armed = false; app.refresh(true) }
 
-  readonly property string today: { app.clock; var d = new Date(); return d.getFullYear() + "-" + ("0" + (d.getMonth() + 1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2) }
+  readonly property string today: { var d = new Date(app.clock); return d.getFullYear() + "-" + ("0" + (d.getMonth() + 1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2) }
 
   // Rows carry their day; the first of each day draws its heading. ListView
   // sections want a model with roles, and these rows are plain arrays.

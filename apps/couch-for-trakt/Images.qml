@@ -5,7 +5,7 @@ import Quickshell.Io
 // Posters, backdrops and headshots on disk, so a picture is downloaded once
 // rather than once per shell start: Qt keeps network images in memory only.
 //
-//     source: app.images.revision, app.images.source(url)
+//     source: app.images.source(url, app.images.revision)
 //
 // source() answers a file:// URL when the picture is on disk, and "" while it
 // is being fetched (Poster draws a tinted card with the title meanwhile), then
@@ -49,7 +49,18 @@ Item {
 
   function fileOf(slot, gen, url) { return root.dir + "/" + slot + "-" + (gen % 2) + "." + extension(url) }
 
+  // MOARCHY_COUCH_FOR_TRAKT_IMAGES: a folder of pictures dev/capture.py
+  // saved, with an index.json of url -> file name, in place of Trakt's
+  // image host. Offline without one, a picture is never fetched.
+  readonly property string savedDir: Quickshell.env("MOARCHY_COUCH_FOR_TRAKT_IMAGES") || ""
+  property var saved: ({})
+  Component.onCompleted: if (savedDir) {
+    try { saved = JSON.parse(savedIndex.text()) || {} } catch (e) { saved = {} }
+  }
+
   function source(url) {
+    if (savedDir || app.trakt.fixtureMode)
+      return url && typeof saved[url] === "string" ? "file://" + savedDir + "/" + saved[url] : ""
     // Nothing is fetched to disk before the cache folder has been made
     // private (Store.secured): the index lists what you looked at.
     if (!url || !loaded || !app.store.secured) return ""
@@ -115,7 +126,7 @@ Item {
     var slot = ix.next
     var gen = (ix.gen[slot] || 0) + 1
     writeOk = true
-    var w = writer.createObject(root, { path: fileOf(slot, gen, url) })
+    var w = writer.createObject(root, { path: fileOf(slot, gen, url) }) as FileView
     w.setData(data)
     w.destroy()
     if (!writeOk) { failed[url] = true; return }
@@ -164,6 +175,13 @@ Item {
     id: saveIndex
     interval: 2000
     onTriggered: if (root.app.store.secured) indexFile.setText(JSON.stringify(root.index))
+  }
+
+  FileView {
+    id: savedIndex
+    path: root.savedDir ? root.savedDir + "/index.json" : ""
+    blockLoading: true
+    printErrors: false
   }
 
   FileView {

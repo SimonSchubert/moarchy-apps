@@ -100,7 +100,7 @@ Item {
     emptyAction: root.signedIn ? "Discover something" : "Sign in with Trakt"
     onEmptyTriggered: root.signedIn ? root.app.setTab("discover") : root.app.startSignIn()
     subtitleFor: function (m) {
-      if (m.type === "movie" && m.released && new Date(m.released) > new Date()) return "Out " + Api.date(m.released)
+      if (m.type === "movie" && m.released && new Date(m.released).getTime() > root.app.clock) return "Out " + Api.date(m.released)
       return ""
     }
     onActivated: function (m) { root.app.openMedia(m) }

@@ -83,7 +83,7 @@ Item {
           else { field.focus = false; event.accepted = false }
         }
         Keys.onReturnPressed: { debounce.stop(); root.asked = root.trimmed; if (root.results.length) root.app.openMedia(root.results[0]) }
-        Keys.onDownPressed: { root.app.resetFocus(); grid.move(0, 0) }
+        Keys.onDownPressed: { root.app.resetFocus(); grid.step(0, 0) }
 
         Text {
           anchors.fill: parent

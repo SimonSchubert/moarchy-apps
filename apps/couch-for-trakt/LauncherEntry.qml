@@ -59,7 +59,7 @@ Item {
 
   function write(show) {
     if (!/^[A-Za-z0-9._-]+$/.test(pluginId)) return
-    var w = writer.createObject(root, { path: root.file })
+    var w = writer.createObject(root, { path: root.file }) as FileView
     w.setText(content(show))
     w.destroy()
   }
