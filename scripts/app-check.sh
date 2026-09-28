@@ -21,7 +21,7 @@ run() { printf '\n==> %s\n' "$*"; "$@" || status=1; }
 
 names=("$@")
 if [[ ${#names[@]} -eq 0 ]]; then
-  for d in apps/*/; do [[ -f $d/Panel.qml && -L $d/kit ]] && names+=("$(basename "$d")"); done
+  for d in apps/*/; do [[ -f $d/Panel.qml ]] && names+=("$(basename "$d")"); done
 fi
 
 run python3 scripts/app-lint.py "${names[@]}"
@@ -67,7 +67,9 @@ for name in "${names[@]}"; do
   # Only the warnings are printed: the info notes are hundreds of lines and
   # say the same thing about every delegate.
   printf '\n==> qmllint\n'
-  if qmllint -W 0 --unqualified=info "$work"/app/*.qml "$work"/app/kit/*.qml >"$work/lint.log" 2>&1; then
+  # An app with no kit carries its own, in its *.qml.
+  kitqml=(); [[ -d $work/app/kit ]] && kitqml=("$work"/app/kit/*.qml)
+  if qmllint -W 0 --unqualified=info "$work"/app/*.qml "${kitqml[@]}" >"$work/lint.log" 2>&1; then
     echo "clean"
   else
     grep -E '^(Warning|Error)' "$work/lint.log" | sed "s|$work/app/||"; status=1

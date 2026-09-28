@@ -46,6 +46,10 @@ export XDG_RUNTIME_DIR="$WORK/run"
 mkdir -p "$XDG_RUNTIME_DIR"; chmod 700 "$XDG_RUNTIME_DIR"
 export WLR_BACKENDS=headless WLR_LIBINPUT_NO_DEVICES=1 WLR_RENDERER=pixman
 export XDG_SESSION_TYPE=wayland QT_QPA_PLATFORM=wayland
+# Qt's software renderer: through GL (llvmpipe) the edges of text come out a
+# shade different from run to run, and a store shot that changes bytes without
+# changing is a new picture to publish.
+export QT_QUICK_BACKEND=software
 unset DISPLAY
 
 # A copy: Arch's sway carries cap_sys_nice, which a container refuses to exec.

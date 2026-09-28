@@ -5,6 +5,7 @@ An app here makes its claims in five places, and every one of them has been wron
 
 * `manifest.json` names Panel.qml as the panel the shell loads.
 * `kit` is the shared kit, linked in -- a copy would drift from the others.
+  (An app with no `kit` at all is self-contained, and carries its own.)
 * `bin/<package>` asks the shell for the plugin id before starting its own.
 * the .desktop file runs that launcher.
 * the PKGBUILD installs the kit beside the app, or the package cannot start.
@@ -13,7 +14,7 @@ And one rule about the views: a colour written into one is a view that ignores
 the theme. Hex colours belong in Panel.qml's Tokens (as a theme's fallbacks)
 and in the kit, nowhere else.
 
-    scripts/app-lint.py            -- every app with a kit
+    scripts/app-lint.py            -- every app with a Panel.qml
     scripts/app-lint.py vitals     -- just that one
 """
 
@@ -65,7 +66,8 @@ def check(app: Path) -> list[str]:
     pid = manifest.get("id", "")
 
     kit = app / "kit"
-    if not kit.is_symlink() or os.readlink(kit) != "../../shared/kit":
+    own = not kit.exists() and not kit.is_symlink()
+    if not own and (not kit.is_symlink() or os.readlink(kit) != "../../shared/kit"):
         bad.append(f"{name}: kit is not a link to ../../shared/kit")
 
     for f in ("Panel.qml", "shell.qml", "LICENSE", "README.md"):
@@ -95,7 +97,7 @@ def check(app: Path) -> list[str]:
     pkgbuild = app / "PKGBUILD"
     if pkgbuild.exists():
         text = pkgbuild.read_text()
-        if "kit" not in text.split("package()", 1)[-1]:
+        if not own and "kit" not in text.split("package()", 1)[-1]:
             bad.append(f"{name}: PKGBUILD does not install kit/")
     else:
         bad.append(f"{name}: no PKGBUILD")
@@ -113,7 +115,7 @@ def main(argv: list[str]) -> int:
     if argv:
         apps = [ROOT / "apps" / a for a in argv]
     else:
-        apps = sorted(p for p in (ROOT / "apps").iterdir() if (p / "kit").is_symlink())
+        apps = sorted(p for p in (ROOT / "apps").iterdir() if (p / "Panel.qml").exists())
     bad: list[str] = []
     for app in apps:
         bad += check(app)
