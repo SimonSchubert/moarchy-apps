@@ -6,36 +6,36 @@ The apps for a Linux phone that Android has and Linux does not.
 good, translated, maintained implementation on F-Droid and no Linux answer in
 the aarch64 repos, the AUR or Flathub. This is where they get written.
 
-| app | what it is | state |
-|---|---|---|
-| [keep](apps/keep) | Notes and checklists, in the shape of Google Keep — in Quickshell, for the desktop and the phone | v0.2.0, unreleased |
-| [habits](apps/habits) | Habit tracking: a tap a day, a streak, sixteen weeks of history — in Quickshell, for the desktop and the phone | v0.2.0, unreleased |
-| [reversi](apps/reversi) | Reversi: an opponent on a clock, on its own thread — in Quickshell, for the desktop and the phone | v0.2.0, unreleased |
-| [chess](apps/chess) | Chess: two taps a move, an opponent in the app, no second package — in Quickshell, for the desktop and the phone | v0.2.0, unreleased |
-| [queens](apps/queens) | *Packaging only:* sidhant947's crown-placement puzzle, and the Linux runner it does not ship | 1.0.8 |
-| [tictactoe](apps/tictactoe) | Noughts and crosses: the game solved at startup, then told to err — in Quickshell, for the desktop and the phone | v0.2.0, unreleased |
-| [solitaire](apps/solitaire) | Klondike: one tap a move, and an app that says when a deal is lost — in Quickshell, for the desktop and the phone | v0.2.0, unreleased |
-| [pegsolitaire](apps/pegsolitaire) | Peg solitaire: nine figures, all solvable, and a hint that is a proof — in Quickshell, for the desktop and the phone | v0.2.0, unreleased |
-| [minesweeper](apps/minesweeper) | Minesweeper: a portrait board, a latching flag, and a clock that stops — in Quickshell, for the desktop and the phone | v0.2.0, unreleased |
-| [mill](apps/mill) | Nine Men's Morris: three squares, an opponent on a clock, and the rule everybody forgets — in Quickshell, for the desktop and the phone | v0.2.0, unreleased |
-| [fiveletters](apps/fiveletters) | A five-letter word a day: its own keyboard, and a mark as well as a colour — in Quickshell, for the desktop and the phone | v0.2.0, unreleased |
-| [breakout](apps/breakout) | Breakout: a bat that follows your thumb, and a clock that stops with the window — in Quickshell, for the desktop and the phone | v0.2.0, unreleased |
-| [vitals](apps/vitals) | A task manager: processor, memory, storage, battery, network and tasks, read from /proc — in Quickshell, for the desktop and the phone | v0.2.0 |
-| [puzzle-games](apps/puzzle-games) | *Packaging only:* sidhant947's suite of 300+ small puzzles, minus the titlebar | 1.1.4 |
-| [crypto-market](apps/crypto-market) | *Not a moarchy app:* CoinGecko prices, coin pages, a watchlist and a portfolio, for any Quickshell desktop | v1.1.1 |
-| [couch-for-trakt](apps/couch-for-trakt) | *Not a moarchy app:* a movie and TV tracker for Trakt — discover, up next, calendar, watchlist, history — for any Quickshell desktop | v1.1.0 |
-| [transit](apps/transit) | *Not a moarchy app:* public transport journeys and live departures, worldwide, on Transitous, for any Quickshell desktop | v1.1.0 |
-| [airwaves](apps/airwaves) | *Not a moarchy app:* internet radio from radio-browser.info — 50,000 stations by genre, country and language, the song on air, favourites — for any Quickshell desktop | v1.0.0 |
-| [food](apps/food) | Point the camera at a barcode: nutrition facts from Open Food Facts — in Quickshell, for the desktop and the phone | v0.2.0, unreleased |
-| [launches](apps/launches) | Upcoming rockets: a countdown, a pad, and the ones you star — in Quickshell, for the desktop and the phone | v0.2.0, unreleased |
-| [calculator](apps/calculator) | The four operations, a tape you can tap, and arithmetic that counts in tens — in Quickshell, for the desktop and the phone | v0.2.0, unreleased |
-| [weather](apps/weather) | Now, the next day and the week, where you are and in the places you named — in Quickshell, for the desktop and the phone | v0.2.0, unreleased |
-| [contacts](apps/contacts) | A name, a number, an email and a note, in one file, with no accounts behind it — in Quickshell, for the desktop and the phone | v0.2.0, unreleased |
-| [calendar](apps/calendar) | The month, the day under it, and what is next — in Quickshell, for the desktop and the phone | v0.2.0, unreleased |
-| [clock](apps/clock) | An alarm that rings late and says so, a stopwatch and a timer — in Quickshell, for the desktop and the phone | v0.2.0, unreleased |
-| [files](apps/files) | One folder at a time: copy, move, rename, and a delete that goes to the trash every other app reads — in Quickshell, for the desktop and the phone | v0.2.0, unreleased |
-| [editor](apps/editor) | One text file at a time, and an `$EDITOR` that waits — in Quickshell, for the desktop and the phone | v0.2.0, unreleased |
-| [mail](apps/mail) | One account over IMAP and SMTP, no HTML drawn, and new mail noticed with the window closed — in Quickshell, for the desktop and the phone | v0.2.0, unreleased |
+| | app | what it is | state |
+|---|---|---|---|
+| <img src="apps/keep/docs/screenshots/omarchy-mobile.png" width="70" alt="keep on Omarchy Mobile"> | [keep](apps/keep) | Notes and checklists, in the shape of Google Keep — in Quickshell, for the desktop and the phone | v0.2.0, unreleased |
+| <img src="apps/habits/docs/screenshots/omarchy-mobile.png" width="70" alt="habits on Omarchy Mobile"> | [habits](apps/habits) | Habit tracking: a tap a day, a streak, sixteen weeks of history — in Quickshell, for the desktop and the phone | v0.2.0, unreleased |
+| <img src="apps/reversi/docs/screenshots/omarchy-mobile.png" width="70" alt="reversi on Omarchy Mobile"> | [reversi](apps/reversi) | Reversi: an opponent on a clock, on its own thread — in Quickshell, for the desktop and the phone | v0.2.0, unreleased |
+| <img src="apps/chess/docs/screenshots/omarchy-mobile.png" width="70" alt="chess on Omarchy Mobile"> | [chess](apps/chess) | Chess: two taps a move, an opponent in the app, no second package — in Quickshell, for the desktop and the phone | v0.2.0, unreleased |
+|  | [queens](apps/queens) | *Packaging only:* sidhant947's crown-placement puzzle, and the Linux runner it does not ship | 1.0.8 |
+| <img src="apps/tictactoe/docs/screenshots/omarchy-mobile.png" width="70" alt="tictactoe on Omarchy Mobile"> | [tictactoe](apps/tictactoe) | Noughts and crosses: the game solved at startup, then told to err — in Quickshell, for the desktop and the phone | v0.2.0, unreleased |
+| <img src="apps/solitaire/docs/screenshots/omarchy-mobile.png" width="70" alt="solitaire on Omarchy Mobile"> | [solitaire](apps/solitaire) | Klondike: one tap a move, and an app that says when a deal is lost — in Quickshell, for the desktop and the phone | v0.2.0, unreleased |
+| <img src="apps/pegsolitaire/docs/screenshots/omarchy-mobile.png" width="70" alt="pegsolitaire on Omarchy Mobile"> | [pegsolitaire](apps/pegsolitaire) | Peg solitaire: nine figures, all solvable, and a hint that is a proof — in Quickshell, for the desktop and the phone | v0.2.0, unreleased |
+| <img src="apps/minesweeper/docs/screenshots/omarchy-mobile.png" width="70" alt="minesweeper on Omarchy Mobile"> | [minesweeper](apps/minesweeper) | Minesweeper: a portrait board, a latching flag, and a clock that stops — in Quickshell, for the desktop and the phone | v0.2.0, unreleased |
+| <img src="apps/mill/docs/screenshots/omarchy-mobile.png" width="70" alt="mill on Omarchy Mobile"> | [mill](apps/mill) | Nine Men's Morris: three squares, an opponent on a clock, and the rule everybody forgets — in Quickshell, for the desktop and the phone | v0.2.0, unreleased |
+| <img src="apps/fiveletters/docs/screenshots/omarchy-mobile.png" width="70" alt="fiveletters on Omarchy Mobile"> | [fiveletters](apps/fiveletters) | A five-letter word a day: its own keyboard, and a mark as well as a colour — in Quickshell, for the desktop and the phone | v0.2.0, unreleased |
+| <img src="apps/breakout/docs/screenshots/omarchy-mobile.png" width="70" alt="breakout on Omarchy Mobile"> | [breakout](apps/breakout) | Breakout: a bat that follows your thumb, and a clock that stops with the window — in Quickshell, for the desktop and the phone | v0.2.0, unreleased |
+| <img src="apps/vitals/docs/screenshots/omarchy-mobile.png" width="70" alt="vitals on Omarchy Mobile"> | [vitals](apps/vitals) | A task manager: processor, memory, storage, battery, network and tasks, read from /proc — in Quickshell, for the desktop and the phone | v0.2.0 |
+|  | [puzzle-games](apps/puzzle-games) | *Packaging only:* sidhant947's suite of 300+ small puzzles, minus the titlebar | 1.1.4 |
+|  | [crypto-market](apps/crypto-market) | *Not a moarchy app:* CoinGecko prices, coin pages, a watchlist and a portfolio, for any Quickshell desktop | v1.1.1 |
+|  | [couch-for-trakt](apps/couch-for-trakt) | *Not a moarchy app:* a movie and TV tracker for Trakt — discover, up next, calendar, watchlist, history — for any Quickshell desktop | v1.1.0 |
+|  | [transit](apps/transit) | *Not a moarchy app:* public transport journeys and live departures, worldwide, on Transitous, for any Quickshell desktop | v1.1.0 |
+|  | [airwaves](apps/airwaves) | *Not a moarchy app:* internet radio from radio-browser.info — 50,000 stations by genre, country and language, the song on air, favourites — for any Quickshell desktop | v1.0.0 |
+| <img src="apps/food/docs/screenshots/omarchy-mobile.png" width="70" alt="food on Omarchy Mobile"> | [food](apps/food) | Point the camera at a barcode: nutrition facts from Open Food Facts — in Quickshell, for the desktop and the phone | v0.2.0, unreleased |
+| <img src="apps/launches/docs/screenshots/omarchy-mobile.png" width="70" alt="launches on Omarchy Mobile"> | [launches](apps/launches) | Upcoming rockets: a countdown, a pad, and the ones you star — in Quickshell, for the desktop and the phone | v0.2.0, unreleased |
+| <img src="apps/calculator/docs/screenshots/omarchy-mobile.png" width="70" alt="calculator on Omarchy Mobile"> | [calculator](apps/calculator) | The four operations, a tape you can tap, and arithmetic that counts in tens — in Quickshell, for the desktop and the phone | v0.2.0, unreleased |
+| <img src="apps/weather/docs/screenshots/omarchy-mobile.png" width="70" alt="weather on Omarchy Mobile"> | [weather](apps/weather) | Now, the next day and the week, where you are and in the places you named — in Quickshell, for the desktop and the phone | v0.2.0, unreleased |
+| <img src="apps/contacts/docs/screenshots/omarchy-mobile.png" width="70" alt="contacts on Omarchy Mobile"> | [contacts](apps/contacts) | A name, a number, an email and a note, in one file, with no accounts behind it — in Quickshell, for the desktop and the phone | v0.2.0, unreleased |
+| <img src="apps/calendar/docs/screenshots/omarchy-mobile.png" width="70" alt="calendar on Omarchy Mobile"> | [calendar](apps/calendar) | The month, the day under it, and what is next — in Quickshell, for the desktop and the phone | v0.2.0, unreleased |
+| <img src="apps/clock/docs/screenshots/omarchy-mobile.png" width="70" alt="clock on Omarchy Mobile"> | [clock](apps/clock) | An alarm that rings late and says so, a stopwatch and a timer — in Quickshell, for the desktop and the phone | v0.2.0, unreleased |
+| <img src="apps/files/docs/screenshots/omarchy-mobile.png" width="70" alt="files on Omarchy Mobile"> | [files](apps/files) | One folder at a time: copy, move, rename, and a delete that goes to the trash every other app reads — in Quickshell, for the desktop and the phone | v0.2.0, unreleased |
+| <img src="apps/editor/docs/screenshots/omarchy-mobile.png" width="70" alt="editor on Omarchy Mobile"> | [editor](apps/editor) | One text file at a time, and an `$EDITOR` that waits — in Quickshell, for the desktop and the phone | v0.2.0, unreleased |
+| <img src="apps/mail/docs/screenshots/omarchy-mobile.png" width="70" alt="mail on Omarchy Mobile"> | [mail](apps/mail) | One account over IMAP and SMTP, no HTML drawn, and new mail noticed with the window closed — in Quickshell, for the desktop and the phone | v0.2.0, unreleased |
 
 Food is the Open Food Facts row on that list: barcode to nutrition, and Linux
 has `qrca` and `decoder`, which read a code and do not say what the packet is.

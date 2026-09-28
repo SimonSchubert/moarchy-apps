@@ -11,6 +11,7 @@
 #   shot phone                                   # 360x720, dark
 #   shot phone-light LOOK=light
 #   shot desktop SIZE=1280x820
+#   shot store SIZE=540x1044 SCALE=1.5          # a phone's 360 px at its density
 #   shot phone-week MOARCHY_HABITS_PAGE=week
 #   shot latte THEME=.themes/catppuccin-latte/colors.toml
 #
@@ -62,16 +63,17 @@ export WAYLAND_DISPLAY SWAYSOCK
 status=0
 shot() {
   local name="${1:?shot needs a name}"; shift
-  local size=360x720 look=dark theme="" env=()
+  local size=360x720 scale=1 look=dark theme="" env=()
   for pair in "$@"; do
     case $pair in
       SIZE=*) size=${pair#SIZE=} ;;
+      SCALE=*) scale=${pair#SCALE=} ;;
       LOOK=*) look=${pair#LOOK=} ;;
       THEME=*) theme=${pair#THEME=}; look=theme ;;
       *) env+=("$pair") ;;
     esac
   done
-  swaymsg output HEADLESS-1 resolution "$size" >/dev/null
+  swaymsg output HEADLESS-1 resolution "$size" scale "$scale" >/dev/null
 
   # A home per shot: its own theme, its own preferences, no leftovers.
   local home="$WORK/home-$name"
