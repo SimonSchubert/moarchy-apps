@@ -32,10 +32,10 @@ RUN pacman -Syu --noconfirm --needed \
 # is a JetBrains Mono Nerd Font glyph: without the font a screenshot is a row
 # of empty boxes and still exits 0. Noto is what an Omarchy desktop's
 # `sans-serif` resolves to, so the text in a shot has the right width. mpv is
-# Airwaves'. pywayland and the wlr protocols drive a headless sway's pointer
+# Airwaves'; Qt Multimedia and its FFmpeg backend are Harbor's player. pywayland and the wlr protocols drive a headless sway's pointer
 # (swaymsg's own clicks do nothing); the scanner writes its bindings once.
 RUN pacman -Sy --noconfirm --needed \
-      ttf-jetbrains-mono-nerd noto-fonts qt6-imageformats mpv \
+      ttf-jetbrains-mono-nerd noto-fonts qt6-imageformats mpv qt6-multimedia qt6-multimedia-ffmpeg \
       python-fonttools python-pywayland wlr-protocols wayland-protocols pkgconf && \
     pacman -Scc --noconfirm && \
     mkdir -p /opt/wlp/proto && \

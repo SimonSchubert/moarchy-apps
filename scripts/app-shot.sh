@@ -104,7 +104,7 @@ shot() {
   grim "$OUT/$name.png" && printf '%-20s %s\n' "$name" "$OUT/$name.png" || status=1
   kill "$pid" 2>/dev/null; wait "$pid" 2>/dev/null
   grep -E '^\s*(WARN|ERROR|FATAL)\b' "$log" \
-    | grep -vE 'qt\.qpa|MESA|libEGL|zink|wl_display|window masks|qt\.core\.qobject\.connect' \
+    | grep -vE 'qt\.qpa|MESA|libEGL|zink|wl_display|window masks|qt\.core\.qobject\.connect|PulseAudioService' \
     | sort -u | sed "s/^/    /" | grep . && status=1
   return 0
 }

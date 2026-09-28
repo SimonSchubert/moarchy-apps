@@ -44,7 +44,7 @@ fi
 env HOME="$gwork/home" MOARCHY_QUIT_AFTER=4 QT_QPA_PLATFORM=offscreen NO_COLOR=1 \
   timeout 30 quickshell --no-color -p "$gwork/g/shell.qml" >"$gwork/run.log" 2>&1
 if grep -q 'Configuration Loaded' "$gwork/run.log" && ! grep -E '^\s*(WARN|ERROR|FATAL)\b' "$gwork/run.log" \
-    | grep -vqE 'qt\.qpa|MESA|libEGL|zink|wl_display|window masks|qt\.core\.qobject\.connect'; then
+    | grep -vqE 'qt\.qpa|MESA|libEGL|zink|wl_display|window masks|qt\.core\.qobject\.connect|PulseAudioService'; then
   echo "clean"
 else
   sed 's/^/    /' "$gwork/run.log" | tail -8; status=1
@@ -95,8 +95,9 @@ for name in "${names[@]}"; do
   if ! grep -q 'Configuration Loaded' "$log"; then
     echo "the config never loaded:"; sed 's/^/    /' "$log" | tail -12; status=1
   fi
+  # PulseAudioService: a container has no sound server for an app that plays.
   complaints=$(grep -E '^\s*(WARN|ERROR|FATAL)\b' "$log" \
-    | grep -vE 'qt\.qpa|MESA|libEGL|zink|wl_display|window masks|qt\.core\.qobject\.connect' \
+    | grep -vE 'qt\.qpa|MESA|libEGL|zink|wl_display|window masks|qt\.core\.qobject\.connect|PulseAudioService' \
     | sort -u)
   if [[ -n $complaints ]]; then
     echo "the run complained:"; printf '%s\n' "$complaints" | sed 's/^/    /'; status=1
