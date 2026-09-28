@@ -1,4 +1,6 @@
 import QtQuick
+import Quickshell
+import Quickshell.Io
 import "Api.mjs" as Api
 
 // Every request to Transitous goes through here, one at a time.
@@ -12,6 +14,14 @@ import "Api.mjs" as Api
 Item {
   id: root
 
+  // MOARCHY_TRANSIT_OFFLINE: no request leaves the app, for the shots. What
+  // it would have asked is answered from MOARCHY_TRANSIT_DIR/fixture.json,
+  // which dev/capture.py recorded and dev/demo.py put there, and goes through
+  // the worker like any answer; a URL the fixture has no answer for is never
+  // answered, and never an error either.
+  readonly property bool sealed: (Quickshell.env("MOARCHY_TRANSIT_OFFLINE") || "") !== ""
+  readonly property string fixtureDir: Quickshell.env("MOARCHY_TRANSIT_DIR") || ""
+  property var fixture: null   // url -> the answer, once read
 
   // Bumped on every change to the cache or to what is in flight. Bindings
   // read it to re-evaluate peek(), status() and error().
@@ -137,6 +147,7 @@ Item {
 
   function pump() {
     if (inflight || !queue.length) return
+    if (sealed) { answerFromFixture(); return }
     var t = Date.now()
     var wait = Math.max(blockedUntil - t, lastSent + gap - t)
     if (wait > 0) {
@@ -194,7 +205,7 @@ Item {
     inflight = ""
     if (status === 200) {
       // Shaped on the worker; the queue moves on meanwhile.
-      var p = parsing
+      var p = Object.assign({}, parsing)
       p[job.url] = true
       parsing = p
       offline = false
@@ -238,7 +249,7 @@ Item {
   }
 
   function shaped(url, kind, data) {
-    var p = parsing
+    var p = Object.assign({}, parsing)
     delete p[url]
     parsing = p
     if (data === null) {
@@ -267,6 +278,33 @@ Item {
     if (keys.length <= 80) return
     keys.sort(function (a, b) { return c[a].t - c[b].t })
     for (var i = 0; i < keys.length - 80; i++) delete c[keys[i]]
+  }
+
+  function answerFromFixture() {
+    if (fixture === null) return
+    var q = queue
+    queue = []
+    for (var i = 0; i < q.length; i++) {
+      var answer = fixture[q[i].url]
+      if (answer === undefined) continue
+      var p = Object.assign({}, parsing)
+      p[q[i].url] = true
+      parsing = p
+      post({ op: "shape", url: q[i].url, kind: q[i].kind, text: JSON.stringify(answer) })
+    }
+    touch()
+  }
+
+  FileView {
+    path: root.sealed && root.fixtureDir ? root.fixtureDir + "/fixture.json" : ""
+    printErrors: false
+    onLoaded: {
+      var answers = {}
+      try { answers = JSON.parse(text()).answers || {} } catch (e) {}
+      root.fixture = answers
+      root.pump()
+    }
+    onLoadFailed: { root.fixture = {}; root.pump() }
   }
 
   WorkerScript {

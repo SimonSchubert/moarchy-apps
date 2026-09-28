@@ -1,0 +1,25 @@
+# What to photograph, for scripts/app-shot.sh. Every shot is offline, on the
+# answers dev/capture.py recorded -- Berlin, on a Monday afternoon -- at the
+# minute it recorded them, in Berlin's time zone, so the board's countdowns
+# and the clock beside them are the ones the city saw.
+FX=apps/transit/dev/fixture.json
+NOW=MOARCHY_TRANSIT_NOW=$(jq .NOW "$FX")
+BERLIN=TZ=Europe/Berlin
+# The journey with a change in it, and a metro's trip from the board.
+JOURNEY="MOARCHY_TRANSIT_PAGE=detail MOARCHY_TRANSIT_OPEN=$(jq .JOURNEY "$FX")"
+TRIP="MOARCHY_TRANSIT_PAGE=trip MOARCHY_TRANSIT_OPEN=$(jq -r .TRIP "$FX")"
+STORE="SIZE=540x1044 SCALE=1.5"
+
+# shellcheck disable=SC2086
+{
+shot store-results $STORE $NOW $BERLIN MOARCHY_TRANSIT_PAGE=results
+shot store-board $STORE $NOW $BERLIN MOARCHY_TRANSIT_PAGE=departures
+shot store-journey $STORE $NOW $BERLIN $JOURNEY
+
+shot phone $NOW $BERLIN
+shot phone-saved $NOW $BERLIN MOARCHY_TRANSIT_PAGE=saved
+shot phone-trip $NOW $BERLIN $TRIP
+shot phone-latte THEME=.themes/catppuccin-latte/colors.toml $NOW $BERLIN MOARCHY_TRANSIT_PAGE=departures
+shot desktop SIZE=1280x820 $NOW $BERLIN $JOURNEY
+shot desktop-board SIZE=1280x820 THEME=.themes/tokyo-night/colors.toml $NOW $BERLIN MOARCHY_TRANSIT_PAGE=departures
+}

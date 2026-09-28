@@ -23,6 +23,14 @@ ShellRoot {
     }
   }
 
+  // MOARCHY_QUIT_AFTER=6 -- for headless runs: a run that does not end is a
+  // run that hangs CI.
+  Timer {
+    interval: 1000 * parseInt(Quickshell.env("MOARCHY_QUIT_AFTER") || "0", 10)
+    running: interval > 0
+    onTriggered: Qt.quit()
+  }
+
   // Saves are asynchronous, and the first one of a file is followed by a
   // chmod 600. A second is enough for both to reach the disk.
   Timer {

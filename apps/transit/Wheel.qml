@@ -4,12 +4,12 @@ import QtQuick
 ListView {
   id: root
   property var app
-  property int count: 0
+  property int rows: 0
   property var format: function (i) { return "" + i }
   signal picked(int index)
 
   readonly property int rowH: 44
-  model: count
+  model: rows
   clip: true
   snapMode: ListView.SnapToItem
   highlightRangeMode: ListView.StrictlyEnforceRange

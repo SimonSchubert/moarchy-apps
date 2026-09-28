@@ -143,7 +143,7 @@ Item {
           width: 80
           height: parent.height
           app: root.app
-          count: 24
+          rows: 24
           format: function (i) { return root.app.store.clock24 ? (i < 10 ? "0" + i : "" + i) : ((i % 12 || 12) + (i < 12 ? " am" : " pm")) }
           onPicked: function (i) { root.hour = i }
         }
@@ -161,7 +161,7 @@ Item {
           width: 80
           height: parent.height
           app: root.app
-          count: 12
+          rows: 12
           format: function (i) { var m = i * 5; return m < 10 ? "0" + m : "" + m }
           onPicked: function (i) { root.minute = i * 5 }
         }

@@ -60,7 +60,9 @@ Item {
   function write(show) {
     if (!/^[A-Za-z0-9._-]+$/.test(pluginId)) return
     var w = writer.createObject(root, { path: root.file })
+    // qmllint disable missing-property
     w.setText(content(show))
+    // qmllint enable missing-property
     w.destroy()
   }
 

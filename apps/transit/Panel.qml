@@ -27,7 +27,12 @@ Item {
   // ------------------------------------------------------------ tokens
 
   readonly property bool compact: stage.width < 720
-  property real clock: Date.now()
+  property real clock: now()
+  // MOARCHY_TRANSIT_NOW: a moment in Unix seconds the clock stays at, for the
+  // shots -- "in 4 min" is four minutes in every picture, and the recorded
+  // departures are still to come.
+  readonly property real pinnedNow: 1000 * (parseFloat(Quickshell.env("MOARCHY_TRANSIT_NOW") || "0") || 0)
+  function now() { return pinnedNow || Date.now() }
   // The router names stops in the language asked for where the feed has it.
   readonly property string lang: {
     var l = Qt.locale().name.split("_")[0]
@@ -42,45 +47,11 @@ Item {
   }
   readonly property color onAccent: luminance(ui.accent) > 0.6 ? "#111111" : "#ffffff"
 
-  // Omarchy's theme inside its shell, a plain one under any other Quickshell.
-  HostTheme { id: theme }
-  Component.onCompleted: theme.probe(root)
+  // Omarchy's theme: its shell's, its theme files, or a plain one.
+  HostTheme { id: hostTheme }
+  Component.onCompleted: hostTheme.probe(root)
 
-  readonly property QtObject ui: QtObject {
-    readonly property bool dark: root.luminance(theme.background) < 0.5
-    readonly property color bg: theme.background
-    readonly property color text: theme.text
-    readonly property color muted: theme.muted
-    readonly property color accent: theme.accent
-    readonly property color border: theme.border
-    readonly property color surface: Qt.tint(bg, root.alpha(text, dark ? 0.06 : 0.04))
-    readonly property color surfaceHigh: Qt.tint(bg, root.alpha(text, dark ? 0.12 : 0.08))
-    // No hover on a touch screen: a finger leaves the last row it lifted from
-    // looking pointed at.
-    readonly property color hover: root.compact ? "transparent" : root.alpha(text, 0.06)
-    readonly property color pressed: root.alpha(text, 0.12)
-    readonly property color accentSoft: root.alpha(accent, 0.16)
-    readonly property color divider: root.alpha(text, 0.08)
-    readonly property color ok: dark ? "#34d399" : "#15803d"
-    readonly property color late: dark ? "#f87171" : "#dc2626"
-    readonly property color warn: dark ? "#fbbf24" : "#b45309"
-    readonly property color lateSoft: root.alpha(late, 0.14)
-    readonly property color warnSoft: root.alpha(warn, 0.16)
-    readonly property color okSoft: root.alpha(ok, 0.14)
-    readonly property color star: "#f5b82e"
-    readonly property string font: theme.fontFamily
-    readonly property int radius: Math.max(6, Math.min(12, theme.cornerRadius))
-    readonly property int target: root.compact ? 44 : 38
-    readonly property int chip: root.compact ? 36 : 32
-    readonly property QtObject fs: QtObject {
-      readonly property int xs: 11
-      readonly property int sm: 13
-      readonly property int md: 14
-      readonly property int lg: 17
-      readonly property int xl: 20
-      readonly property int xxl: root.compact ? 26 : 30
-    }
-  }
+  readonly property Tokens ui: Tokens { theme: hostTheme; compact: root.compact }
 
   // A line's own colour where the feed has one, else the mode's. On the
   // background (the timeline, the leg bar) a colour too close to it -- a
@@ -268,7 +239,8 @@ Item {
     if (!opened) return
     var v = currentView()
     if (v && v.refresh) v.refresh(force)
-    if (detailLoader.item) detailLoader.item.refresh(force)
+    var d = detailLoader.item as DetailView
+    if (d) d.refresh(force)
   }
 
   function currentView() {
@@ -299,7 +271,8 @@ Item {
     try { p = typeof payloadJson === "string" && payloadJson ? JSON.parse(payloadJson) : payloadJson } catch (e) { p = null }
     if (p && p.from && p.to && Api.cleanPlace(p.from) && Api.cleanPlace(p.to)) plan(p.from, p.to)
     else if (p && p.board && Api.cleanPlace(p.board)) openBoard(p.board)
-    root.clock = Date.now()
+    hostTheme.reload()
+    root.clock = root.now()
     Qt.callLater(function () { keys.forceActiveFocus(); root.refresh(false) })
   }
 
@@ -338,11 +311,58 @@ Item {
       // same few places.
       if (storeObj.recents.length) root.query = { from: storeObj.recents[0].from, to: null, time: 0, arriveBy: false }
       root.refresh(false)
+      root.showPage()
     }
     onSnapshotLoaded: function (text) { motisObj.restoreText(text) }
   }
 
   Motis { id: motisObj }
+
+  // ------------------------------------------------------------ for the shots
+  //
+  // MOARCHY_TRANSIT_PAGE opens a screen at startup, for scripts/app-shot.sh:
+  // a tab (journey, departures, saved, settings), the last search's results,
+  // one journey from them (detail: MOARCHY_TRANSIT_OPEN is its place in the
+  // list, 0 by default), or the trip of the board row whose trip id is
+  // MOARCHY_TRANSIT_OPEN (trip). The last two wait for their answers.
+  readonly property string shotPage: Quickshell.env("MOARCHY_TRANSIT_PAGE") || ""
+  readonly property string shotOpen: Quickshell.env("MOARCHY_TRANSIT_OPEN") || ""
+  property bool shotWaiting: false
+
+  function showPage() {
+    var p = shotPage
+    if (!p) return
+    if (tabs.some(function (t) { return t.key === p }) || p === "settings") { setTab(p); return }
+    if (p === "trip") setTab("departures")
+    else if (store.recents.length) plan(store.recents[0].from, store.recents[0].to)
+    shotWaiting = p === "detail" || p === "trip"
+    Qt.callLater(showOpen)
+  }
+
+  function showOpen() {
+    if (!shotWaiting) return
+    if (shotPage === "detail") {
+      var results = resultsLoader.item as ResultsView
+      var it = results ? results.journeys[parseInt(shotOpen || "0", 10)] : null
+      if (!it) return
+      shotWaiting = false
+      openJourney(it)
+    } else {
+      var rows = boardView.rows
+      for (var i = 0; i < rows.length; i++) {
+        if (rows[i].tripId !== shotOpen) continue
+        shotWaiting = false
+        openTrip(rows[i], rows[i].place.stopId)
+        return
+      }
+    }
+  }
+
+  Connections {
+    target: motisObj
+    enabled: root.shotWaiting
+    function onChanged() { root.showOpen() }
+  }
 
   LauncherEntry {
     id: launcherObj
@@ -361,7 +381,7 @@ Item {
     interval: 15000
     repeat: true
     running: root.opened
-    onTriggered: { root.clock = Date.now(); root.refresh(false) }
+    onTriggered: { root.clock = root.now(); root.refresh(false) }
   }
 
   // Written when the app closes, not while it is in use.
@@ -412,7 +432,8 @@ Item {
             if (root.picking || root.timeOpen) return
             if (event.modifiers & (Qt.ControlModifier | Qt.AltModifier | Qt.MetaModifier)) return
             var v = root.currentView()
-            var f = root.detailOpen && detailLoader.item ? detailLoader.item.flick : v && v.flick ? v.flick : null
+            var d = detailLoader.item as DetailView
+            var f = root.detailOpen && d ? d.flick : v && v.flick ? v.flick : null
             if ((k === Qt.Key_Down || k === Qt.Key_Up) && f) {
               f.contentY = Math.max(0, Math.min(f.contentHeight - f.height, f.contentY + (k === Qt.Key_Down ? 80 : -80)))
               event.accepted = true

@@ -242,6 +242,7 @@ Rectangle {
 
       // Where the journey starts, counted down.
       Rectangle {
+        id: countdown
         readonly property real at: root.firstRide ? root.firstRide.start : 0
         readonly property int mins: Math.round((at - root.app.clock) / 60000)
         visible: !root.isTrip && !!root.firstRide && mins >= -1 && mins <= 120 && !root.journey.cancelled
@@ -258,7 +259,7 @@ Rectangle {
             anchors.verticalCenter: parent.verticalCenter
             width: body.width - 14 - 30 - 10 - 14
             elide: Text.ElideRight
-            readonly property int m: parent.parent.mins
+            readonly property int m: countdown.mins
             text: root.firstRide ? (m <= 0 ? root.firstRide.line + " leaves now" : root.firstRide.line + " leaves in " + m + " min")
               + (root.firstRide.from.track ? " from " + Api.platform(root.firstRide.from.track) : "") : ""
             color: root.app.ui.text

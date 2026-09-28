@@ -62,7 +62,7 @@ Column {
       required property var modelData
       readonly property var row: modelData
       width: root.width
-      height: loader.item ? loader.item.implicitHeight : 0
+      height: loader.item ? (loader.item as Item).implicitHeight : 0
 
       Loader {
         id: loader
