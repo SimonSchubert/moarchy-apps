@@ -22,10 +22,10 @@ Row {
       readonly property bool live: root.turn === modelData
       width: (root.width - root.spacing) / 2
       height: 64
-      radius: root.app.ui.radius + 2
+      radius: root.app.ui.radius
       color: live ? root.app.ui.accentSoft : root.app.ui.surface
       border.width: 1
-      border.color: live ? root.app.ui.accent : root.app.ui.divider
+      border.color: live ? root.app.ui.accent : root.app.ui.line
 
       Rectangle {
         id: swatch
@@ -58,8 +58,10 @@ Row {
           text: root.names[box.modelData]
           color: box.live ? root.app.ui.accent : root.app.ui.muted
           font.family: root.app.ui.font
-          font.pixelSize: root.app.ui.fs.sm
-          font.weight: box.live ? Font.DemiBold : Font.Normal
+          font.pixelSize: root.app.ui.fs.xs
+          font.weight: box.live ? Font.Bold : Font.Normal
+          font.capitalization: Font.AllUppercase
+          font.letterSpacing: root.app.ui.tracking
         }
       }
     }

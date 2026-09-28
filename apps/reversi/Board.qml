@@ -33,8 +33,10 @@ Item {
     anchors.centerIn: parent
     width: root.side
     height: root.side
-    radius: root.app.ui.radius + 2
+    radius: root.app.ui.radius
     color: root.app.ui.felt
+    border.width: 1
+    border.color: root.app.ui.line
     clip: true
 
     // The grid: seven lines each way, inside the felt's own edge.
@@ -161,7 +163,7 @@ Item {
           anchors.margins: 2
           visible: root.cursor === cell.index
           color: "transparent"
-          radius: 4
+          radius: root.app.ui.radius
           border.width: 3
           border.color: root.app.ui.text
         }

@@ -389,10 +389,12 @@ App {
 
     Text {
       text: "Against"
-      color: root.ui.text
+      color: root.ui.muted
       font.family: root.ui.font
-      font.pixelSize: root.ui.fs.md
-      font.weight: Font.DemiBold
+      font.pixelSize: root.ui.fs.xs
+      font.weight: Font.Bold
+      font.capitalization: Font.AllUppercase
+      font.letterSpacing: root.ui.tracking
     }
     Flow {
       width: parent.width
@@ -405,10 +407,12 @@ App {
     Text {
       visible: newGame.mode === S.SOLO
       text: "Difficulty"
-      color: root.ui.text
+      color: root.ui.muted
       font.family: root.ui.font
-      font.pixelSize: root.ui.fs.md
-      font.weight: Font.DemiBold
+      font.pixelSize: root.ui.fs.xs
+      font.weight: Font.Bold
+      font.capitalization: Font.AllUppercase
+      font.letterSpacing: root.ui.tracking
     }
     Flow {
       visible: newGame.mode === S.SOLO
@@ -437,10 +441,12 @@ App {
     Text {
       visible: newGame.mode === S.SOLO
       text: "You play"
-      color: root.ui.text
+      color: root.ui.muted
       font.family: root.ui.font
-      font.pixelSize: root.ui.fs.md
-      font.weight: Font.DemiBold
+      font.pixelSize: root.ui.fs.xs
+      font.weight: Font.Bold
+      font.capitalization: Font.AllUppercase
+      font.letterSpacing: root.ui.tracking
     }
     Flow {
       visible: newGame.mode === S.SOLO
@@ -497,7 +503,7 @@ App {
           color: root.over ? root.ui.accent : root.ui.muted
           font.family: root.ui.font
           font.pixelSize: root.ui.fs.md
-          font.weight: root.over ? Font.DemiBold : Font.Normal
+          font.weight: root.over ? Font.Bold : Font.Normal
         }
       }
     }
