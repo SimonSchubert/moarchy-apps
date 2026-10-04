@@ -26,7 +26,7 @@ optdepends=('grim: scan a QR code off the screen'
 # the tag, with shared/kit in place of the kit link.
 source=("$url/releases/download/authenticator-v$pkgver/$pkgname-$pkgver.tar.gz")
 # Pinned in the commit after the tag, as every app's here is.
-sha256sums=('SKIP')
+sha256sums=('4bfdfd11776d4865619decb865c82e47d2599741c48f157eb8d26addd8470a49')
 
 check() {
   cd "$pkgname-$pkgver"
