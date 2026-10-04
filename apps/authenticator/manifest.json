@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "id": "org.moarchy.authenticator",
+  "name": "Authenticator",
+  "version": "0.1.0",
+  "author": "Simon Schubert",
+  "license": "MIT",
+  "description": "The six-digit codes two-factor sign-in asks for (TOTP), one tap from the clipboard. Add a key, an otpauth:// link or a Google Authenticator export; scan a QR code off the screen on a desktop. One file, no network. Desktop and phone layouts.",
+  "homepage": "https://github.com/SimonSchubert/moarchy-apps/tree/main/apps/authenticator",
+  "repository": "https://github.com/SimonSchubert/moarchy-apps",
+  "keywords": ["authenticator", "totp", "2fa", "two-factor", "otp", "mfa"],
+  "icon": "icon.svg",
+  "kinds": ["panel"],
+  "keepLoaded": true,
+  "entryPoints": {
+    "panel": "Panel.qml"
+  }
+}

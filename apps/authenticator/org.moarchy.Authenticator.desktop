@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=Authenticator
+GenericName=Authenticator
+Comment=Two-factor sign-in codes, one tap from the clipboard
+Exec=moarchy-authenticator
+Icon=org.moarchy.Authenticator
+Terminal=false
+Categories=Utility;Security;
+Keywords=totp;2fa;otp;authenticator;two-factor;mfa;code;
+StartupNotify=false

@@ -1,0 +1,23 @@
+# What to photograph, for scripts/app-shot.sh. dev/demo.py writes the
+# accounts. The clock is stopped so the pictures hold still: 19 seconds left
+# of the period, or 4 for the shots where the codes are about to turn over.
+NOW="MOARCHY_AUTHENTICATOR_NOW=1789999991"
+LATE="MOARCHY_AUTHENTICATOR_NOW=1790000006"
+LINK="otpauth://totp/Codeberg:simon%40example.org?secret=JBSWY3DPEHPK3PXP&issuer=Codeberg"
+shot phone $NOW
+shot phone-light $NOW LOOK=light
+shot phone-late $LATE
+shot phone-add $NOW MOARCHY_AUTHENTICATOR_PAGE=add MOARCHY_AUTHENTICATOR_ADD="$LINK"
+shot phone-edit $NOW MOARCHY_AUTHENTICATOR_EDIT=GitHub
+shot desktop $NOW SIZE=1280x820
+shot desktop-light $NOW SIZE=1280x820 LOOK=light
+shot desktop-latte $LATE SIZE=1280x820 THEME=.themes/catppuccin-latte/colors.toml
+shot desktop-add $NOW SIZE=1280x820 MOARCHY_AUTHENTICATOR_PAGE=add
+
+# The store's three, for App Finder: the list, a code about to turn over,
+# and adding from a link. scripts/app-shot.sh's themed mode shoots these
+# once per Omarchy theme.
+STORE="SIZE=540x1044 SCALE=1.5"
+shot store-1-codes $NOW $STORE
+shot store-2-late $LATE $STORE
+shot store-3-add $NOW $STORE MOARCHY_AUTHENTICATOR_PAGE=add MOARCHY_AUTHENTICATOR_ADD="$LINK"

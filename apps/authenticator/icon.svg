@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- A shield with a keyhole: a login guarded, not a padlock or a phone.
+
+     The drawer paints a .desktop icon bare, with no tile behind it, so the
+     shield is the whole mark, and the keyhole is cut out of it rather than
+     drawn on it so it reads on any background at 42px. -->
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+  <path fill="#3584e4" fill-rule="evenodd" d="M64 10 L108 26 V60 C108 88 90 108 64 118 C38 108 20 88 20 60 V26 Z M64 42 A13 13 0 0 0 57 66 L53 88 H75 L71 66 A13 13 0 0 0 64 42 Z"/>
+</svg>
