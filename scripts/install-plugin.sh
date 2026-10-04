@@ -113,6 +113,12 @@ data["plugins"] = plugins
 p.parent.mkdir(parents=True, exist_ok=True)
 p.write_text(json.dumps(data, indent=2) + "\n")
 PY
+# Made before the restart, not left to the plugin-apps service: that writes
+# omarchy-plugin-<id>.desktop a few seconds after the shell is up, and
+# Quickshell's DesktopEntries only watches application folders that existed
+# when it started. On a phone with no user entries yet the folder is born
+# after the scan, and the app never reaches the drawer until the next restart.
+mkdir -p ~/.local/share/applications
 update-desktop-database ~/.local/share/applications >/dev/null 2>&1 || true
 export XDG_RUNTIME_DIR="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}"
 export OMARCHY_PATH="${OMARCHY_PATH:-/usr/share/omarchy}"
