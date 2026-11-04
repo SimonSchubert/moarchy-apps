@@ -25,10 +25,13 @@ Item {
   readonly property string fixtureDir: Quickshell.env("MOARCHY_COUCH_FOR_TRAKT_DIR") || ""
   property var fixture: null
 
-  // The built-in app unless Settings names another one.
+  // The built-in app unless Settings names another one. It has a client ID
+  // only, which is enough for Trakt's public lists. Signing in needs a client
+  // secret, which public source can't keep, so it needs the person's own app.
   readonly property string clientId: store && store.clientId ? store.clientId : Keys.CLIENT_ID
-  readonly property string clientSecret: store && store.clientId ? store.clientSecret : Keys.CLIENT_SECRET
+  readonly property string clientSecret: store && store.clientId ? store.clientSecret : ""
   readonly property bool configured: /^[A-Za-z0-9_-]{20,128}$/.test(clientId)
+  readonly property bool canSignIn: configured && clientSecret !== ""
   readonly property string access: store && store.auth ? store.auth.access : ""
   readonly property bool signedIn: access !== ""
 
@@ -384,6 +387,7 @@ Item {
 
   function beginSignIn() {
     if (!configured) { authState = "failed"; authMessage = "No Trakt app is set up. Add a client ID and secret below."; return }
+    if (!canSignIn) { authState = "failed"; authMessage = "Signing in needs your own Trakt app. Create one at trakt.tv/oauth/applications and add its client ID and secret under Trakt app below."; return }
     authState = "asking"
     authMessage = ""
     userCode = ""

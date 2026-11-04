@@ -335,8 +335,8 @@ Item {
         app: root.app
         width: body.width
         title: "Trakt app"
-        note: "Optional. Couch signs in as its own Trakt app. To use one of yours instead, create it at trakt.tv/oauth/applications with the redirect URI urn:ietf:wg:oauth:2.0:oob and paste its client ID and secret here. Changing this signs you out."
-        property bool open: root.app.store.clientId !== "" || !root.app.trakt.configured
+        note: "Needed to sign in. Couch's built-in app can only read Trakt's public lists, since a client secret can't be kept in public source. Create your own app at trakt.tv/oauth/applications with the redirect URI urn:ietf:wg:oauth:2.0:oob and paste its client ID and secret here. They are kept in ~/.local/state/couch/prefs.json, readable only by you. Changing this signs you out."
+        property bool open: root.app.store.clientId !== "" || !root.app.trakt.canSignIn
         Chip {
           visible: !appSection.open
           app: root.app

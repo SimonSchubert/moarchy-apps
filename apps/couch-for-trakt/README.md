@@ -65,8 +65,9 @@ bind = SUPER SHIFT, T, exec, couch-for-trakt
 
 ## Signing in
 
-You need a free [Trakt](https://trakt.tv) account. Open **Settings** and
-choose **Sign in**. The app shows a short code. On any
+You need a free [Trakt](https://trakt.tv) account and your own Trakt app
+(see below; it takes a minute). Open **Settings** and choose **Sign in**.
+The app shows a short code. On any
 phone or computer, go to [trakt.tv/activate](https://trakt.tv/activate) and
 enter it. There is no password to type into the app. The app notices the
 approval by itself and fills in your lists.
@@ -117,11 +118,25 @@ any other app.
 
 ## Your own Trakt app
 
-Couch signs in as its own registered Trakt app. If you would rather use
-one of your own, create it at
-[trakt.tv/oauth/applications](https://trakt.tv/oauth/applications), with the
-redirect URI `urn:ietf:wg:oauth:2.0:oob`. Then paste its client ID and secret
-into **Settings → Trakt app**.
+Browsing Trakt's public lists works out of the box: Couch has a built-in
+client ID for that, and a client ID is public by design. Signing in is
+different. Trakt's device sign-in swaps the code for tokens with the app's
+client secret, and a secret can't be kept in public source, so Couch doesn't
+ship one. Use your own Trakt app instead:
+
+1. Go to [trakt.tv/oauth/applications](https://trakt.tv/oauth/applications)
+   and choose **New application**.
+2. Give it any name, and set the redirect URI to
+   `urn:ietf:wg:oauth:2.0:oob`. No other field is needed.
+3. Save it, then copy its **Client ID** and **Client Secret** into
+   **Settings → Trakt app** and choose **Save**.
+4. Choose **Sign in**.
+
+The ID and secret are kept with your other settings in
+`~/.local/state/couch/prefs.json` (as `clientId` and `clientSecret`), which
+only you can read.
+**Use the built-in app** in the same section goes back to browsing without
+an account.
 
 ## Privacy and security
 
@@ -138,8 +153,8 @@ into **Settings → Trakt app**.
   other processes. If either step fails, it saves nothing and says so on
   screen.
 - **Files.** It writes only these files:
-  - `~/.local/state/couch/prefs.json`: settings and the Trakt access and
-    refresh tokens
+  - `~/.local/state/couch/prefs.json`: settings, your Trakt app's client ID
+    and secret, and the Trakt access and refresh tokens
   - `~/.cache/couch/`: the last lists, for opening offline, and the pictures
 - **Your data.** Tokens are sent only to Trakt. Descriptions are shown as
   plain text. Links open in your browser, and only `https:` links are opened.

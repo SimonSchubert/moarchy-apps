@@ -1,10 +1,9 @@
-// The Trakt app this plugin signs in as, registered at
-// https://trakt.tv/oauth/applications with the redirect URI
-// urn:ietf:wg:oauth:2.0:oob (the device flow).
+// The Trakt app Couch reads Trakt's public lists as, registered at
+// https://trakt.tv/oauth/applications.
 //
-// An app whose source is public cannot keep a secret: this one identifies
-// the app, it protects nobody's account. The device flow still needs the
-// person to approve the app on trakt.tv, and every token is theirs alone.
-// Settings can name a different app instead.
+// A client ID is public by design: Trakt sends it as the trakt-api-key header
+// on every request, and it lets nobody into anyone's account. The app's
+// client secret is not here, because a secret can't be kept in public
+// source. Signing in exchanges a code for tokens with a secret, so it uses
+// the person's own Trakt app, set in Settings -> Trakt app.
 export var CLIENT_ID = "FfaAy3QK7UmKwSgD3KP-Q4LbdHuki64OZBNNb44_ibc"
-export var CLIENT_SECRET = "Nezbd-pNTJDVPaoOG08jQG5LpJyrZ_YQzUjogOlplhY"
