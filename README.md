@@ -284,6 +284,8 @@ shared/kit-gallery/    every kit widget on one screen
 packaging/release.sh   tag -> per-app tarball (the kit resolved) + sha256
 packaging/publish-market.sh   built packages -> [market-apps], the Omarchy
                        Mobile Market's prebuilt repo (gh-pages)
+packaging/srcpkg.sh    an app's makepkg --allsource source package, which
+                       publish-market.sh publishes beside its binary
 scripts/check.sh       every check: ruff, the lints, the Python helper tests,
                        and app-check.sh
 scripts/app-check.sh   per app: app-lint, qmllint, its tests, a real quickshell
@@ -324,6 +326,25 @@ The phone's other store, the Omarchy Mobile Market, installs prebuilt packages
 from its own signed repo, `[market-apps]`, on this repo's `gh-pages`; ours are
 kept there too, with `packaging/publish-market.sh`.
 [`docs/publishing.md`](docs/publishing.md) has the table and the commands.
+
+## Source code
+
+Every package in `[market-apps]` —
+[simonschubert.github.io/moarchy-apps/aarch64](https://simonschubert.github.io/moarchy-apps/aarch64),
+this repo's `gh-pages` branch — has its corresponding source beside it in the
+same directory: for `<name>-<ver>-<rel>-<arch>.pkg.tar.xz` there is a
+`<pkgbase>-<ver>-<rel>.src.tar.gz`, made by `makepkg --allsource` and signed
+with the same key. It holds the PKGBUILD, its local files, and every source the
+PKGBUILD downloads — for an app of ours the release tarball from its tag, for
+`queens` and `puzzle-games` the upstream clone at the pinned commit. The AUR
+apps the Market's test run puts in `[market-apps]` have theirs, the same
+`makepkg --allsource` of the AUR recipe each was built from, on the
+[`market-apps-sources`](https://github.com/SimonSchubert/moarchy-apps/releases/tag/market-apps-sources)
+release rather than on Pages (more than a gigabyte of them, which is more than
+a Pages site may hold).
+`packaging/srcpkg.sh` makes them, and `packaging/publish-market.sh` will not
+publish a package without one. Each app's source is also its tag here
+(`<app>-v<version>`) and the release tarball attached to it.
 
 ## Working on it
 

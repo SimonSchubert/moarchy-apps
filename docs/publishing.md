@@ -170,4 +170,5 @@ For each app, in this order:
 - [ ] tag pushed, `packaging/release.sh`, asset uploaded, checksum pinned
 - [ ] `.SRCINFO` regenerated, committed, pushed -- `aur.yml` green
 - [ ] `recommended.json` entry, screens and icon, at the new version
-- [ ] `scripts/package.sh`, `packaging/publish-market.sh`
+- [ ] `scripts/package.sh`, `packaging/publish-market.sh` -- which makes and
+      publishes its `makepkg --allsource` source beside it (`packaging/srcpkg.sh`)

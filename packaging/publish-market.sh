@@ -15,6 +15,11 @@
 # older version of that one package and its file, signs, and refuses to push
 # if anything but our own packages and the database would change.
 #
+# Every package goes up with its source: <pkgbase>-<ver>-<rel>.src.tar.gz from
+# packaging/srcpkg.sh (makepkg --allsource), beside it in aarch64/ and signed
+# the same way. One that is missing is made first, from apps/<app>/PKGBUILD at
+# the same version; a package whose source cannot be made is not published.
+#
 # The Market lists only its test run's apps (aur/apps.json), so ours here are
 # installable by name and listed nowhere; they are kept in step because the
 # database is shared, and omarchy-market-test's publish.sh keeps the versions
@@ -35,6 +40,26 @@ for p in "$@"; do
   [[ $(basename "$p") == moarchy-* ]] || { echo "not one of ours: $p" >&2; exit 1; }
 done
 
+# The source package that goes with each one, by the package's own .PKGINFO --
+# pkgbase and the full version -- and made now if it is not there yet.
+srcs=()
+for p in "$@"; do
+  info=$(tar -xOf "$p" .PKGINFO)
+  base=$(sed -n 's/^pkgbase = //p' <<<"$info" | head -1)
+  full=$(sed -n 's/^pkgver = //p' <<<"$info" | head -1)
+  src=$(dirname "$p")/$base-$full.src.tar.gz
+  if [[ ! -f $src ]]; then
+    app=$(grep -lx "pkgname=$base" apps/*/PKGBUILD 2>/dev/null | head -1 | cut -d/ -f2)
+    [[ -n $app ]] || { echo "no source for $(basename "$p"), and no app named $base" >&2; exit 1; }
+    want=$(sed -n 's/^pkgver=//p' "apps/$app/PKGBUILD" | head -1)-$(sed -n 's/^pkgrel=//p' "apps/$app/PKGBUILD" | head -1)
+    [[ $want == "$full" ]] ||
+      { echo "no source for $(basename "$p"): apps/$app/PKGBUILD is $want now, not $full" >&2; exit 1; }
+    OUT=$(dirname "$p") packaging/srcpkg.sh "$app"
+  fi
+  [[ -f $src ]] || { echo "no source package $src" >&2; exit 1; }
+  srcs+=("$src")
+done
+
 git fetch -q origin gh-pages
 wt=$(mktemp -d)/pages
 git worktree add -q --detach "$wt" origin/gh-pages
@@ -45,6 +70,17 @@ for p in "$@"; do
   gpg --batch --yes --detach-sign --no-armor --local-user "$FPR" "$p"
   cp "$p" "$p.sig" "$wt/aarch64/"
   names+=("$(basename "$p")")
+done
+for src in "${srcs[@]}"; do
+  b=$(basename "$src"); base=${b%-*-*.src.tar.gz}
+  # The older source of the same package goes, as repo-add --remove takes the
+  # older package -- by exact shape, so moarchy-keep never takes moarchy-keep-x.
+  for old in "$wt"/aarch64/"$base"-*.src.tar.gz; do
+    [[ -f $old && ${old##*/} != "$b" && ${old##*/} =~ ^"$base"-[^-]+-[^-]+\.src\.tar\.gz$ ]] || continue
+    rm -f "$old" "$old.sig"
+  done
+  gpg --batch --yes --detach-sign --no-armor --local-user "$FPR" "$src"
+  cp "$src" "$src.sig" "$wt/aarch64/"
 done
 
 echo "==> $REPO.db"
@@ -67,7 +103,7 @@ gpg --verify "$wt/aarch64/$REPO.db.sig" "$wt/aarch64/$REPO.db" 2>&1 | grep -q "G
 
 git -C "$wt" add -A aarch64
 # Nothing but our packages and the database may change.
-stray=$(git -C "$wt" diff --cached --name-only | grep -vE "^aarch64/(moarchy-[^/]+\.pkg\.tar\.[a-z]+(\.sig)?|$REPO\.(db|files)(\.tar\.gz)?(\.sig)?)$" || true)
+stray=$(git -C "$wt" diff --cached --name-only | grep -vE "^aarch64/(moarchy-[^/]+\.(pkg\.tar\.[a-z]+|src\.tar\.gz)(\.sig)?|$REPO\.(db|files)(\.tar\.gz)?(\.sig)?)$" || true)
 [[ -z $stray ]] || { echo "refusing: this would change files that are not ours:"; echo "$stray"; exit 1; } >&2
 git -C "$wt" diff --cached --name-status | sed 's/^/    /'
 
